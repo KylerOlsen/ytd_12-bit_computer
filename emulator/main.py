@@ -1,7 +1,7 @@
 # Kyler Olsen
 # Feb 2024
 
-MAX_INT = 4089
+MAX_INT = 0x1000
 
 
 class Memory:
@@ -94,12 +94,9 @@ class Computer:
         self,
         index: int,
         *,
-        top: bool = False,
-        strict: bool = False,
+        strict: bool = True,
     ) -> int:
         if strict and not (0 <= index <= 7): raise IndexError
-        elif strict and top and not (0 <= index <= 3): raise IndexError
-        elif top and not (0 <= index <= 3): index = (index % 4) + 4
         else: index %= 8
 
         return self._get_reg(index)
@@ -119,12 +116,9 @@ class Computer:
         index: int,
         value: int,
         *,
-        top: bool = False,
-        strict: bool = False,
+        strict: bool = True,
     ):
         if strict and not (0 <= index <= 7): raise IndexError
-        elif strict and top and not (0 <= index <= 3): raise IndexError
-        elif top and not (0 <= index <= 3): index = (index % 4) + 4
         else: index %= 8
 
         value %= MAX_INT
@@ -143,6 +137,44 @@ class Computer:
     def interrupt(self, index: int):
         self._interrupt_flag.append(index % MAX_INT)
 
+    def step(self):
+        instruction = self._mem[self.program_counter]
+
+        if instruction == 0: self.NOP()
+        elif instruction == 1: self.HLT()
+        elif instruction == 2: self.INT()
+        elif instruction == 3: self.BNZ()
+        elif instruction & 0xFF8 == 0x10: self.GET(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x18: self.SET(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x20: self.LOD(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x28: self.STR(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x30: self.PSH(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x38: self.POP(instruction & 0x7)
+        elif instruction & 0xF80 == 0x80: self.LDI(instruction & 0x7F)
+        elif instruction & 0xFC0 == 0x100:
+            self.LSH(instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xFC0 == 0x140:
+            self.RSH(instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xFC0 == 0x180:
+            self.INC(instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xFC0 == 0x1C0:
+            self.DEC(instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0x200:
+            self.AND(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0x400:
+            self.OR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0x600:
+            self.NAD(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0x800:
+            self.SUB(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0xA00:
+            self.XOR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0xC00:
+            self.NOR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        elif instruction & 0xE0 == 0xE00:
+            self.ADD(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
+        else: raise LookupError()
+
     # === Operations ===
 
     def NOP(self):
@@ -156,21 +188,25 @@ class Computer:
         self.interrupt(self.pointer)
         self.program_counter += 1
 
-    def JPZ(self):
+    def BNZ(self):
         if self.zero_flag:
             self.program_counter = self.pointer
         self.program_counter += 1
 
+    def GET(self, REG: int):
+        self.set_reg(REG, self._interrupt_map[self.pointer])
+        self.program_counter += 1
+
     def SET(self, REG: int):
-        self._interrupt_map[self.pointer] = self.get_reg(REG, top=True)
+        self._interrupt_map[self.pointer] = self.get_reg(REG)
         self.program_counter += 1
 
     def LOD(self, REG: int):
-        self.set_reg(REG, self._mem[self.pointer], top=True)
+        self.set_reg(REG, self._mem[self.pointer])
         self.program_counter += 1
 
     def STR(self, REG: int):
-        self._mem[self.pointer] = self.get_reg(REG, top=True)
+        self._mem[self.pointer] = self.get_reg(REG)
         self.program_counter += 1
 
     def PSH(self, REG: int):
@@ -181,11 +217,15 @@ class Computer:
         self._mem[self.stack_pointer] = self.get_reg(REG)
         self.program_counter += 1
 
+    def LDI(self, Immediate: int):
+        self.pointer = Immediate % 0x3F
+        self.program_counter += 1
+
     def LSH(self, REG_D: int, REG_A: int):
         result = self.get_reg(REG_A) << 1
         result %= MAX_INT
         self._zero_flag = result == 0
-        self.set_reg(REG_D, result, top=True)
+        self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def RSH(self, REG_D: int, REG_A: int):
@@ -210,28 +250,42 @@ class Computer:
         self.program_counter += 1
 
     def AND(self, REG_D: int, REG_A: int, REG_B: int):
-        result = self.get_reg(REG_A) & self.get_reg(REG_B, top=True)
+        result = self.get_reg(REG_A) & self.get_reg(REG_B)
         result %= MAX_INT
         self._zero_flag = result == 0
-        self.set_reg(REG_D, result, top=True)
+        self.set_reg(REG_D, result)
         self.program_counter += 1
 
-    def XOR(self, REG_D: int, REG_A: int, REG_B: int):
-        result = self.get_reg(REG_A) ^ self.get_reg(REG_B, top=True)
+    def OR(self, REG_D: int, REG_A: int, REG_B: int):
+        result = self.get_reg(REG_A) | self.get_reg(REG_B)
         result %= MAX_INT
         self._zero_flag = result == 0
-        self.set_reg(REG_D, result, top=True)
+        self.set_reg(REG_D, result)
         self.program_counter += 1
 
-    def NOR(self, REG_D: int, REG_A: int, REG_B: int):
-        result = MAX_INT ^ (self.get_reg(REG_A) | self.get_reg(REG_B))
+    def NAD(self, REG_D: int, REG_A: int, REG_B: int):
+        result = (MAX_INT - 1) ^ (self.get_reg(REG_A) & self.get_reg(REG_B))
         result %= MAX_INT
         self._zero_flag = result == 0
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def SUB(self, REG_D: int, REG_A: int, REG_B: int):
-        result = self.get_reg(REG_A) - self.get_reg(REG_B)
+        result = self.get_reg(REG_A) + ((MAX_INT - 1) ^ self.get_reg(REG_B)) + 1
+        result %= MAX_INT
+        self._zero_flag = result == 0
+        self.set_reg(REG_D, result)
+        self.program_counter += 1
+
+    def XOR(self, REG_D: int, REG_A: int, REG_B: int):
+        result = self.get_reg(REG_A) ^ self.get_reg(REG_B)
+        result %= MAX_INT
+        self._zero_flag = result == 0
+        self.set_reg(REG_D, result)
+        self.program_counter += 1
+
+    def NOR(self, REG_D: int, REG_A: int, REG_B: int):
+        result = (MAX_INT - 1) ^ (self.get_reg(REG_A) | self.get_reg(REG_B))
         result %= MAX_INT
         self._zero_flag = result == 0
         self.set_reg(REG_D, result)
@@ -243,8 +297,3 @@ class Computer:
         self._zero_flag = result == 0
         self.set_reg(REG_D, result)
         self.program_counter += 1
-
-    def LDI(self, REG: int, Immediate: int):
-        self.set_reg(REG, Immediate)
-        self.program_counter += 1
-
