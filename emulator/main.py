@@ -4,13 +4,68 @@
 MAX_INT = 0x1000
 
 
-class Memory:
+class Device:
+
+    _start: int
+    _end: int
+
+    def __init__(self, start: int, end: int):
+        self._start = start
+        self._end = end
+
+    def __contains__(self, value: int) -> bool:
+        return self._start <= value <= self._end
 
     def __getitem__(self, index: int) -> int:
         return 0
 
     def __setitem__(self, index: int, value: int):
         pass
+
+
+class Memory:
+
+    _rom: list[int]
+    _devices: list[Device]
+    _ram: list[int]
+
+
+    def __init__(self, devices: list[Device]) -> None:
+        self._rom = [0] * 0x700
+        self._devices = devices[:]
+        self._ram = [0] * 0x1000
+
+    def _get_device(self, index: int) -> Device | None:
+        for device in self._devices:
+            if index in device:
+                return device
+        return None
+
+    def __getitem__(self, index: int) -> int:
+        if 0 <= index <= 0x6FF:
+            return self._rom[index]
+        elif 0x700 <= index <= 0x7FF:
+            device = self._get_device(index)
+            if device is not None:
+                return device[index]
+            else:
+                return 0
+        elif 0x800 <= index <= 0xFFF:
+            return self._ram[index - 0x1000]
+        else:
+            raise IndexError
+
+    def __setitem__(self, index: int, value: int):
+        if 0 <= index <= 0x6FF:
+            pass
+        elif 0x700 <= index <= 0x7FF:
+            device = self._get_device(index)
+            if device is not None:
+                device[index] = value % MAX_INT
+        elif 0x800 <= index <= 0xFFF:
+            self._ram[index - 0x1000] = value % MAX_INT
+        else:
+            raise IndexError
 
 
 class Computer:
