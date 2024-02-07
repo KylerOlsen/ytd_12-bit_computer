@@ -30,10 +30,13 @@ class Memory:
     _ram: list[int]
 
 
-    def __init__(self, devices: list[Device]) -> None:
+    def __init__(self, rom: list[int], devices: list[Device]) -> None:
         self._rom = [0] * 0x700
         self._devices = devices[:]
         self._ram = [0] * 0x1000
+
+        for i, data in enumerate(rom):
+            self._rom[i] = data % MAX_INT
 
     def _get_device(self, index: int) -> Device | None:
         for device in self._devices:
