@@ -78,8 +78,11 @@ class Computer:
     _running: bool
     _halted: bool
 
-    _zero_flag: bool
     _interrupt_flag: list[int]
+
+    _pc_last: int
+    _zero_flag: bool
+    _interruptable: bool
 
     _pc: int
     _sp: int
@@ -89,15 +92,16 @@ class Computer:
     _d2: int
     _d3: int
 
-    _interrupt_map: list[int]
-
     def __init__(self, mem: Memory):
         self._mem = mem
 
         self._running = True
         self._halted = False
-        self._zero_flag = False
         self._interrupt_flag = []
+
+        self._pc_last = 0
+        self._zero_flag = False
+        self._interruptable = False
 
         self._pc = 0
         self._sp = 0
@@ -106,8 +110,6 @@ class Computer:
         self._d1 = 0
         self._d2 = 0
         self._d3 = 0
-
-        self._interrupt_map = [0] * MAX_INT
 
     @property
     def running(self) -> bool: return self._running
@@ -122,7 +124,9 @@ class Computer:
     @property
     def program_counter(self) -> int: return self._pc
     @program_counter.setter
-    def program_counter(self, value: int): self._pc = value % MAX_INT
+    def program_counter(self, value: int):
+        self._pc_last = self._pc
+        self._pc = value % MAX_INT
     @property
     def stack_pointer(self) -> int: return self._sp
     @stack_pointer.setter
@@ -202,8 +206,10 @@ class Computer:
         elif instruction == 1: self.HLT()
         elif instruction == 2: self.INT()
         elif instruction == 3: self.BNZ()
-        elif instruction & 0xFF8 == 0x10: self.GET(instruction & 0x7)
-        elif instruction & 0xFF8 == 0x18: self.SET(instruction & 0x7)
+        elif instruction == 4: self.BLK()
+        elif instruction == 5: self.ENB()
+        elif instruction & 0xFF8 == 0x10: self.GLA(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x18: self.GET(instruction & 0x7)
         elif instruction & 0xFF8 == 0x20: self.LOD(instruction & 0x7)
         elif instruction & 0xFF8 == 0x28: self.STR(instruction & 0x7)
         elif instruction & 0xFF8 == 0x30: self.PSH(instruction & 0x7)
@@ -251,12 +257,21 @@ class Computer:
             self.program_counter = self.pointer
         self.program_counter += 1
 
-    def GET(self, REG: int):
-        self.set_reg(REG, self._interrupt_map[self.pointer])
+    def BLK(self):
+        self._interruptable = False
         self.program_counter += 1
 
-    def SET(self, REG: int):
-        self._interrupt_map[self.pointer] = self.get_reg(REG)
+    def ENB(self):
+        self._interruptable = True
+        self.program_counter += 1
+
+    def GLA(self, REG: int):
+        self.set_reg(REG, self._pc_last)
+        self.program_counter += 1
+
+    def GET(self, REG: int):
+        if self._interrupt_flag: self.set_reg(REG, self._interrupt_flag.pop())
+        else: self.set_reg(REG, 0)
         self.program_counter += 1
 
     def LOD(self, REG: int):
@@ -355,3 +370,4 @@ class Computer:
         self._zero_flag = result == 0
         self.set_reg(REG_D, result)
         self.program_counter += 1
+
