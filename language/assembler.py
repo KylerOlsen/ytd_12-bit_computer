@@ -3,7 +3,10 @@
 
 from collections import namedtuple
 
+
 class AssemblerError(Exception): pass
+class LinkerError(Exception): pass
+
 
 class Instruction(namedtuple('Instruction', ['bb', 'bl', 'lb', 'll'])):
 
@@ -15,6 +18,13 @@ class Instruction(namedtuple('Instruction', ['bb', 'bl', 'lb', 'll'])):
             (self.ll)
         )
 
+    def __bytes__(self) -> bytes:
+        value = int(self)
+        u = value & 0xf00 >> 8
+        m = value & 0xf0 >> 4
+        l = value & 0xf
+        return bytes((u, m, l))
+
     def oct_str(self) -> str:
         return (
             str(self.bb) +
@@ -22,6 +32,49 @@ class Instruction(namedtuple('Instruction', ['bb', 'bl', 'lb', 'll'])):
             str(self.lb) +
             str(self.ll)
         )
+
+
+class Label:
+
+    value: str
+
+    def __init__(self, value: str):
+        self.value = value
+
+
+class Immediate(Label): pass
+
+
+class Program:
+
+    _instructions: list[Instruction | Label]
+    _labels: list[tuple[int, Label]]
+    _immediate: list[tuple[int, Immediate]]
+
+    def __init__(self, instructions: list[Instruction | Label]):
+        self._instructions = instructions
+        self._labels = []
+        self._immediate = []
+        for index, item in enumerate(self._instructions):
+            if isinstance(item, Label) and not isinstance(item, Immediate):
+                self._labels.append((index, item))
+            elif isinstance(item, Immediate):
+                self._immediate.append((index, item))
+
+    def __bytes__(self) -> bytes:
+        if self._labels or self._immediate:
+            raise LinkerError("Program Not Linked Properly.")
+        for item in self._instructions:
+            if not isinstance(item, Instruction):
+                raise LinkerError("Program Not Linked Properly.")
+
+        output = bytearray()
+        for i in self._instructions:
+            output += bytes(i) # type: ignore
+        return output
+
+    def link(self):
+        pass
 
 def reg(reg: str) -> int:
     register_names = [
@@ -72,10 +125,12 @@ def reg3(l: str) -> tuple[int, int, int]:
     else:
         raise AssemblerError(f"Invalid number of arguments: {args[0]}")
 
-def immediate(l: str) -> Instruction:
+def immediate(l: str) -> Instruction | Immediate:
     args = l.split(' ')
     if len(args) == 2:
-        if 'b' in args[1]:
+        if ':' in args[1]:
+            return Immediate(args[1][1:])
+        elif 'b' in args[1]:
             value = int(args[1].split('b')[1], base=2)
         elif 'o' in args[1]:
             value = int(args[1].split('o')[1], base=8)
@@ -93,7 +148,7 @@ def immediate(l: str) -> Instruction:
     else:
         raise AssemblerError(f"Invalid number of arguments: {args[0]}")
 
-def parse(s: str) -> list[Instruction]:
+def parse(s: str) -> list[Instruction | Label]:
     instruction_set = {
         "NOP": lambda _: Instruction(0,0,0,0),
         "HLT": lambda _: Instruction(0,0,0,1),
@@ -128,9 +183,15 @@ def parse(s: str) -> list[Instruction]:
 
     for rl in s.splitlines(False):
         l = rl.strip()
-        if l[:3] in instruction_set:
+        if l[0] == ";":
+            pass
+        elif l[:3] in instruction_set:
             instructions.append(instruction_set[l[:3]](l))
         elif l[:2] in instruction_set:
             instructions.append(instruction_set[l[:2]](l))
+        elif l[-1] == ":":
+            instructions.append(Label(l[:-1]))
+        elif l.strip():
+            raise AssemblerError(f"Invalid Instruction: '{l.strip()}'")
 
     return instructions
