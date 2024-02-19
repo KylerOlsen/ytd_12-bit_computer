@@ -1,0 +1,51 @@
+Halt = (A & ~B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Interrupt = (~A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Branch if Zero = (A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Block interrupts = (~A & ~B & C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Unblock interrupts = (A & ~B & C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Last Address = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Interrupt Device = ((A | ~A) & (B | ~B) & (C | ~C) & D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Memory = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Write Memory = ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Use Memory Pointer = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Use Stack Pointer = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Load Immediate = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & H & ~I & ~J & ~K & ~L)
+
+Write Reg 1 = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+
+Read Reg 1 = ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Reg 2 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+
+Read Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+
+Left Shift = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L)
+
+Right Shift = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L)
+
+AND = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L)
+
+OR = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L)
+
+XOR = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L)
+
+NOT out = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L)
+
+NOT Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L)
+
+Add = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+
+Inject Carry = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L)
+
+One as Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L)
