@@ -383,27 +383,22 @@ def immediate(line: str, line_number: int) -> Instruction | Immediate:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='ytd12LA',
-        description='ytd 12-bit Linker and Assembler',
-        # epilog='Text at the bottom of help',
+        description='ytd 12-bit Computer Linker and Assembler',
     )
-    parser.add_argument('input_file')
-    parser.add_argument('-o', '--output_file')
-    parser.add_argument('-l', '--labels_file')
+    parser.add_argument('input_file', type=argparse.FileType('r'))
+    parser.add_argument('-o', '--output_file', type=argparse.FileType('wb'))
+    parser.add_argument('-l', '--labels_file', type=argparse.FileType('w'))
 
     args = parser.parse_args()
 
-    with open(args.input_file) as ifile:
-        program = Program(ifile.read())
+    program = Program(args.input_file.read())
 
     if args.output_file:
-        with open(args.output_file, 'wb') as ofile:
-            ofile.write(bytes(program))
+        args.output_file.write(bytes(program))
 
     if args.labels_file:
-        with open(args.labels_file, 'w') as lfile:
-            for label, location in program.labels().items():
-                lfile.write(f"{hex(location)}, {label}\n")
+        for label, location in program.labels().items():
+            args.labels_file.write(f"{hex(location)}, {label}\n")
 
 if __name__ == '__main__':
     main()
