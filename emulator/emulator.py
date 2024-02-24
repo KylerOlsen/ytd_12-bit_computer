@@ -3,7 +3,11 @@
 
 from typing import BinaryIO
 
+ROM_SIZE = 0x700
 MAX_INT = 0x1000
+MAX_IMMEDIATE = 0x80
+
+class ConfigurationError(Exception): pass
 
 
 class Device:
@@ -37,9 +41,13 @@ class Memory:
         rom: list[int],
         devices: list[Device] | None = None,
     ) -> None:
-        self._rom = [0] * 0x700
+        self._rom = [0] * ROM_SIZE
         self._devices = (devices or list())[:]
         self._ram = [0] * 0x1000
+
+        if len(rom) > ROM_SIZE:
+            raise ConfigurationError(
+                f"ROM too long: {hex(len(rom))} > {hex(ROM_SIZE)}")
 
         for i, data in enumerate(rom):
             self._rom[i] = data % MAX_INT
@@ -84,13 +92,29 @@ class Memory:
             with open(file, 'b') as f:
                 while f:
                     incoming = f.read(3)
-                    rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
-                    rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+                    if len(incoming) == 3:
+                        rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                        rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+                    elif len(incoming) == 2:
+                        rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                        rom.append(((incoming[1] & 0xf) << 8))
+                    elif len(incoming) == 1:
+                        rom.append(incoming[0] << 4)
+                    else:
+                        break
         else:
             while file:
                 incoming = file.read(3)
-                rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
-                rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+                if len(incoming) == 3:
+                    rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                    rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+                elif len(incoming) == 2:
+                    rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                    rom.append(((incoming[1] & 0xf) << 8))
+                elif len(incoming) == 1:
+                    rom.append(incoming[0] << 4)
+                else:
+                    break
 
         return rom
 
@@ -223,8 +247,14 @@ class Computer:
     def interrupt(self, index: int):
         self._interrupt_flag.append(index % MAX_INT)
 
-    def step(self):
+    def step(self, verbose: bool = False):
         instruction = self._mem[self.program_counter]
+        if verbose:
+            print(
+                f"; {hex(self.program_counter)} : {oct(instruction)} "
+                f"({hex(instruction)})"
+            )
+            self.verbose_step()
 
         if instruction == 0: self.NOP()
         elif instruction == 1: self.HLT()
@@ -240,28 +270,125 @@ class Computer:
         elif instruction & 0xFF8 == 0x38: self.POP(instruction & 0x7)
         elif instruction & 0xF80 == 0x80: self.LDI(instruction & 0x7F)
         elif instruction & 0xFC0 == 0x100:
-            self.LSH(instruction & 0x38, instruction & 0x7)
+            self.LSH((instruction & 0x38) >> 3, instruction & 0x7)
         elif instruction & 0xFC0 == 0x140:
-            self.RSH(instruction & 0x38, instruction & 0x7)
+            self.RSH((instruction & 0x38) >> 3, instruction & 0x7)
         elif instruction & 0xFC0 == 0x180:
-            self.INC(instruction & 0x38, instruction & 0x7)
+            self.INC((instruction & 0x38) >> 3, instruction & 0x7)
         elif instruction & 0xFC0 == 0x1C0:
-            self.DEC(instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0x200:
-            self.AND(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0x400:
-            self.OR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0x600:
-            self.NAD(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0x800:
-            self.SUB(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0xA00:
-            self.XOR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0xC00:
-            self.NOR(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        elif instruction & 0xE0 == 0xE00:
-            self.ADD(instruction & 0x1C, instruction & 0x38, instruction & 0x7)
-        else: raise LookupError()
+            self.DEC((instruction & 0x38) >> 3, instruction & 0x7)
+        elif instruction & 0xE00 == 0x200:
+            self.AND(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0x400:
+            self.OR(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0x600:
+            self.NAD(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0x800:
+            self.SUB(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0xA00:
+            self.XOR(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0xC00:
+            self.NOR(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0xE00:
+            self.ADD(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        else:
+            raise LookupError(
+                f"Cannot find instruction "
+                f"{hex(self.program_counter)}: {oct(instruction)}"
+            )
+
+    def verbose_step(self):
+        instruction = self._mem[self.program_counter]
+
+        if instruction == 0: print("NOP")
+        elif instruction == 1: print("HLT")
+        elif instruction == 2: print("INT")
+        elif instruction == 3: print("BNZ")
+        elif instruction == 4: print("BLK")
+        elif instruction == 5: print("ENB")
+        elif instruction & 0xFF8 == 0x10: print(f"GLA {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x18: print(f"GET {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x20: print(f"LOD {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x28: print(f"STR {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x30: print(f"PSH {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x38: print(f"POP {instruction & 0x7}")
+        elif instruction & 0xF80 == 0x80: print(f"LDI {instruction & 0x7F}")
+        elif instruction & 0xFC0 == 0x100:
+            print(f"LSH {instruction & 0x7} {(instruction & 0x38) >> 3}")
+        elif instruction & 0xFC0 == 0x140:
+            print(f"RSH {instruction & 0x7} {(instruction & 0x38) >> 3}")
+        elif instruction & 0xFC0 == 0x180:
+            print(f"INC {instruction & 0x7} {(instruction & 0x38) >> 3}")
+        elif instruction & 0xFC0 == 0x1C0:
+            print(f"DEC {instruction & 0x7} {(instruction & 0x38) >> 3}")
+        elif instruction & 0xE00 == 0x200:
+            print(
+                f"AND {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0x400:
+            print(
+                f"OR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0x600:
+            print(
+                f"NAD {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0x800:
+            print(
+                f"SUB {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0xA00:
+            print(
+                f"XOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0xC00:
+            print(
+                f"NOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        elif instruction & 0xE00 == 0xE00:
+            print(
+                f"ADD {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"{(instruction & 0x38) >> 3}"
+            )
+        else:
+            print(
+                f"LookupError: Cannot find instruction "
+                f"{hex(self.program_counter)}: {oct(instruction)}"
+            )
 
     # === Operations ===
 
@@ -315,7 +442,7 @@ class Computer:
         self.program_counter += 1
 
     def LDI(self, Immediate: int):
-        self.pointer = Immediate % 0x3F
+        self.pointer = Immediate % MAX_IMMEDIATE
         self.program_counter += 1
 
     def LSH(self, REG_D: int, REG_A: int):

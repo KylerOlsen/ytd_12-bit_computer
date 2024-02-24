@@ -5,6 +5,7 @@ from collections import namedtuple
 from typing import TypeVar, Generic, Iterable, Sequence
 
 INSTRUCTIONS_COUNT = 0x700
+MAX_IMMEDIATE = 0x80
 
 class AssemblerError(Exception): pass
 class LinkerError(Exception): pass
@@ -105,10 +106,16 @@ class Instruction(namedtuple('Instruction', ['bb', 'bl', 'lb', 'll'])):
 
     def __bytes__(self) -> bytes:
         value = int(self)
-        u = value & 0xf00 >> 8
-        m = value & 0xf0 >> 4
+        u = (value & 0xf00) >> 8
+        l = value & 0xff
+        return bytes((u, l))
+
+    def hex_tuple(self) -> tuple[int, int, int]:
+        value = int(self)
+        u = (value & 0xf00) >> 8
+        m = (value & 0xf0) >> 4
         l = value & 0xf
-        return bytes((u, m, l))
+        return (u, m, l)
 
     def oct_str(self) -> str:
         return (
@@ -215,10 +222,25 @@ class Program:
 
     def __bytes__(self) -> bytes:
         output = bytearray()
+        for i in range(0, INSTRUCTIONS_COUNT, 2):
+            instruction = self._get_instruction(i)
+            u1, m1, l1 = instruction.hex_tuple()
+            output += bytes(((u1 << 4) | m1, ))
+            if i + 1 < INSTRUCTIONS_COUNT:
+                instruction = self._get_instruction(i + 1)
+                u2, m2, l2 = instruction.hex_tuple()
+                output += bytes(((l1 << 4) | u2, ))
+                output += bytes(((m2 << 4) | l2, ))
+            else:
+                output += bytes((l1 << 4, ))
+        return bytes(output)
+
+    def hex_str(self) -> str:
+        output = ""
         for i in range(INSTRUCTIONS_COUNT):
             instruction = self._get_instruction(i)
-            output += bytes(instruction)
-        return bytes(output)
+            output += f"{hex(int(instruction))}\n"
+        return output
 
     def labels(self) -> dict[str, int]:
         return self._label_map.copy()
@@ -229,7 +251,7 @@ class Program:
         else: _, value = self._instructions[new_index]
         if isinstance(value, Immediate):
             return self.instruction_set["LDI"](
-                f"LDI {self._label_map[value.value]}", -1)
+                f"LDI {self._label_map[value.value] -1}", -1)
         elif isinstance(value, Directive):
             raise LinkerError("Unexpected directive!")
         else:
@@ -300,7 +322,8 @@ class Program:
                 last_error = e
                 print(f"Error:\n\t{e}")
         if last_error is not None:
-            raise last_error
+            # raise last_error
+            exit()
 
         return instructions
 
@@ -370,17 +393,21 @@ def immediate(line: str, line_number: int) -> Instruction | Immediate:
         else:
             value = int(args[1], base=0)
 
-        return Instruction(
-            0,
-            2 + ((value & 0x040) >> 6),
-            (value & 0x038) >> 3,
-            value & 0x007,
-        )
+            if value >= MAX_IMMEDIATE:
+                raise AssemblerError(
+                    f"Immediate value too large {line_number}: {args[1]}")
+
+            return Instruction(
+                0,
+                2 + ((value & 0x040) >> 6),
+                (value & 0x038) >> 3,
+                value & 0x007,
+            )
     else:
         raise AssemblerError(
             f"Invalid number of arguments on line {line_number}: {args[0]}")
 
-def main(argv: Sequence[str]):
+def main(argv: Sequence[str] | None = None):
     import argparse
     parser = argparse.ArgumentParser(
         description='ytd 12-bit Computer Linker and Assembler',
@@ -388,10 +415,22 @@ def main(argv: Sequence[str]):
     parser.add_argument('input_file', type=argparse.FileType('r'))
     parser.add_argument('-o', '--output_file', type=argparse.FileType('wb'))
     parser.add_argument('-l', '--labels_file', type=argparse.FileType('w'))
+    parser.add_argument('-x', '--hex_file', type=argparse.FileType('w'))
 
     args = parser.parse_args(argv)
 
     program = Program(args.input_file.read())
+
+    try: assert len(bytes(program)) <= INSTRUCTIONS_COUNT * 1.5
+    except AssertionError:
+        print(
+            hex(int(len(bytes(program)) / 1.5)),
+            '>',
+            hex(INSTRUCTIONS_COUNT),
+            ':',
+            hex(int(len(bytes(program)) / 1.5) - INSTRUCTIONS_COUNT),
+        )
+        raise
 
     if args.output_file:
         args.output_file.write(bytes(program))
@@ -400,6 +439,8 @@ def main(argv: Sequence[str]):
         for label, location in program.labels().items():
             args.labels_file.write(f"{hex(location)}, {label}\n")
 
+    if args.hex_file:
+        args.hex_file.write(program.hex_str())
+
 if __name__ == '__main__':
-    from sys import argv
-    main(argv)
+    main()

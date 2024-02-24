@@ -2,9 +2,19 @@
 ; Example 1 - ytd 12-bit Computer
 ; Fibonacci
 
-.0x5
+; .0x5
 main:
-    ; Initialize values
+    ; Load Output Device Address
+    ldi 0x7F
+    or D3 MP ZR
+    lsh D3 D3
+    lsh D3 D3
+    lsh D3 D3
+    lsh D3 D3
+    ldi 0xE
+    or D3 MP D3
+
+    ; Initialize Fibonacci values
     ldi 1
     or D0 MP ZR
     or D1 ZR ZR
@@ -12,7 +22,7 @@ main:
 
 loop:
     ; Output current value
-    ldi 0x7FE
+    or MP D3 ZR
     str D0
 
     ; Move values down

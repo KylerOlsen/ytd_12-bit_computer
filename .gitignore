@@ -1,2 +1,3 @@
 *.ods#
 docs/*.pdf
+__pycache__
