@@ -1,6 +1,8 @@
 # Kyler Olsen
 # Feb 2024
 
+from typing import BinaryIO
+
 MAX_INT = 0x1000
 
 
@@ -75,10 +77,16 @@ class Memory:
             raise IndexError
 
     @staticmethod
-    def load_rom_file(filename: str) -> list[int]:
+    def load_rom_file(file: str | BinaryIO) -> list[int]:
         rom: list[int] = []
 
-        with open(filename, 'b') as file:
+        if isinstance(file, str):
+            with open(file, 'b') as f:
+                while f:
+                    incoming = f.read(3)
+                    rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                    rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+        else:
             while file:
                 incoming = file.read(3)
                 rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
@@ -132,7 +140,7 @@ class Computer:
     @property
     def halted(self) -> bool: return self._halted
     @property
-    def active(self) -> bool: return self.running and self.halted
+    def active(self) -> bool: return self.running and not self.halted
 
     @property
     def zero_flag(self) -> bool: return self._zero_flag
