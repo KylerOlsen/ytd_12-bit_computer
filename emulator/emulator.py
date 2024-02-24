@@ -9,9 +9,9 @@ class Device:
     _start: int
     _end: int
 
-    def __init__(self, start: int, end: int):
+    def __init__(self, start: int, end: int | None = None):
         self._start = start
-        self._end = end
+        self._end = end or start
 
     def __contains__(self, value: int) -> bool:
         return self._start <= value <= self._end
@@ -30,9 +30,13 @@ class Memory:
     _ram: list[int]
 
 
-    def __init__(self, rom: list[int], devices: list[Device]) -> None:
+    def __init__(
+        self,
+        rom: list[int],
+        devices: list[Device] | None = None,
+    ) -> None:
         self._rom = [0] * 0x700
-        self._devices = devices[:]
+        self._devices = (devices or list())[:]
         self._ram = [0] * 0x1000
 
         for i, data in enumerate(rom):
@@ -69,6 +73,18 @@ class Memory:
             self._ram[index - 0x1000] = value % MAX_INT
         else:
             raise IndexError
+
+    @staticmethod
+    def load_rom_file(filename: str) -> list[int]:
+        rom: list[int] = []
+
+        with open(filename, 'b') as file:
+            while file:
+                incoming = file.read(3)
+                rom.append(incoming[0] << 4 | ((incoming[1] & 0xf0) >> 4))
+                rom.append(((incoming[1] & 0xf) << 8) | incoming[2])
+
+        return rom
 
 
 class Computer:
