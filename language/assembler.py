@@ -1,9 +1,8 @@
 # Kyler Olsen
 # Feb 2024
 
-import argparse
 from collections import namedtuple
-from typing import TypeVar, Generic, Iterable
+from typing import TypeVar, Generic, Iterable, Sequence
 
 INSTRUCTIONS_COUNT = 0x700
 
@@ -381,7 +380,8 @@ def immediate(line: str, line_number: int) -> Instruction | Immediate:
         raise AssemblerError(
             f"Invalid number of arguments on line {line_number}: {args[0]}")
 
-def main():
+def main(argv: Sequence[str]):
+    import argparse
     parser = argparse.ArgumentParser(
         description='ytd 12-bit Computer Linker and Assembler',
     )
@@ -389,7 +389,7 @@ def main():
     parser.add_argument('-o', '--output_file', type=argparse.FileType('wb'))
     parser.add_argument('-l', '--labels_file', type=argparse.FileType('w'))
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     program = Program(args.input_file.read())
 
@@ -401,4 +401,5 @@ def main():
             args.labels_file.write(f"{hex(location)}, {label}\n")
 
 if __name__ == '__main__':
-    main()
+    from sys import argv
+    main(argv)
