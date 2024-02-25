@@ -1,51 +1,213 @@
-Halt = (A & ~B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+Halt (ORG) = A & ~B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Interrupt = (~A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+Halt (CNF) = A & ~B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Branch if Zero = (A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+Halt (DNF) = A & ~B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Block interrupts = (~A & ~B & C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
 
-Unblock interrupts = (A & ~B & C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
 
-Read Last Address = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+Branch if Zero (ORG) = B & ~A & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Read Interrupt Device = ((A | ~A) & (B | ~B) & (C | ~C) & D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L)
+Branch if Zero (CNF) = B & ~A & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Read Memory = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+Branch if Zero (DNF) = B & ~A & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Write Memory = ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
 
-Use Memory Pointer = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L)
 
-Use Stack Pointer = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
+Branch if Not Zero (ORG) = A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Load Immediate = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & H & ~I & ~J & ~K & ~L)
+Branch if Not Zero (CNF) = A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Write Reg 1 = ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & ~F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & ~D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+Branch if Not Zero (DNF) = A & B & ~C & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Read Reg 1 = ((A | ~A) & (B | ~B) & (C | ~C) & D & ~E & F & ~G & ~H & ~I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & D & E & F & ~G & ~H & ~I & ~J & ~K & ~L)
 
-Read Reg 2 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
 
-Read Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
+Branch if Positive (ORG) = C & ~A & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Left Shift = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & ~H & I & ~J & ~K & ~L)
+Branch if Positive (CNF) = C & ~A & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Right Shift = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & ~H & I & ~J & ~K & ~L)
+Branch if Positive (DNF) = C & ~A & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-AND = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L)
 
-OR = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L)
 
-XOR = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & ~K & L)
+Branch if Negative (ORG) = A & C & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-NOT out = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & K & L)
+Branch if Negative (CNF) = A & C & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-NOT Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L)
+Branch if Negative (DNF) = A & C & ~B & ~D & ~E & ~F & ~G & ~H & ~I & ~J & ~K & ~L
 
-Add = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & J & K & L)
 
-Inject Carry = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & ~G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L) | ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & (G | ~G) & (H | ~H) & (I | ~I) & ~J & ~K & L)
 
-One as Reg 3 = ((A | ~A) & (B | ~B) & (C | ~C) & (D | ~D) & (E | ~E) & (F | ~F) & G & H & I & ~J & ~K & ~L)
+Read Memory (ORG) = (E & F & ~D & ~G & ~H & ~I & ~J & ~K & ~L) | (F & ~D & ~E & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Memory (CNF) = F & ~D & ~G & ~H & ~I & ~J & ~K & ~L
+
+Read Memory (DNF) = F & ~D & ~G & ~H & ~I & ~J & ~K & ~L
+
+
+
+Write Memory (ORG) = (D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Write Memory (CNF) = D & F & ~G & ~H & ~I & ~J & ~K & ~L
+
+Write Memory (DNF) = D & F & ~G & ~H & ~I & ~J & ~K & ~L
+
+
+
+Use Memory Pointer (ORG) = (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L) | (F & ~D & ~E & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Use Memory Pointer (CNF) = F & ~E & ~G & ~H & ~I & ~J & ~K & ~L
+
+Use Memory Pointer (DNF) = F & ~E & ~G & ~H & ~I & ~J & ~K & ~L
+
+
+
+Use Stack Pointer (ORG) = (D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | (E & F & ~D & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Use Stack Pointer (CNF) = E & F & ~G & ~H & ~I & ~J & ~K & ~L
+
+Use Stack Pointer (DNF) = E & F & ~G & ~H & ~I & ~J & ~K & ~L
+
+
+
+Load Immediate Upper (ORG) = G & ~H & ~I & ~J & ~K & ~L
+
+Load Immediate Upper (CNF) = G & ~H & ~I & ~J & ~K & ~L
+
+Load Immediate Upper (DNF) = G & ~H & ~I & ~J & ~K & ~L
+
+
+
+Load Immediate Lower (ORG) = H & ~G & ~I & ~J & ~K & ~L
+
+Load Immediate Lower (CNF) = H & ~G & ~I & ~J & ~K & ~L
+
+Load Immediate Lower (DNF) = H & ~G & ~I & ~J & ~K & ~L
+
+
+
+Load Immediate Lower OR (ORG) = G & H & ~I & ~J & ~K & ~L
+
+Load Immediate Lower OR (CNF) = G & H & ~I & ~J & ~K & ~L
+
+Load Immediate Lower OR (DNF) = G & H & ~I & ~J & ~K & ~L
+
+
+
+Left Shift (ORG) = I & ~G & ~H & ~J & ~K & ~L
+
+Left Shift (CNF) = I & ~G & ~H & ~J & ~K & ~L
+
+Left Shift (DNF) = I & ~G & ~H & ~J & ~K & ~L
+
+
+
+Right Shift (ORG) = G & I & ~H & ~J & ~K & ~L
+
+Right Shift (CNF) = G & I & ~H & ~J & ~K & ~L
+
+Right Shift (DNF) = G & I & ~H & ~J & ~K & ~L
+
+
+
+AND (ORG) = (J & L & ~K) | (J & ~K & ~L)
+
+AND (CNF) = J & ~K
+
+AND (DNF) = J & ~K
+
+
+
+OR (ORG) = (K & L & ~J) | (K & ~J & ~L)
+
+OR (CNF) = K & ~J
+
+OR (DNF) = K & ~J
+
+
+
+XOR (ORG) = L & ~J & ~K
+
+XOR (CNF) = L & ~J & ~K
+
+XOR (DNF) = L & ~J & ~K
+
+
+
+NOT out (ORG) = (J & L & ~K) | (K & L & ~J)
+
+NOT out (CNF) = L & (J | K) & (~J | ~K)
+
+NOT out (DNF) = (J & L & ~K) | (K & L & ~J)
+
+
+
+NOT Reg 3 (ORG) = (J & K & ~L) | (G & H & I & ~J & ~K & ~L)
+
+NOT Reg 3 (CNF) = ~L & (G | J) & (H | J) & (I | J) & (J | ~K) & (K | ~J)
+
+NOT Reg 3 (DNF) = (J & K & ~L) | (G & H & I & ~J & ~K & ~L)
+
+
+
+Add (ORG) = (J & K & L) | (J & K & ~L) | (G & H & I & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L)
+
+Add (CNF) = (H | J) & (I | J) & (J | ~K) & (J | ~L) & (K | ~J)
+
+Add (DNF) = (J & K) | (H & I & ~J & ~K & ~L)
+
+
+
+Inject Carry (ORG) = (J & K & ~L) | (G & H & I & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L)
+
+Inject Carry (CNF) = ~L & (H | J) & (I | J) & (J | ~K) & (K | ~J)
+
+Inject Carry (DNF) = (J & K & ~L) | (H & I & ~J & ~K & ~L)
+
+
+
+One as Reg 3 (ORG) = G & H & I & ~J & ~K & ~L
+
+One as Reg 3 (CNF) = G & H & I & ~J & ~K & ~L
+
+One as Reg 3 (DNF) = G & H & I & ~J & ~K & ~L
+
+
+
+Write Reg 1 (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K) | (G & H & I & ~J & ~K & ~L) | (G & I & ~H & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L) | (I & ~G & ~H & ~J & ~K & ~L) | (D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | (F & ~D & ~E & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Write Reg 1 (CNF) = (F | I | J | K | L) & (I | J | K | L | ~G) & (I | J | K | L | ~H) & (D | I | J | K | L | ~E) & (E | I | J | K | L | ~D)
+
+Write Reg 1 (DNF) = I | J | K | L | (D & E & F & ~G & ~H) | (F & ~D & ~E & ~G & ~H)
+
+
+
+Read Reg 1 (ORG) = (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L) | (E & F & ~D & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Read Reg 1 (CNF) = F & ~G & ~H & ~I & ~J & ~K & ~L & (D | E) & (~D | ~E)
+
+Read Reg 1 (DNF) = (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L) | (E & F & ~D & ~G & ~H & ~I & ~J & ~K & ~L)
+
+
+
+Read Reg 2 (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K) | (G & H & I & ~J & ~K & ~L) | (G & I & ~H & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L) | (I & ~G & ~H & ~J & ~K & ~L)
+
+Read Reg 2 (CNF) = I | J | K | L
+
+Read Reg 2 (DNF) = I | J | K | L
+
+
+
+Read Reg 3 (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K)
+
+Read Reg 3 (CNF) = J | K | L
+
+Read Reg 3 (DNF) = J | K | L
+
+
+
+Update Flags (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K) | (G & H & I & ~J & ~K & ~L) | (G & I & ~H & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L) | (I & ~G & ~H & ~J & ~K & ~L)
+
+Update Flags (CNF) = I | J | K | L
+
+Update Flags (DNF) = I | J | K | L
