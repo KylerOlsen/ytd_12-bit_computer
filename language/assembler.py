@@ -5,7 +5,7 @@ from collections import namedtuple
 from typing import TypeVar, Generic, Iterable, Sequence
 
 INSTRUCTIONS_COUNT = 0x700
-MAX_IMMEDIATE = 0x80
+MAX_IMMEDIATE = 0x40
 
 class AssemblerError(Exception): pass
 class LinkerError(Exception): pass
@@ -175,19 +175,21 @@ class Program:
     instruction_set = {
         "NOP": lambda *_: Instruction(0, 0, 0, 0),
         "HLT": lambda *_: Instruction(0, 0, 0, 1),
-        "INT": lambda *_: Instruction(0, 0, 0, 2),
-        "BNZ": lambda *_: Instruction(0, 0, 0, 3),
-        "BLK": lambda *_: Instruction(0, 0, 0, 4),
-        "ENB": lambda *_: Instruction(0, 0, 0, 5),
+        "BNZ": lambda *_: Instruction(0, 0, 0, 2),
+        "BNA": lambda *_: Instruction(0, 0, 0, 3),
+        "BNP": lambda *_: Instruction(0, 0, 0, 4),
+        "BNN": lambda *_: Instruction(0, 0, 0, 5),
 
         "GLA": lambda l, i: Instruction(0, 0, 2, reg1(l, i)),
         "GET": lambda l, i: Instruction(0, 0, 3, reg1(l, i)),
         "LOD": lambda l, i: Instruction(0, 0, 4, reg1(l, i)),
         "STR": lambda l, i: Instruction(0, 0, 5, reg1(l, i)),
-        "PSH": lambda l, i: Instruction(0, 0, 6, reg1(l, i)),
-        "POP": lambda l, i: Instruction(0, 0, 7, reg1(l, i)),
+        "POP": lambda l, i: Instruction(0, 0, 6, reg1(l, i)),
+        "PSH": lambda l, i: Instruction(0, 0, 7, reg1(l, i)),
 
+        "LIU": lambda l, i: Instruction(0, 1, *immediate_value(l, i)),
         "LDI": lambda l, i: immediate(l, i),
+        "LIL": lambda l, i: Instruction(0, 3, *immediate_value(l, i)),
 
         "LSH": lambda l, i: Instruction(0, 4, *reg2(l, i)),
         "RSH": lambda l, i: Instruction(0, 5, *reg2(l, i)),
@@ -196,10 +198,10 @@ class Program:
 
         "AND": lambda l, i: Instruction(1, *reg3(l, i)),
         "OR":  lambda l, i: Instruction(2, *reg3(l, i)),
-        "NAD": lambda l, i: Instruction(3, *reg3(l, i)),
-        "SUB": lambda l, i: Instruction(4, *reg3(l, i)),
-        "XOR": lambda l, i: Instruction(5, *reg3(l, i)),
-        "NOR": lambda l, i: Instruction(6, *reg3(l, i)),
+        "SUB": lambda l, i: Instruction(3, *reg3(l, i)),
+        "XOR": lambda l, i: Instruction(4, *reg3(l, i)),
+        "NOR": lambda l, i: Instruction(5, *reg3(l, i)),
+        "NAD": lambda l, i: Instruction(6, *reg3(l, i)),
         "ADD": lambda l, i: Instruction(7, *reg3(l, i)),
     }
 
@@ -381,6 +383,18 @@ def reg3(line: str, line_number: int) -> tuple[int, int, int]:
             reg(args[3], line_number),
             reg(args[1], line_number),
         )
+    else:
+        raise AssemblerError(
+            f"Invalid number of arguments on line {line_number}: {args[0]}")
+
+def immediate_value(line: str, line_number: int) -> tuple[int, int]:
+    args = line.split(' ')
+    if len(args) == 2:
+        value = int(args[1], base=0)
+        if value >= MAX_IMMEDIATE:
+            raise AssemblerError(
+                f"Immediate value too large {line_number}: {args[1]}")
+        return ((value & 0x038) >> 3, value & 0x007)
     else:
         raise AssemblerError(
             f"Invalid number of arguments on line {line_number}: {args[0]}")

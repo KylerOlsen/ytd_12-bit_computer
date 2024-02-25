@@ -5,7 +5,7 @@ from typing import BinaryIO
 
 ROM_SIZE = 0x700
 MAX_INT = 0x1000
-MAX_IMMEDIATE = 0x80
+MAX_IMMEDIATE = 0x40
 
 class ConfigurationError(Exception): pass
 
@@ -126,11 +126,9 @@ class Computer:
     _running: bool
     _halted: bool
 
-    _interrupt_flag: list[int]
-
     _pc_last: int
     _zero_flag: bool
-    _interruptable: bool
+    _negative_flag: bool
 
     _pc: int
     _sp: int
@@ -145,11 +143,10 @@ class Computer:
 
         self._running = True
         self._halted = False
-        self._interrupt_flag = []
 
         self._pc_last = 0
         self._zero_flag = False
-        self._interruptable = False
+        self._negative_flag = False
 
         self._pc = 0
         self._sp = 0
@@ -244,8 +241,10 @@ class Computer:
         elif index == 6: self._d2 = value
         elif index == 7: self._d3 = value
 
-    def interrupt(self, index: int):
-        self._interrupt_flag.append(index % MAX_INT)
+    def _update_flags(self, value: int):
+        value %= MAX_INT
+        self._zero_flag = value == 0
+        self._negative_flag = (value & 0x800) == 1
 
     def step(self, verbose: bool = False):
         instruction = self._mem[self.program_counter]
@@ -258,17 +257,17 @@ class Computer:
 
         if instruction == 0: self.NOP()
         elif instruction == 1: self.HLT()
-        elif instruction == 2: self.INT()
-        elif instruction == 3: self.BNZ()
-        elif instruction == 4: self.BLK()
-        elif instruction == 5: self.ENB()
-        elif instruction & 0xFF8 == 0x10: self.GLA(instruction & 0x7)
-        elif instruction & 0xFF8 == 0x18: self.GET(instruction & 0x7)
+        elif instruction == 2: self.BNZ()
+        elif instruction == 3: self.BNA()
+        elif instruction == 4: self.BNP()
+        elif instruction == 5: self.BNN()
         elif instruction & 0xFF8 == 0x20: self.LOD(instruction & 0x7)
         elif instruction & 0xFF8 == 0x28: self.STR(instruction & 0x7)
-        elif instruction & 0xFF8 == 0x30: self.PSH(instruction & 0x7)
-        elif instruction & 0xFF8 == 0x38: self.POP(instruction & 0x7)
-        elif instruction & 0xF80 == 0x80: self.LDI(instruction & 0x7F)
+        elif instruction & 0xFF8 == 0x30: self.POP(instruction & 0x7)
+        elif instruction & 0xFF8 == 0x38: self.PSH(instruction & 0x7)
+        elif instruction & 0xFC0 == 0x40: self.LIU(instruction & 0x3F)
+        elif instruction & 0xFC0 == 0x80: self.LDI(instruction & 0x3F)
+        elif instruction & 0xFC0 == 0xC0: self.LIL(instruction & 0x3F)
         elif instruction & 0xFC0 == 0x100:
             self.LSH((instruction & 0x38) >> 3, instruction & 0x7)
         elif instruction & 0xFC0 == 0x140:
@@ -290,25 +289,25 @@ class Computer:
                 (instruction & 0x1C0) >> 6,
             )
         elif instruction & 0xE00 == 0x600:
-            self.NAD(
-                instruction & 0x7,
-                (instruction & 0x38) >> 3,
-                (instruction & 0x1C0) >> 6,
-            )
-        elif instruction & 0xE00 == 0x800:
             self.SUB(
                 instruction & 0x7,
                 (instruction & 0x38) >> 3,
                 (instruction & 0x1C0) >> 6,
             )
-        elif instruction & 0xE00 == 0xA00:
+        elif instruction & 0xE00 == 0x800:
             self.XOR(
                 instruction & 0x7,
                 (instruction & 0x38) >> 3,
                 (instruction & 0x1C0) >> 6,
             )
-        elif instruction & 0xE00 == 0xC00:
+        elif instruction & 0xE00 == 0xA00:
             self.NOR(
+                instruction & 0x7,
+                (instruction & 0x38) >> 3,
+                (instruction & 0x1C0) >> 6,
+            )
+        elif instruction & 0xE00 == 0xC00:
+            self.NAD(
                 instruction & 0x7,
                 (instruction & 0x38) >> 3,
                 (instruction & 0x1C0) >> 6,
@@ -330,17 +329,19 @@ class Computer:
 
         if instruction == 0: print("NOP")
         elif instruction == 1: print("HLT")
-        elif instruction == 2: print("INT")
-        elif instruction == 3: print("BNZ")
-        elif instruction == 4: print("BLK")
-        elif instruction == 5: print("ENB")
+        elif instruction == 2: print("BNZ")
+        elif instruction == 3: print("BNA")
+        elif instruction == 4: print("BNP")
+        elif instruction == 5: print("BNN")
         elif instruction & 0xFF8 == 0x10: print(f"GLA {instruction & 0x7}")
         elif instruction & 0xFF8 == 0x18: print(f"GET {instruction & 0x7}")
         elif instruction & 0xFF8 == 0x20: print(f"LOD {instruction & 0x7}")
         elif instruction & 0xFF8 == 0x28: print(f"STR {instruction & 0x7}")
-        elif instruction & 0xFF8 == 0x30: print(f"PSH {instruction & 0x7}")
-        elif instruction & 0xFF8 == 0x38: print(f"POP {instruction & 0x7}")
-        elif instruction & 0xF80 == 0x80: print(f"LDI {instruction & 0x7F}")
+        elif instruction & 0xFF8 == 0x30: print(f"POP {instruction & 0x7}")
+        elif instruction & 0xFF8 == 0x38: print(f"PSH {instruction & 0x7}")
+        elif instruction & 0xFC0 == 0x40: print(f"LIU {instruction & 0x3F}")
+        elif instruction & 0xFC0 == 0x80: print(f"LDI {instruction & 0x3F}")
+        elif instruction & 0xFC0 == 0xC0: print(f"LIL {instruction & 0x3F}")
         elif instruction & 0xFC0 == 0x100:
             print(f"LSH {instruction & 0x7} {(instruction & 0x38) >> 3}")
         elif instruction & 0xFC0 == 0x140:
@@ -361,22 +362,22 @@ class Computer:
             )
         elif instruction & 0xE00 == 0x600:
             print(
-                f"NAD {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"SUB {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
                 f"{(instruction & 0x38) >> 3}"
             )
         elif instruction & 0xE00 == 0x800:
             print(
-                f"SUB {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"XOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
                 f"{(instruction & 0x38) >> 3}"
             )
         elif instruction & 0xE00 == 0xA00:
             print(
-                f"XOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"NOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
                 f"{(instruction & 0x38) >> 3}"
             )
         elif instruction & 0xE00 == 0xC00:
             print(
-                f"NOR {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
+                f"NAD {instruction & 0x7} {(instruction & 0x1C0) >> 6} "
                 f"{(instruction & 0x38) >> 3}"
             )
         elif instruction & 0xE00 == 0xE00:
@@ -399,30 +400,24 @@ class Computer:
         self._halted = True
         self.program_counter += 1
 
-    def INT(self):
-        self.interrupt(self.pointer)
-        self.program_counter += 1
-
     def BNZ(self):
         if self.zero_flag:
             self.program_counter = self.pointer
         self.program_counter += 1
 
-    def BLK(self):
-        self._interruptable = False
+    def BNA(self):
+        if not self.zero_flag:
+            self.program_counter = self.pointer
         self.program_counter += 1
 
-    def ENB(self):
-        self._interruptable = True
+    def BNP(self):
+        if not self._negative_flag:
+            self.program_counter = self.pointer
         self.program_counter += 1
 
-    def GLA(self, REG: int):
-        self.set_reg(REG, self._pc_last)
-        self.program_counter += 1
-
-    def GET(self, REG: int):
-        if self._interrupt_flag: self.set_reg(REG, self._interrupt_flag.pop())
-        else: self.set_reg(REG, 0)
+    def BNN(self):
+        if self._negative_flag:
+            self.program_counter = self.pointer
         self.program_counter += 1
 
     def LOD(self, REG: int):
@@ -433,92 +428,100 @@ class Computer:
         self._mem[self.pointer] = self.get_reg(REG)
         self.program_counter += 1
 
+    def POP(self, REG: int):
+        self._mem[self.stack_pointer] = self.get_reg(REG)
+        self.program_counter += 1
+
     def PSH(self, REG: int):
         self.set_reg(REG, self._mem[self.stack_pointer])
         self.program_counter += 1
 
-    def POP(self, REG: int):
-        self._mem[self.stack_pointer] = self.get_reg(REG)
+    def LIU(self, Immediate: int):
+        self.pointer = (Immediate % MAX_IMMEDIATE) << 6
         self.program_counter += 1
 
     def LDI(self, Immediate: int):
         self.pointer = Immediate % MAX_IMMEDIATE
         self.program_counter += 1
 
+    def LIL(self, Immediate: int):
+        self.pointer |= (Immediate % MAX_IMMEDIATE)
+        self.program_counter += 1
+
     def LSH(self, REG_D: int, REG_A: int):
         result = self.get_reg(REG_A) << 1
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def RSH(self, REG_D: int, REG_A: int):
         result = self.get_reg(REG_A) >> 1
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def INC(self, REG_D: int, REG_A: int):
         result = self.get_reg(REG_A) + 1
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def DEC(self, REG_D: int, REG_A: int):
         result = self.get_reg(REG_A) - 1
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def AND(self, REG_D: int, REG_A: int, REG_B: int):
         result = self.get_reg(REG_A) & self.get_reg(REG_B)
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def OR(self, REG_D: int, REG_A: int, REG_B: int):
         result = self.get_reg(REG_A) | self.get_reg(REG_B)
         result %= MAX_INT
-        self._zero_flag = result == 0
-        self.set_reg(REG_D, result)
-        self.program_counter += 1
-
-    def NAD(self, REG_D: int, REG_A: int, REG_B: int):
-        result = (MAX_INT - 1) ^ (self.get_reg(REG_A) & self.get_reg(REG_B))
-        result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def SUB(self, REG_D: int, REG_A: int, REG_B: int):
         result = self.get_reg(REG_A) + ((MAX_INT - 1) ^ self.get_reg(REG_B)) + 1
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def XOR(self, REG_D: int, REG_A: int, REG_B: int):
         result = self.get_reg(REG_A) ^ self.get_reg(REG_B)
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def NOR(self, REG_D: int, REG_A: int, REG_B: int):
         result = (MAX_INT - 1) ^ (self.get_reg(REG_A) | self.get_reg(REG_B))
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
+        self.set_reg(REG_D, result)
+        self.program_counter += 1
+
+    def NAD(self, REG_D: int, REG_A: int, REG_B: int):
+        result = (MAX_INT - 1) ^ (self.get_reg(REG_A) & self.get_reg(REG_B))
+        result %= MAX_INT
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 
     def ADD(self, REG_D: int, REG_A: int, REG_B: int):
         result = self.get_reg(REG_A) + self.get_reg(REG_B)
         result %= MAX_INT
-        self._zero_flag = result == 0
+        self._update_flags(result)
         self.set_reg(REG_D, result)
         self.program_counter += 1
 

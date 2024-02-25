@@ -4,16 +4,6 @@
 
 ; .0x5
 main:
-    ; Load Output Device Address
-    ldi 0x7F
-    or D3 MP ZR
-    lsh D3 D3
-    lsh D3 D3
-    lsh D3 D3
-    lsh D3 D3
-    ldi 0xE
-    or D3 MP D3
-
     ; Initialize Fibonacci values
     ldi 1
     or D0 MP ZR
@@ -22,7 +12,8 @@ main:
 
 loop:
     ; Output current value
-    or MP D3 ZR
+    liu 0x1f
+    lil 0x3E
     str D0
 
     ; Move values down
