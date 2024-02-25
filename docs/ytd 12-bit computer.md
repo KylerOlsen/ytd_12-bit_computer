@@ -25,10 +25,10 @@ assembly language with assembler. Custom high level language coming soon!
 
 - `NOP`
 - `HLT`
-- `INT`
 - `BNZ`
-- `BLK`
-- `ENB`
+- `BNA`
+- `BNP`
+- `BNN`
 
 ### One Operand Instructions
 
@@ -36,10 +36,12 @@ assembly language with assembler. Custom high level language coming soon!
 - `GET` `Destination Register`
 - `LOD` `Destination Register`
 - `STR` `Source Register`
-- `PSH` `Source Register`
 - `POP` `Destination Register`
+- `PSH` `Source Register`
+- `LIU` `Immediate Value`
 - `LDI` `Immediate Value`
 - `LDI` :`Label`
+- `LIL` `Immediate Value`
 
 ### Two Operand Instructions
 
@@ -52,10 +54,10 @@ assembly language with assembler. Custom high level language coming soon!
 
 - `AND` `Destination Register` `Source Register A` `Source Register B`
 - `OR` `Destination Register` `Source Register A` `Source Register B`
-- `NAD` `Destination Register` `Source Register A` `Source Register B`
 - `SUB` `Destination Register` `Source Register A` `Source Register B`
 - `XOR` `Destination Register` `Source Register A` `Source Register B`
 - `NOR` `Destination Register` `Source Register A` `Source Register B`
+- `NAD` `Destination Register` `Source Register A` `Source Register B`
 - `ADD` `Destination Register` `Source Register A` `Source Register B`
 
 ## High Level Language
