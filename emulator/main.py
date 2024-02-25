@@ -11,7 +11,7 @@ def main(argv: Sequence[str] | None = None):
     from time import sleep
 
     machines = {
-        'tty': lambda rom: Computer(Memory(rom, [tty(0x7FE, 0x7FF)]))
+        'tty': lambda rom: Computer(Memory(rom, [tty(0x7FD, 0x7FF)]))
     }
 
     parser = argparse.ArgumentParser(

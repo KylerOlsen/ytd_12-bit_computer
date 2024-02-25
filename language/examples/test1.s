@@ -13,7 +13,7 @@ main:
 loop:
     ; Output current value
     liu 0x1f
-    lil 0x3E
+    lil 0x3D
     str D0
 
     ; Move values down
