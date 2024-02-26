@@ -1,7 +1,7 @@
 # Kyler Olsen
 # Feb 2024
 
-from . import emulator, assembler, compiler
+from . import assembler, emulator, compiler
 
 __all__ = [
     'emulator',
