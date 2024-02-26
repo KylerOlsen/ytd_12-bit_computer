@@ -1,3 +1,4 @@
 *.ods#
 docs/*.pdf
 __pycache__
+bin
