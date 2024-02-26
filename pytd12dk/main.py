@@ -14,7 +14,7 @@ def main(argv: Sequence[str] | None = None):
         description='ytd 12-bit Development Kit',
     )
 
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(required=True)
 
     parser_emulator = subparsers.add_parser('em', help='Emulator help')
     emulator_parser(parser_emulator)
