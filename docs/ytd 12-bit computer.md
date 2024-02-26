@@ -62,3 +62,11 @@ assembly language with assembler. Custom high level language coming soon!
 
 ## High Level Language
 *WIP*
+
+Paradigm: Multi-Paradigm: Procedural (Imperative), Structured
+Designer: Kyler Olsen
+First Appeared: *Future*
+Typing Discipline: Typeless
+Platform: ytd 12-bit computer, ytd 12-bit emulator (multi-platform)
+License: *Tentatively MIT*
+Filename extension: `.ytd12c`

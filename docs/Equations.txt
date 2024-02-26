@@ -190,6 +190,14 @@ Read Reg 1 (DNF) = (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L) | (E & F & ~D & ~G
 
 
 
+Any Reg 1 (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K) | (G & H & I & ~J & ~K & ~L) | (G & I & ~H & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L) | (I & ~G & ~H & ~J & ~K & ~L) | (D & E & F & ~G & ~H & ~I & ~J & ~K & ~L) | (D & F & ~E & ~G & ~H & ~I & ~J & ~K & ~L) | (E & F & ~D & ~G & ~H & ~I & ~J & ~K & ~L) | (F & ~D & ~E & ~G & ~H & ~I & ~J & ~K & ~L)
+
+Any Reg 1 (CNF) = (F | I | J | K | L) & (I | J | K | L | ~G) & (I | J | K | L | ~H)
+
+Any Reg 1 (DNF) = I | J | K | L | (F & ~G & ~H)
+
+
+
 Read Reg 2 (ORG) = (J & K & L) | (J & K & ~L) | (J & L & ~K) | (K & L & ~J) | (J & ~K & ~L) | (K & ~J & ~L) | (L & ~J & ~K) | (G & H & I & ~J & ~K & ~L) | (G & I & ~H & ~J & ~K & ~L) | (H & I & ~G & ~J & ~K & ~L) | (I & ~G & ~H & ~J & ~K & ~L)
 
 Read Reg 2 (CNF) = I | J | K | L
