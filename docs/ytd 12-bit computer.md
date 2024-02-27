@@ -114,7 +114,43 @@ unsigned    int         fixed       float
 
 Number Literals
 
+```
+number ::=  decinteger | bininteger | octinteger | hexinteger | pointfloat | exponentfloat
+decinteger ::=  nonzerodigit (["_"] digit)* | "0"+ (["_"] "0")*
+bininteger ::=  "0" ("b" | "B") (["_"] bindigit)+
+octinteger ::=  "0" ("o" | "O") (["_"] octdigit)+
+hexinteger ::=  "0" ("x" | "X") (["_"] hexdigit)+
+nonzerodigit ::=  "1"..."9"
+digit ::=  "0"..."9"
+bindigit ::=  "0" | "1"
+octdigit ::=  "0"..."7"
+hexdigit ::=  digit | "a"..."f" | "A"..."F"
+pointfloat    ::=  ([digitpart] fraction) | (digitpart ".")
+exponentfloat ::=  (digitpart | pointfloat) exponent
+digitpart     ::=  digit (["_"] digit)*
+fraction      ::=  "." digitpart
+exponent      ::=  ("e" | "E") ["+" | "-"] digitpart
+```
+
+Character Literals
+
+Character Literals must be on one line and begin and end with `'`. They can only
+have one printable ascii character or escape code.
+
 String Literals
+
+String Literals must be on one line and begin and end with `"`. They can have a
+unspecified number of printable ascii characters and escape codes.
+
+Escape Codes
+
+| Code | Meaning |
+| - | - |
+| `\n` | Line Feed |
+| `\r` | Return Carriage |
+| `\0` | Null Character |
+| `\'` | Single Quotation Mark (In char literals) |
+| `\"` | Double Quotation Mark (In str literals) |
 
 #### Punctuation
 
@@ -168,3 +204,20 @@ String Literals
 {       }       [       ]       ;
 :
 ```
+
+#### Escape Codes
+
+| Code | Meaning |
+| - | - |
+| `\0` | Null Character |
+| `\a` | Alert (Beep, Bell) |
+| `\b` | Backspace |
+| `\e` | Escape Character |
+| `\f` | Formfeed Page Break* |
+| `\n` | Line Feed |
+| `\r` | Return Carriage |
+| `\t` | Horizontal Tab |
+| `\v` | Vertical Tab* |
+| `\\` | Backslash |
+| `\'` | Single Quotation Mark (In char literals) |
+| `\"` | Double Quotation Mark (In str literals) |

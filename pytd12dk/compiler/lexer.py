@@ -2,7 +2,7 @@
 # Feb 2024
 
 from enum import Enum
-from typing import ClassVar, Sequence, TextIO
+from typing import ClassVar, Sequence
 
 from .compiler_types import CompilerError, FileInfo
 
@@ -17,6 +17,16 @@ class _InterTokenType(Enum):
     CharLiteral = 'CharLiteral'
     StringLiteral = 'StringLiteral'
     Punctuation = 'Punctuation'
+
+
+class _NumberLiteralType(Enum):
+    Number = 'Number'
+    Real = 'Real'
+    Exp = 'Exp'
+    Base = 'Base'
+    Binary = 'Binary'
+    Octal = 'Octal'
+    Hex = 'Hex'
 
 
 _OnlyNewLineTerminatedTokens = (
@@ -49,9 +59,59 @@ _Keywords = (
 
 _Num_Start = "0123456789"
 
-_Num_Second = _Num_Start + "box._Ee"
+_Num_Start_Next = {
+    _NumberLiteralType.Number: {
+        '.': _NumberLiteralType.Real,
+        '0': _NumberLiteralType.Base,
+    }
+}
 
-_Num_Continue = _Num_Start + "._" "ABCDEF" "abcdef"
+_Num_Second = {
+    _NumberLiteralType.Number: _Num_Start + ".eE_",
+    _NumberLiteralType.Real: _Num_Start + "eE_",
+    _NumberLiteralType.Base: "bBoOxX",
+}
+
+_Num_Second_Next = {
+    _NumberLiteralType.Number: {
+        '.': _NumberLiteralType.Real,
+        'e': _NumberLiteralType.Exp,
+        'E': _NumberLiteralType.Exp,
+    },
+    _NumberLiteralType.Real: {
+        'e': _NumberLiteralType.Exp,
+        'E': _NumberLiteralType.Exp,
+    },
+    _NumberLiteralType.Base: {
+        'b': _NumberLiteralType.Binary,
+        'B': _NumberLiteralType.Binary,
+        'o': _NumberLiteralType.Octal,
+        'O': _NumberLiteralType.Octal,
+        'x': _NumberLiteralType.Hex,
+        'X': _NumberLiteralType.Hex,
+    }
+}
+
+_Num_Continue = {
+    _NumberLiteralType.Number: _Num_Start + ".eE_",
+    _NumberLiteralType.Real: _Num_Start + "eE_",
+    _NumberLiteralType.Exp: _Num_Start + "_",
+    _NumberLiteralType.Binary: "01_",
+    _NumberLiteralType.Octal: "01234567_",
+    _NumberLiteralType.Hex: _Num_Start + "abcdefABCDEF_",
+}
+
+_Num_Continue_Next = {
+    _NumberLiteralType.Number: {
+        '.': _NumberLiteralType.Real,
+        'e': _NumberLiteralType.Exp,
+        'E': _NumberLiteralType.Exp,
+    },
+    _NumberLiteralType.Real: {
+        'e': _NumberLiteralType.Exp,
+        'E': _NumberLiteralType.Exp,
+    }
+}
 
 _Punctuation_Any = "@$+-*/%~&|^<>=!?{}[]().->,;:"
 
@@ -95,14 +155,13 @@ class StringLiteral(Token): _type = 'StringLiteral'
 class Punctuation(Token): _type = 'Punctuation'
 
 
-def lexer(file: str | TextIO, filename: str) -> Sequence[Token]:
-    if not isinstance(file, str):
-        file = file.read()
+def lexer(file: str, filename: str) -> Sequence[Token]:
     tokens: list[Token] = []
     current: str = ""
     current_line: int = 0
     current_col: int = 0
     escaped: bool = False
+    number_type: _NumberLiteralType = _NumberLiteralType.Number
     token_type: _InterTokenType = _InterTokenType.Generic
 
     for line, line_str in enumerate(file.splitlines()):
@@ -149,11 +208,14 @@ def lexer(file: str | TextIO, filename: str) -> Sequence[Token]:
                         tokens.append(Identifier(current, fi))
                 token_type = _InterTokenType.Generic
             elif token_type is _InterTokenType.NumberLiteral:
-                if (
-                    (len(current) == 2 and char in _Num_Second) ^
-                    (char in _Num_Continue)
-                ):
+                if len(current) == 2 and char in _Num_Second[number_type]:
                     current += char
+                    if char in _Num_Second_Next[number_type]:
+                        number_type = _Num_Second_Next[number_type][char]
+                elif char in _Num_Continue:
+                    current += char
+                    if char in _Num_Continue_Next[number_type]:
+                        number_type = _Num_Continue_Next[number_type][char]
                 else:
                     fi = FileInfo(
                         filename, current_line, current_col, len(current))
@@ -214,10 +276,17 @@ def lexer(file: str | TextIO, filename: str) -> Sequence[Token]:
                     token_type = _InterTokenType.MultiLineComment
                 elif char in _ID_Start:
                     token_type = _InterTokenType.Word
-                elif char == '.' and line_str[col+1] in _Num_Second:
+                elif (
+                    char == '.' and
+                    line_str[col+1] in _Num_Second[_NumberLiteralType.Real]
+                ):
                     token_type = _InterTokenType.NumberLiteral
+                    if char in _Num_Start_Next[number_type]:
+                        number_type = _Num_Start_Next[number_type][char]
                 elif char in _Num_Start:
                     token_type = _InterTokenType.NumberLiteral
+                    if char in _Num_Start_Next[number_type]:
+                        number_type = _Num_Start_Next[number_type][char]
                 elif char == "'":
                     token_type = _InterTokenType.CharLiteral
                 elif char == '"':
