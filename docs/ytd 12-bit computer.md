@@ -1,15 +1,15 @@
 # YTD 12-bit Computer
 *Yeahbut, aka Kyler Olsen*
 
+**NOTICE: Most of this document is unfinished.**
+
 It is a custom computer and instruction set architecture. It also has its own
 assembly language with assembler written in Python. Custom high level language
 coming soon!
 
 ## ISA
-*WIP*
 
 ## Assembly Language
-*WIP*
 
 ### Registers
 
@@ -69,9 +69,12 @@ About
 - Designer: Kyler Olsen
 - Created: *Future*
 - Typing Discipline: ~~Typeless~~ Static, Weak
-- Platform: ytd 12-bit computer, ytd 12-bit emulator (multi-platform)
+- Platform: ytd 12-bit computer,
+ytd 12-bit emulator (from *pytd12dk*, multi-platform)
 - License: *Tentatively MIT*
 - Filename extension: `.ytd12c`
+- Compiler Implementations: `pytd12dk` (Python),
+`ytd12nc` (*bootstrapped compiler*)
 
 ### Lexical
 
@@ -88,6 +91,9 @@ Single-line comments start with `//` and end at the end of a line.
 
 Multi-line comments start with `/*` and end with `*/`.
 
+**pytd12dk implementation detail**: Comments and their content are ultimately
+ignored by the lexer after they are tokenized. There are no comments in the
+output of the lexer.
 
 #### Identifiers
 
@@ -167,6 +173,21 @@ Escape Codes
 
 ### Syntax
 
+#### ProgramFile
+
+A `ProgramFile` contains a number of `Directives` and `BlockHeaders`.
+
+#### Directives
+
+#### BlockHeaders
+
+A `BlockHeaders` contains a `Header` and a number of `Statements`, `Directives`,
+and `BlockHeaders`.
+
+### Semantics
+
+### Scratch Area
+
 #### Operator Operand Counts
 
 - Unitary: `++`, `--`, `@`, `$`
@@ -185,10 +206,6 @@ Escape Codes
 - Bitwise: `~`, `&`, `|`, `^`, `<<`, `>>`
 - Increment and decrement: `++`, `--`
 - Reference and dereference: `@`, `$`, `[ ]`
-
-### Semantics
-
-### Scratch Area
 
 #### Keywords
 
@@ -221,3 +238,39 @@ Escape Codes
 | `\\` | Backslash |
 | `\'` | Single Quotation Mark (In char literals) |
 | `\"` | Double Quotation Mark (In str literals) |
+
+## pytd12dk
+
+`pytd12dk` (Python ytd 12-bit development kit) is a tool set written in Python
+to assist in developing software for the ytd 12-bit computer. It includes a
+compiler, assembler with linker, and emulator.
+
+### Compiler
+
+### Assembler
+
+### Emulator
+
+## ytd12nc
+
+`ytd12nc` (ytd 12-bit native compiler) is a compiler and assembler with linker
+set written in the native high-level programming language and assembly language
+to compile software for the ytd 12-bit computer natively.
+
+Currently development of `ytd12nc` has not yet started.
+
+### Bootstrapping
+
+In order to compile the the compiler, we need a compiler to compile it. This
+process is called *bootstrapping* as it is like pulling ourselves up by our
+bootstraps. This requires writing a compiler in assembly language or another
+high-level programming language. In our case we are lucky to have the compiler
+that is apart of `pytd12dk`.
+
+| Compiler | *Compiler* Compiler | *Compiler Compiler* Compiler |
+| --- | --- | --- |
+| `pytd12dk` | `CPython` | `gcc`, `clang`, or other C compiler |
+| `ytd12nc` (a) | `pytd12dk` | `CPython` |
+| `ytd12nc` (b) | `ytd12nc` (a) | `pytd12dk` |
+| `ytd12nc` (c) | `ytd12nc` (b) | `ytd12nc` (a) |
+| `ytd12nc` (d) | `ytd12nc` (c) | `ytd12nc` (b) |
