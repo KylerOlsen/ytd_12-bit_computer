@@ -699,10 +699,10 @@ def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
     temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '(')
+    _assert_token(ExpectedPunctuation, temp, '{')
     members: list[StructureMember] = []
-    temp = tokens.pop(0)
-    while temp.value != ')':
+    while temp.value != '}':
+        temp = tokens.pop(0)
         if isinstance(temp, lexer.Keyword):
             _assert_token(ExpectedKeyword, temp, 'static')
             temp = tokens.pop(0)
@@ -744,6 +744,7 @@ def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
                 _assert_token_literal(temp)
                 literal = _literal_map(temp) # type: ignore
                 temp = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, temp, ',')
             else: literal = None
             members.append(
                 StructureMember(member_id, data_type, pointer, static, literal))
@@ -752,7 +753,27 @@ def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
     return StructBlock(Identifier(identifier.value), members)
 
 def enumeration_syntactical_analyzer(tokens: list[lexer.Token]) -> EnumBlock:
-    pass
+    identifier = tokens.pop(0)
+    _assert_token(ExpectedIdentifier, identifier)
+    temp = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, temp, '{')
+    members: list[EnumMember] = []
+    while temp.value != '}':
+        temp = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, temp)
+        member_id = Identifier(temp.value)
+        temp = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, temp)
+        if temp.value not in [',', '=']:
+            raise UnexpectedPunctuation(temp, [',', '='])
+        elif temp.value == '=':
+            temp = tokens.pop(0)
+            _assert_token(ExpectedNumberLiteral, temp)
+            temp = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, temp, ',')
+        else: literal = None
+        members.append(EnumMember(member_id, literal))
+    return EnumBlock(Identifier(identifier.value), members)
 
 def function_syntactical_analyzer(tokens: list[lexer.Token]) -> FunctionBlock:
     pass
