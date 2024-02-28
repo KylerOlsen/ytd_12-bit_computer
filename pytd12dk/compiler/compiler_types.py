@@ -22,4 +22,7 @@ class FileInfo:
         self._length = length
 
 
-class CompilerError(Exception): pass
+class CompilerError(Exception):
+
+    def __init__(self, message: str, file_info: FileInfo):
+        super().__init__(message, file_info)

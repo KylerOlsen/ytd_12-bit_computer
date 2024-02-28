@@ -127,7 +127,10 @@ _Punctuation = (
 )
 
 
-class LexerError(CompilerError): pass
+class LexerError(CompilerError):
+
+    def __init__(self, message: str, file_info: FileInfo):
+        super().__init__(message, file_info)
 
 
 class Token:
@@ -165,15 +168,15 @@ def lexer(file: str, filename: str) -> Sequence[Token]:
     token_type: _InterTokenType = _InterTokenType.Generic
 
     for line, line_str in enumerate(file.splitlines()):
+        fi = FileInfo(filename, current_line, current_col, len(current))
         if token_type in _NewLineErrorTokens:
-            raise LexerError("Unexpected Newline")
+            raise LexerError("Unexpected Newline", fi)
         if token_type in _NewLineTerminatedTokens:
-            fi = FileInfo(filename, current_line, current_col, len(current))
             if token_type is _InterTokenType.Directive:
                 tokens.append(Directive(current, fi))
             elif token_type is _InterTokenType.Word:
                 if len(current) > 15:
-                    raise LexerError("Identifier Too Long")
+                    raise LexerError("Identifier Too Long", fi)
                 if current in _Keywords:
                     tokens.append(Keyword(current, fi))
                 else:
@@ -182,7 +185,7 @@ def lexer(file: str, filename: str) -> Sequence[Token]:
                 tokens.append(NumberLiteral(current, fi))
             elif token_type is _InterTokenType.Punctuation:
                 if current not in _Punctuation:
-                    raise LexerError("Invalid Punctuation")
+                    raise LexerError("Invalid Punctuation", fi)
                 tokens.append(Punctuation(current, fi))
             token_type = _InterTokenType.Generic
 
@@ -198,10 +201,10 @@ def lexer(file: str, filename: str) -> Sequence[Token]:
                 if char in _ID_Continue:
                     current += char
                 else:
-                    if len(current) > 15:
-                        raise LexerError("Identifier Too Long")
                     fi = FileInfo(
                         filename, current_line, current_col, len(current))
+                    if len(current) > 15:
+                        raise LexerError("Identifier Too Long", fi)
                     if current in _Keywords:
                         tokens.append(Keyword(current, fi))
                     else:
@@ -228,14 +231,14 @@ def lexer(file: str, filename: str) -> Sequence[Token]:
                     escaped = True
                 elif char == "'":
                     current += char
+                    fi = FileInfo(
+                        filename, current_line, current_col, len(current))
                     if (
                         current[1] != '\\' and
                         len(current) == 3 or
                         len(current) > 3
                     ):
-                        raise LexerError("Character Literal Too Long")
-                    fi = FileInfo(
-                        filename, current_line, current_col, len(current))
+                        raise LexerError("Character Literal Too Long", fi)
                     tokens.append(StringLiteral(current, fi))
                     token_type = _InterTokenType.Generic
                     continue
@@ -257,10 +260,10 @@ def lexer(file: str, filename: str) -> Sequence[Token]:
                 if char in _Punctuation_Any:
                     current += char
                 else:
-                    if current not in _Punctuation:
-                        raise LexerError("Invalid Punctuation")
                     fi = FileInfo(
                         filename, current_line, current_col, len(current))
+                    if current not in _Punctuation:
+                        raise LexerError("Invalid Punctuation", fi)
                     tokens.append(Punctuation(current, fi))
                 token_type = _InterTokenType.Generic
 
