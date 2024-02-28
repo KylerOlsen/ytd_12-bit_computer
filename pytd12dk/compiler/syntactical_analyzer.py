@@ -763,10 +763,16 @@ def struct_syntactical_analyzer(
             raise UnexpectedToken(temp, ["Keyword", "Identifier"])
     return StructBlock(Identifier(identifier.value), public, members)
 
-def enumeration_syntactical_analyzer(tokens: list[lexer.Token]) -> EnumBlock:
+def enumeration_syntactical_analyzer(
+    tokens: list[lexer.Token],
+    public: bool,
+) -> EnumBlock:
     pass
 
-def function_syntactical_analyzer(tokens: list[lexer.Token]) -> FunctionBlock:
+def function_syntactical_analyzer(
+    tokens: list[lexer.Token],
+    public: bool,
+) -> FunctionBlock:
     pass
 
 def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
@@ -774,15 +780,29 @@ def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
 
     while tokens:
         token = tokens.pop(0)
+        _assert_token_mult(token, (lexer.Directive, lexer.Keyword))
         if isinstance(token, lexer.Directive):
             children.append(Directive(token.value))
         elif isinstance(token, lexer.Keyword):
+            public = False
             while True:
                 match token.value:
-                    case 'pub': pass
+                    case 'pub':
+                        token = tokens.pop(0)
+                        _assert_token(ExpectedKeyword, token)
+                        public = True
+                        continue
                     case 'struct':
                         children.append(
-                            struct_syntactical_analyzer(tokens, False))
+                            struct_syntactical_analyzer(tokens, public))
+                    case 'enum':
+                        children.append(
+                            enumeration_syntactical_analyzer(tokens, public))
+                    case 'fn':
+                        children.append(
+                            function_syntactical_analyzer(tokens, public))
+                    case _:
+                        raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
                 break
 
     return File(children)
