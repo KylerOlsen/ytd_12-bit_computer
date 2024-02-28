@@ -401,7 +401,7 @@ There are four default data types represented by the following keywords:
 
 #### Statement
 
-A `statement` is made up of a `statement` followed by a semicolon (`;`), a
+A `statement` is made up of an `expression` followed by a semicolon (`;`), a
 `let statement`, a `loop statement`, or a `nestable code block`.
 
 ##### Nestable Code Block
