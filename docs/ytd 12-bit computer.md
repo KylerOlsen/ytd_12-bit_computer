@@ -151,7 +151,7 @@ unspecified number of printable ascii characters and escape codes.
 Escape Codes
 
 | Code | Meaning |
-| - | - |
+| -- | -- |
 | `\n` | Line Feed |
 | `\r` | Return Carriage |
 | `\0` | Null Character |
@@ -185,8 +185,10 @@ A `File` can contain any number of the following elements:
 
 #### Directive
 
-Just a `directive`, their content is stored here for later when directive
-compilation occurs.
+Just a `directive`.
+
+**pytd12dk implementation detail**: Their content is stored here for later when
+directive compilation occurs.
 
 #### struct
 
@@ -215,14 +217,14 @@ followed by an equal sign (`=`) and a `number literal`.
 
 A `function` begins with the `fn` keyword, which may optionally be preceded
 with the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
-separated list enclosed in parentheses (`(` and `)`) of *function arguments*.
+separated list enclosed in parentheses (`(` and `)`) of *function parameters*.
 After that is an arrow (`->`) followed by a `data type` denoting the function's
 return type. After that is a list enclosed in curly braces (`{` and `}`) of
 `statements`.
 
-##### Function Arguments
+##### Function Parameter
 
-A *function argument* begins with its `identifier`, followed by a colon (`:`)
+A *function parameter* begins with its `identifier`, followed by a colon (`:`)
 and its `data type`. It may then optionally be followed by an equal sign (`=`)
 and a `literal`.
 
@@ -236,17 +238,17 @@ by an `else block`.
 #### Do Loop
 
 A `do loop` begins with the `do` keyword, followed by a list enclosed in curly
-braces (`{` and `}`) of `statements` or `loop statements`. It is then finished
+braces (`{` and `}`) of `statements`. It is then finished
 with the `while` keyword, followed by its condition, an `expression` enclosed
 in parentheses (`(` and `)`). It may then optionally be followed by another list
-enclosed in curly braces (`{` and `}`) of `statements` or `loop statements`then
+enclosed in curly braces (`{` and `}`) of `statements` then
 again optionally by an `else block`.
 
 #### While Loop
 
 A `while loop` begins with the `while` keyword, followed by its condition, an
 `expression` enclosed in parentheses (`(` and `)`), then a list enclosed in
-curly braces (`{` and `}`) of `statements` or `loop statements`. It may then
+curly braces (`{` and `}`) of `statements`. It may then
 optionally be followed by an `else block`.
 
 #### For Loop
@@ -256,7 +258,7 @@ enclosed in parentheses (`(` and `)`), separated by semicolons (`;`). The first
 expression is a *pre-loop expression*, the second is its condition which is a
 normal `expression`, and the last is its post-loop expression which is another
 normal `expression`. It is ended with a list enclosed in curly braces
-(`{` and `}`) of `statements` or `loop statements`. It may then optionally be
+(`{` and `}`) of `statements`. It may then optionally be
 followed by an `else block`.
 
 ##### Pre-Loop Expression
@@ -284,73 +286,238 @@ equal sign (`=`) and an `expression`. It must then be finished with a semicolon
 
 ##### Unary Expression
 
-
+A `unary expression` is made up of one `expression` and one `unary operator`.
+The operator may come before or after the expression.
 
 ##### Binary Expression
-##### Other Expressions
-###### Function Parameters
+
+A `binary expression` is made up of one `expression`, then one
+`binary operator`, then another `expression`.
+
+##### Ternary Expression
+
+A `ternary expression` is made up of one `expression` which is the condition,
+then a question mark (`?`) followed by two `expression`s separated by a colon
+(`:`).
+
+##### Function Call
+
+A `function call` starts with an `identifier` followed by a comma (`,`)
+separated list enclosed in parentheses (`(` and `)`) of *function arguments*.
+
+###### Function Argument
+
+A *function argument* is an `expression` that may optionally be preceded by an
+`identifier` which is immediately followed by an equal sign (`=`).
+
+##### Array Subscription
+
+An `array subscription` starts with an `identifier` followed by an `expression`
+enclosed in square brackets (`[` and `]`).
+
+##### Enclosed Expression
+
+An `enclosed expression` is simply an `expression` enclosed in parentheses
+(`(` and `)`).
+
 ##### Operators
+
 ###### Prefix Unary Operators
+
+| Operator | Name |
+| -- | -- |
+| `++` | Prefix Increment *Operator* |
+| `--` | Prefix Decrement *Operator* |
+| `-` | Negate *Operator* |
+| `~` | Bitwise NOT *Operator* |
+| `!` | Boolean NOT *Operator* |
+| `@` | Address of *Operator* |
+| `$` | Dereference *Operator* |
+
 ###### Postfix Unary Operators
-###### Infix Binary Operators
+
+| Operator | Name |
+| -- | -- |
+| `++` | Postfix Increment *Operator* |
+| `--` | Postfix Decrement *Operator* |
+
+###### Binary Operators
+
+| Operator | Name |
+| -- | -- |
+| `+` | Addition *Operator* |
+| `-` | Subtraction *Operator* |
+| `*` | Multiplication *Operator* |
+| `/` | Division *Operator* |
+| `%` | Modulus *Operator* |
+| `&` | Bitwise AND *Operator* |
+| `\|` | Bitwise OR *Operator* |
+| `^` | Bitwise XOR *Operator* |
+| `<<` | Left Shift *Operator* |
+| `>>` | Right Shift *Operator* |
+| `=` | Assignment *Operator* |
+| `+=` | Addition Assignment *Operator* |
+| `-=` | Subtraction Assignment *Operator* |
+| `*=` | Multiplication Assignment *Operator* |
+| `/=` | Division Assignment *Operator* |
+| `%=` | Modulus Assignment *Operator* |
+| `&=` | Bitwise AND Assignment *Operator* |
+| `\|=` | Bitwise OR Assignment *Operator* |
+| `^=` | Bitwise XOR Assignment *Operator* |
+| `<<=` | Left Shift Assignment *Operator* |
+| `>>=` | Right Shift Assignment *Operator* |
+| `&&` | Boolean AND *Operator* |
+| `\|\|` | Boolean OR *Operator* |
+| `==` | Equality Comparison *Operator* |
+| `!=` | Inequality Comparison *Operator* |
+| `<` | Less Than *Operator* |
+| `<=` | Less or Equal to Than *Operator* |
+| `>` | Greater Than *Operator* |
+| `>=` | Greater or Equal to Than *Operator* |
+
+###### Operator Precedence and Types
+
+Here are all operators and their types and names.
+
+| Operator | Type | Name |
+| -- | -- | -- |
+| `@` | Unary (Prefix) | Address of *Operator* |
+| `$` | Unary (Prefix) | Dereference *Operator* |
+| `~` | Unary (Prefix) | Bitwise NOT *Operator* |
+| `--` | Unary (Postfix) | Postfix Decrement *Operator* |
+| `++` | Unary (Postfix) | Postfix Increment *Operator* |
+| `--` | Unary (Prefix) | Prefix Decrement *Operator* |
+| `++` | Unary (Prefix) | Prefix Increment *Operator* |
+| `-` | Unary (Prefix) | Negate *Operator* |
+| `!` | Unary (Prefix) | Boolean NOT *Operator* |
+| `>>` | Binary | Right Shift *Operator* |
+| `<<` | Binary | Left Shift *Operator* |
+| `^` | Binary | Bitwise XOR *Operator* |
+| `\|` | Binary | Bitwise OR *Operator* |
+| `&` | Binary | Bitwise AND *Operator* |
+| `%` | Binary | Modulus *Operator* |
+| `/` | Binary | Division *Operator* |
+| `*` | Binary | Multiplication *Operator* |
+| `-` | Binary | Subtraction *Operator* |
+| `+` | Binary | Addition *Operator* |
+| `>=` | Binary | Greater or Equal to Than *Operator* |
+| `>` | Binary | Greater Than *Operator* |
+| `<=` | Binary | Less or Equal to Than *Operator* |
+| `<` | Binary | Less Than *Operator* |
+| `!=` | Binary | Inequality Comparison *Operator* |
+| `==` | Binary | Equality Comparison *Operator* |
+| `\|\|` | Binary | Boolean OR *Operator* |
+| `&&` | Binary | Boolean AND *Operator* |
+| `>>=` | Binary | Right Shift Assignment *Operator* |
+| `<<=` | Binary | Left Shift Assignment *Operator* |
+| `^=` | Binary | Bitwise XOR Assignment *Operator* |
+| `\|=` | Binary | Bitwise OR Assignment *Operator* |
+| `&=` | Binary | Bitwise AND Assignment *Operator* |
+| `%=` | Binary | Modulus Assignment *Operator* |
+| `/=` | Binary | Division Assignment *Operator* |
+| `*=` | Binary | Multiplication Assignment *Operator* |
+| `-=` | Binary | Subtraction Assignment *Operator* |
+| `+=` | Binary | Addition Assignment *Operator* |
+| `=` | Binary | Assignment *Operator* |
+
+**pytd12dk implementation detail**: Operators are selected in reverse order by
+by the syntactical analyzer:
+
+| Operator | Name |
+| -- | -- |
+| `=` | Assignment *Operator* |
+| `+=` | Addition Assignment *Operator* |
+| `-=` | Subtraction Assignment *Operator* |
+| `*=` | Multiplication Assignment *Operator* |
+| `/=` | Division Assignment *Operator* |
+| `%=` | Modulus Assignment *Operator* |
+| `&=` | Bitwise AND Assignment *Operator* |
+| `\|=` | Bitwise OR Assignment *Operator* |
+| `^=` | Bitwise XOR Assignment *Operator* |
+| `<<=` | Left Shift Assignment *Operator* |
+| `>>=` | Right Shift Assignment *Operator* |
+| `&&` | Boolean AND *Operator* |
+| `\|\|` | Boolean OR *Operator* |
+| `==` | Equality Comparison *Operator* |
+| `!=` | Inequality Comparison *Operator* |
+| `<` | Less Than *Operator* |
+| `<=` | Less or Equal to Than *Operator* |
+| `>` | Greater Than *Operator* |
+| `>=` | Greater or Equal to Than *Operator* |
+| `+` | Addition *Operator* |
+| `-` | Subtraction *Operator* |
+| `*` | Multiplication *Operator* |
+| `/` | Division *Operator* |
+| `%` | Modulus *Operator* |
+| `&` | Bitwise AND *Operator* |
+| `\|` | Bitwise OR *Operator* |
+| `^` | Bitwise XOR *Operator* |
+| `<<` | Left Shift *Operator* |
+| `>>` | Right Shift *Operator* |
+| `!` | Boolean NOT *Operator* |
+| `-` | Negate *Operator* |
+| `++` | Prefix Increment *Operator* |
+| `--` | Prefix Decrement *Operator* |
+| `++` | Postfix Increment *Operator* |
+| `--` | Postfix Decrement *Operator* |
+| `~` | Bitwise NOT *Operator* |
+| `$` | Dereference *Operator* |
+| `@` | Address of *Operator* |
 
 #### Literal
-##### Number Literal
-##### Character Literal
-##### String Literal
+
+A `literal` is just simply the content of the literal. There are three types of
+literals:
+
+- Number Literal
+- Character Literal
+- String Literal
 
 #### Identifier
 
+A `identifier` is just simply the name of the identifier.
+
 #### Data Type
+
+A `data type` is made up of an `identifier` or `default data type`, and may
+optionally be preceded by an at symbol (`@`).
 
 ##### Default Data Types
 
+There are four default data types represented by the following keywords:
+
+- `unsigned`
+- `int`
+- `fixed`
+- `float`
+
 #### Statement
-##### Nestable Code Blocks
-##### Loop Statements
+
+A `statement` is made up of a `statement` followed by a semicolon (`;`), a
+`let statement`, a `loop statement`, or a `nestable code block`.
+
+##### Nestable Code Block
+
+There are four `nestable code block`s:
+
+- `if statement`
+- `do loop`
+- `while loop`
+- `for loop`
+
+##### Loop Statement
+
+A `loop statement` are either the keyword `continue` or `break` followed by a
+semicolon (`;`).
 
 ### Semantics
 
 ### Scratch Area
 
-#### Operator Operand Counts
-
-- Unary: `++`, `--`, `@`, `$`
-- Binary: `[ ]`, `+`, `-`, `*`, `/`, `%`, `~`, `&`, `|`, `^`, `<<`, `>>`, `=`,
-`+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`, `!`, `&&`, `||`,
-`==`, `!=`, `<`, `<=`, `>`, `>=`
-- Ternary: `? :`
-
-#### Operator Precedence
-
-- Assignment: `=`, `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`
-- Ternary Operator: `? :`
-- Equality and order testing: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- Boolean logic: `!`, `&&`, `||`
-- Arithmetic: `+`, `-`, `*`, `/`, `%`
-- Bitwise: `~`, `&`, `|`, `^`, `<<`, `>>`
-- Increment and decrement: `++`, `--`
-- Reference and dereference: `@`, `$`, `[ ]`
-
-#### Keywords
-
-- Types: `unsigned`, `int`, `fixed`, `float`
-- Structural: `if`, `else`, `do`, `while`, `for`, `break`, `continue`
-- Constants: `True`, `False`, `None`
-- Other: `struct`, `fn`, `enum`, `static`, `pub`, `let`
-
-#### Delimiters
-
-```
-.       ->      ,       (       )
-{       }       [       ]       ;
-:
-```
-
 #### Escape Codes
 
 | Code | Meaning |
-| - | - |
+| -- | -- |
 | `\0` | Null Character |
 | `\a` | Alert (Beep, Bell) |
 | `\b` | Backspace |
