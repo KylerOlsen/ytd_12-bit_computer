@@ -152,9 +152,16 @@ Escape Codes
 
 | Code | Meaning |
 | -- | -- |
+| `\0` | Null Character |
+| `\a` | Alert (Beep, Bell) |
+| `\b` | Backspace |
+| `\e` | Escape Character |
+| `\f` | Formfeed Page Break* |
 | `\n` | Line Feed |
 | `\r` | Return Carriage |
-| `\0` | Null Character |
+| `\t` | Horizontal Tab |
+| `\v` | Vertical Tab* |
+| `\\` | Backslash |
 | `\'` | Single Quotation Mark (In char literals) |
 | `\"` | Double Quotation Mark (In str literals) |
 
@@ -320,65 +327,9 @@ enclosed in square brackets (`[` and `]`).
 An `enclosed expression` is simply an `expression` enclosed in parentheses
 (`(` and `)`).
 
-##### Operators
+##### Operator
 
-###### Prefix Unary Operators
-
-| Operator | Name |
-| -- | -- |
-| `++` | Prefix Increment *Operator* |
-| `--` | Prefix Decrement *Operator* |
-| `-` | Negate *Operator* |
-| `~` | Bitwise NOT *Operator* |
-| `!` | Boolean NOT *Operator* |
-| `@` | Address of *Operator* |
-| `$` | Dereference *Operator* |
-
-###### Postfix Unary Operators
-
-| Operator | Name |
-| -- | -- |
-| `++` | Postfix Increment *Operator* |
-| `--` | Postfix Decrement *Operator* |
-
-###### Binary Operators
-
-| Operator | Name |
-| -- | -- |
-| `+` | Addition *Operator* |
-| `-` | Subtraction *Operator* |
-| `*` | Multiplication *Operator* |
-| `/` | Division *Operator* |
-| `%` | Modulus *Operator* |
-| `&` | Bitwise AND *Operator* |
-| `\|` | Bitwise OR *Operator* |
-| `^` | Bitwise XOR *Operator* |
-| `<<` | Left Shift *Operator* |
-| `>>` | Right Shift *Operator* |
-| `=` | Assignment *Operator* |
-| `+=` | Addition Assignment *Operator* |
-| `-=` | Subtraction Assignment *Operator* |
-| `*=` | Multiplication Assignment *Operator* |
-| `/=` | Division Assignment *Operator* |
-| `%=` | Modulus Assignment *Operator* |
-| `&=` | Bitwise AND Assignment *Operator* |
-| `\|=` | Bitwise OR Assignment *Operator* |
-| `^=` | Bitwise XOR Assignment *Operator* |
-| `<<=` | Left Shift Assignment *Operator* |
-| `>>=` | Right Shift Assignment *Operator* |
-| `&&` | Boolean AND *Operator* |
-| `\|\|` | Boolean OR *Operator* |
-| `^^` | Boolean XOR *Operator* |
-| `==` | Equality Comparison *Operator* |
-| `!=` | Inequality Comparison *Operator* |
-| `<` | Less Than *Operator* |
-| `<=` | Less or Equal to Than *Operator* |
-| `>` | Greater Than *Operator* |
-| `>=` | Greater or Equal to Than *Operator* |
-
-###### Operator Precedence and Types
-
-Here are all operators and their types and names.
+Here are all operators and their types and names in order of operator precedence.
 
 | Operator | Type | Name |
 | -- | -- | -- |
@@ -421,51 +372,6 @@ Here are all operators and their types and names.
 | `-=` | Binary | Subtraction Assignment *Operator* |
 | `+=` | Binary | Addition Assignment *Operator* |
 | `=` | Binary | Assignment *Operator* |
-
-**pytd12dk implementation detail**: Operators are selected in reverse order by
-by the syntactical analyzer:
-
-| Operator | Name |
-| -- | -- |
-| `=` | Assignment *Operator* |
-| `+=` | Addition Assignment *Operator* |
-| `-=` | Subtraction Assignment *Operator* |
-| `*=` | Multiplication Assignment *Operator* |
-| `/=` | Division Assignment *Operator* |
-| `%=` | Modulus Assignment *Operator* |
-| `&=` | Bitwise AND Assignment *Operator* |
-| `\|=` | Bitwise OR Assignment *Operator* |
-| `^=` | Bitwise XOR Assignment *Operator* |
-| `<<=` | Left Shift Assignment *Operator* |
-| `>>=` | Right Shift Assignment *Operator* |
-| `&&` | Boolean AND *Operator* |
-| `\|\|` | Boolean OR *Operator* |
-| `^^` | Boolean XOR *Operator* |
-| `==` | Equality Comparison *Operator* |
-| `!=` | Inequality Comparison *Operator* |
-| `<` | Less Than *Operator* |
-| `<=` | Less or Equal to Than *Operator* |
-| `>` | Greater Than *Operator* |
-| `>=` | Greater or Equal to Than *Operator* |
-| `+` | Addition *Operator* |
-| `-` | Subtraction *Operator* |
-| `*` | Multiplication *Operator* |
-| `/` | Division *Operator* |
-| `%` | Modulus *Operator* |
-| `&` | Bitwise AND *Operator* |
-| `\|` | Bitwise OR *Operator* |
-| `^` | Bitwise XOR *Operator* |
-| `<<` | Left Shift *Operator* |
-| `>>` | Right Shift *Operator* |
-| `!` | Boolean NOT *Operator* |
-| `-` | Negate *Operator* |
-| `++` | Prefix Increment *Operator* |
-| `--` | Prefix Decrement *Operator* |
-| `++` | Postfix Increment *Operator* |
-| `--` | Postfix Decrement *Operator* |
-| `~` | Bitwise NOT *Operator* |
-| `$` | Dereference *Operator* |
-| `@` | Address of *Operator* |
 
 #### Literal
 
@@ -514,25 +420,6 @@ A `loop statement` are either the keyword `continue` or `break` followed by a
 semicolon (`;`).
 
 ### Semantics
-
-### Scratch Area
-
-#### Escape Codes
-
-| Code | Meaning |
-| -- | -- |
-| `\0` | Null Character |
-| `\a` | Alert (Beep, Bell) |
-| `\b` | Backspace |
-| `\e` | Escape Character |
-| `\f` | Formfeed Page Break* |
-| `\n` | Line Feed |
-| `\r` | Return Carriage |
-| `\t` | Horizontal Tab |
-| `\v` | Vertical Tab* |
-| `\\` | Backslash |
-| `\'` | Single Quotation Mark (In char literals) |
-| `\"` | Double Quotation Mark (In str literals) |
 
 ## pytd12dk
 
