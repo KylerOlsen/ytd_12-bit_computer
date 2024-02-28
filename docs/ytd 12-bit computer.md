@@ -165,10 +165,10 @@ Escape Codes
 *       /       %       ~       &       |
 ^       <<      >>      =       +=      -=
 *=      /=      %=      &=      |=      ^=
-<<=     >>=     !       &&      ||      ==
-!=      <       <=      >       >=      ?
+<<=     >>=     !       &&      ||      ^^
+==      !=      <       <=      >       >=
 {       }       [       ]       (       )
-.       ->      ,       ;       :
+?       .       ->      ,       ;       :
 ```
 
 ### Syntax
@@ -368,6 +368,7 @@ An `enclosed expression` is simply an `expression` enclosed in parentheses
 | `>>=` | Right Shift Assignment *Operator* |
 | `&&` | Boolean AND *Operator* |
 | `\|\|` | Boolean OR *Operator* |
+| `^^` | Boolean XOR *Operator* |
 | `==` | Equality Comparison *Operator* |
 | `!=` | Inequality Comparison *Operator* |
 | `<` | Less Than *Operator* |
@@ -406,6 +407,7 @@ Here are all operators and their types and names.
 | `<` | Binary | Less Than *Operator* |
 | `!=` | Binary | Inequality Comparison *Operator* |
 | `==` | Binary | Equality Comparison *Operator* |
+| `^^` | Binary | Boolean XOR *Operator* |
 | `\|\|` | Binary | Boolean OR *Operator* |
 | `&&` | Binary | Boolean AND *Operator* |
 | `>>=` | Binary | Right Shift Assignment *Operator* |
@@ -438,6 +440,7 @@ by the syntactical analyzer:
 | `>>=` | Right Shift Assignment *Operator* |
 | `&&` | Boolean AND *Operator* |
 | `\|\|` | Boolean OR *Operator* |
+| `^^` | Boolean XOR *Operator* |
 | `==` | Equality Comparison *Operator* |
 | `!=` | Inequality Comparison *Operator* |
 | `<` | Less Than *Operator* |
