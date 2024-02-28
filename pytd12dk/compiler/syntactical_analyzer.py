@@ -708,24 +708,24 @@ def struct_syntactical_analyzer(
     tokens: list[lexer.Token],
     public: bool,
 ) -> StructBlock:
-    identifier = tokens.pop()
+    identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
-    temp = tokens.pop()
+    temp = tokens.pop(0)
     _assert_token(ExpectedPunctuation, temp, '(')
     members: list[StructureMember] = []
-    temp = tokens.pop()
+    temp = tokens.pop(0)
     while temp.value != ')':
         if isinstance(temp, lexer.Keyword):
             _assert_token(ExpectedKeyword, temp, 'static')
-            temp = tokens.pop()
+            temp = tokens.pop(0)
             static = True
         else:
             static = False
         if isinstance(temp, lexer.Identifier):
             member_id = Identifier(temp.value)
-            temp = tokens.pop()
+            temp = tokens.pop(0)
             _assert_token(ExpectedPunctuation, temp, ':')
-            temp = tokens.pop()
+            temp = tokens.pop(0)
             _assert_token_mult(temp, (
                 lexer.Keyword,
                 lexer.Identifier,
@@ -734,7 +734,7 @@ def struct_syntactical_analyzer(
             if isinstance(temp, lexer.Punctuation):
                 _assert_token(ExpectedPunctuation, temp, '*')
                 pointer = True
-                temp = tokens.pop()
+                temp = tokens.pop(0)
                 _assert_token_mult(temp, (lexer.Keyword, lexer.Identifier))
             else:
                 pointer = False
@@ -747,15 +747,15 @@ def struct_syntactical_analyzer(
                 data_type = DefaultDataType(temp.value)
             else:
                 data_type = Identifier(temp.value)
-            temp = tokens.pop()
+            temp = tokens.pop(0)
             _assert_token(ExpectedPunctuation, temp)
             if temp.value not in [',', '=']:
                 raise UnexpectedPunctuation(temp, [',', '='])
             elif temp.value == '=':
-                temp = tokens.pop()
+                temp = tokens.pop(0)
                 _assert_token_literal(temp)
                 literal = _literal_map(temp) # type: ignore
-                temp = tokens.pop()
+                temp = tokens.pop(0)
             else: literal = None
             members.append(
                 StructureMember(member_id, data_type, pointer, static, literal))
