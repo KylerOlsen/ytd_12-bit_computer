@@ -173,16 +173,141 @@ Escape Codes
 
 ### Syntax
 
-#### ProgramFile
+The syntactical structure starts with a `File` at the root.
 
-A `ProgramFile` contains a number of `Directives` and `BlockHeaders`.
+#### File
 
-#### Directives
+A `File` can contain any number of the following elements:
+- `directive`
+- `struct`
+- `enum`
+- `function`
 
-#### BlockHeaders
+#### Directive
 
-A `BlockHeaders` contains a `Header` and a number of `Statements`, `Directives`,
-and `BlockHeaders`.
+Just a `directive`, their content is stored here for later when directive
+compilation occurs.
+
+#### struct
+
+A `struct` begins with the `struct` keyword, which may optionally be preceded
+with the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
+separated list enclosed in curly braces (`{` and `}`) of *structure members*.
+
+##### Structure Member
+
+A *structure member* begins with its `identifier`, which may optionally be
+preceded with the `static` keyword. After a colon (`:`) is its `data type`. It
+may then optionally be followed by an equal sign (`=`) and a `literal`.
+
+#### enum
+
+A `enum` begins with the `enum` keyword, which may optionally be preceded with
+the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
+separated list enclosed in curly braces (`{` and `}`) of *enum members*.
+
+##### Enum Member
+
+An *enum member* begins with its `identifier`. It can then optionally be
+followed by an equal sign (`=`) and a `number literal`.
+
+#### Function
+
+A `function` begins with the `fn` keyword, which may optionally be preceded
+with the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
+separated list enclosed in parentheses (`(` and `)`) of *function arguments*.
+After that is an arrow (`->`) followed by a `data type` denoting the function's
+return type. After that is a list enclosed in curly braces (`{` and `}`) of
+`statements`.
+
+##### Function Arguments
+
+A *function argument* begins with its `identifier`, followed by a colon (`:`)
+and its `data type`. It may then optionally be followed by an equal sign (`=`)
+and a `literal`.
+
+#### If Statement
+
+An `if statement` begins with the `if` keyword, followed by its condition, an
+`expression` enclosed in parentheses (`(` and `)`), then a list enclosed in
+curly braces (`{` and `}`) of `statements`. It may then optionally be followed
+by an `else block`.
+
+#### Do Loop
+
+A `do loop` begins with the `do` keyword, followed by a list enclosed in curly
+braces (`{` and `}`) of `statements` or `loop statements`. It is then finished
+with the `while` keyword, followed by its condition, an `expression` enclosed
+in parentheses (`(` and `)`). It may then optionally be followed by another list
+enclosed in curly braces (`{` and `}`) of `statements` or `loop statements`then
+again optionally by an `else block`.
+
+#### While Loop
+
+A `while loop` begins with the `while` keyword, followed by its condition, an
+`expression` enclosed in parentheses (`(` and `)`), then a list enclosed in
+curly braces (`{` and `}`) of `statements` or `loop statements`. It may then
+optionally be followed by an `else block`.
+
+#### For Loop
+
+A `for loop` begins with the `for` keyword, followed by three expressions
+enclosed in parentheses (`(` and `)`), separated by semicolons (`;`). The first
+expression is a *pre-loop expression*, the second is its condition which is a
+normal `expression`, and the last is its post-loop expression which is another
+normal `expression`. It is ended with a list enclosed in curly braces
+(`{` and `}`) of `statements` or `loop statements`. It may then optionally be
+followed by an `else block`.
+
+##### Pre-Loop Expression
+
+A *pre-loop expression* can be a normal `expression` or a special variable
+definition. It starts its identifier, then a colon (`:`) is its `data type`,
+then an equal sign (`=`) followed by an `expression`.
+
+#### Else Block
+
+An `else block` begins with the `else` keyword, followed by a list enclosed in
+curly braces (`{` and `}`) of `statements`.
+
+#### Let Statement
+
+A `let statement` begins with the `let` keyword, which may optionally be
+preceded with the `static` keyword. It then has  its `identifier`, followed by
+a colon (`:`) and its `data type`. It may then optionally be followed by an
+equal sign (`=`) and an `expression`. It must then be finished with a semicolon
+(`;`).
+
+#### Expressions
+
+
+
+##### Unary Expression
+
+
+
+##### Binary Expression
+##### Other Expressions
+###### Function Parameters
+##### Operators
+###### Prefix Unary Operators
+###### Postfix Unary Operators
+###### Infix Binary Operators
+
+#### Literal
+##### Number Literal
+##### Character Literal
+##### String Literal
+
+#### Identifier
+
+#### Data Type
+
+##### Default Data Types
+
+#### Statement
+##### Nestable Code Blocks
+##### Loop Statements
 
 ### Semantics
 
@@ -190,7 +315,7 @@ and `BlockHeaders`.
 
 #### Operator Operand Counts
 
-- Unitary: `++`, `--`, `@`, `$`
+- Unary: `++`, `--`, `@`, `$`
 - Binary: `[ ]`, `+`, `-`, `*`, `/`, `%`, `~`, `&`, `|`, `^`, `<<`, `>>`, `=`,
 `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`, `!`, `&&`, `||`,
 `==`, `!=`, `<`, `<=`, `>`, `>=`
