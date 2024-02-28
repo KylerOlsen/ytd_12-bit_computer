@@ -535,7 +535,6 @@ class FunctionParameter:
 class FunctionBlock:
 
     _identifier: Identifier
-    _public: bool
     _args: list[FunctionParameter]
     _return_type: DataType
     _code: list[Statement]
@@ -543,13 +542,11 @@ class FunctionBlock:
     def __init__(
         self,
         identifier: Identifier,
-        public: bool,
         args: list[FunctionParameter],
         return_type: DataType,
         code: list[Statement],
     ):
         self._identifier = identifier
-        self._public = public
         self._args = args[:]
         self._return_type = return_type
         self._code = code[:]
@@ -572,17 +569,14 @@ class EnumMember:
 class EnumBlock:
 
     _identifier: Identifier
-    _public: bool
     _members: list[EnumMember]
 
     def __init__(
         self,
         identifier: Identifier,
-        public: bool,
         members: list[EnumMember],
     ):
         self._identifier = identifier
-        self._public = public
         self._members = members[:]
 
 
@@ -612,17 +606,14 @@ class StructureMember:
 class StructBlock:
 
     _identifier: Identifier
-    _public: bool
     _members: list[StructureMember]
 
     def __init__(
         self,
         identifier: Identifier,
-        public: bool,
         members: list[StructureMember],
     ):
         self._identifier = identifier
-        self._public = public
         self._members = members[:]
 
 
@@ -704,10 +695,7 @@ def _literal_map(literal: (
     elif isinstance(literal, lexer.StringLiteral):
         return StringLiteral(literal.value)
 
-def struct_syntactical_analyzer(
-    tokens: list[lexer.Token],
-    public: bool,
-) -> StructBlock:
+def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
     temp = tokens.pop(0)
@@ -761,18 +749,12 @@ def struct_syntactical_analyzer(
                 StructureMember(member_id, data_type, pointer, static, literal))
         else:
             raise UnexpectedToken(temp, ["Keyword", "Identifier"])
-    return StructBlock(Identifier(identifier.value), public, members)
+    return StructBlock(Identifier(identifier.value), members)
 
-def enumeration_syntactical_analyzer(
-    tokens: list[lexer.Token],
-    public: bool,
-) -> EnumBlock:
+def enumeration_syntactical_analyzer(tokens: list[lexer.Token]) -> EnumBlock:
     pass
 
-def function_syntactical_analyzer(
-    tokens: list[lexer.Token],
-    public: bool,
-) -> FunctionBlock:
+def function_syntactical_analyzer(tokens: list[lexer.Token]) -> FunctionBlock:
     pass
 
 def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
@@ -784,26 +766,18 @@ def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
         if isinstance(token, lexer.Directive):
             children.append(Directive(token.value))
         elif isinstance(token, lexer.Keyword):
-            public = False
-            while True:
-                match token.value:
-                    case 'pub':
-                        token = tokens.pop(0)
-                        _assert_token(ExpectedKeyword, token)
-                        public = True
-                        continue
-                    case 'struct':
-                        children.append(
-                            struct_syntactical_analyzer(tokens, public))
-                    case 'enum':
-                        children.append(
-                            enumeration_syntactical_analyzer(tokens, public))
-                    case 'fn':
-                        children.append(
-                            function_syntactical_analyzer(tokens, public))
-                    case _:
-                        raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
-                break
+            match token.value:
+                case 'struct':
+                    children.append(
+                        struct_syntactical_analyzer(tokens))
+                case 'enum':
+                    children.append(
+                        enumeration_syntactical_analyzer(tokens))
+                case 'fn':
+                    children.append(
+                        function_syntactical_analyzer(tokens))
+                case _:
+                    raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
 
     return File(children)
 

@@ -111,9 +111,9 @@ ID_Continue ::= ID_Start | <Any decimal ligature: "0"-"9">
 ```
 struct      fn          enum        static
 if          else        do          while
-for         pub         let         break
-continue    True        False       None
+for         break       continue    let
 unsigned    int         fixed       float
+True        False       None
 ```
 
 #### Literals
@@ -199,21 +199,21 @@ directive compilation occurs.
 
 #### struct
 
-A `struct` begins with the `struct` keyword, which may optionally be preceded
-with the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
-separated list enclosed in curly braces (`{` and `}`) of *structure members*.
+A `struct` begins with the `struct` keyword. It then has its `identifier`
+followed by a comma (`,`) separated list enclosed in curly braces (`{` and `}`)
+of *structure members*.
 
 ##### Structure Member
 
-A *structure member* begins with its `identifier`, which may optionally be
-preceded with the `static` keyword. After a colon (`:`) is its `data type`. It
-may then optionally be followed by an equal sign (`=`) and a `literal`.
+A *structure member* begins with its `identifier`. After a colon (`:`) is its
+`data type`. It may then optionally be followed by an equal sign (`=`) and a
+`literal`.
 
 #### enum
 
-A `enum` begins with the `enum` keyword, which may optionally be preceded with
-the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
-separated list enclosed in curly braces (`{` and `}`) of *enum members*.
+A `enum` begins with the `enum` keyword. It then has its `identifier` followed
+by a comma (`,`) separated list enclosed in curly braces (`{` and `}`) of
+*enum members*.
 
 ##### Enum Member
 
@@ -222,12 +222,11 @@ followed by an equal sign (`=`) and a `number literal`.
 
 #### Function
 
-A `function` begins with the `fn` keyword, which may optionally be preceded
-with the `pub` keyword. It then has its `identifier` followed by a comma (`,`)
-separated list enclosed in parentheses (`(` and `)`) of *function parameters*.
-After that is an arrow (`->`) followed by a `data type` denoting the function's
-return type. After that is a list enclosed in curly braces (`{` and `}`) of
-`statements`.
+A `function` begins with the `fn` keyword. It then has its `identifier` followed
+by a comma (`,`) separated list enclosed in parentheses (`(` and `)`) of
+*function parameters*. After that is an arrow (`->`) followed by a `data type`
+denoting the function's return type. After that is a list enclosed in curly
+braces (`{` and `}`) of `statements`.
 
 ##### Function Parameter
 
@@ -456,7 +455,3 @@ that is apart of `pytd12dk`.
 | `ytd12nc` (b) | `ytd12nc` (a) | `pytd12dk` |
 | `ytd12nc` (c) | `ytd12nc` (b) | `ytd12nc` (a) |
 | `ytd12nc` (d) | `ytd12nc` (c) | `ytd12nc` (b) |
-
-# TODO / Ideas
-
-Remove `pub` keyword.

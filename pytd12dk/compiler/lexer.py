@@ -50,11 +50,11 @@ _ID_Start = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz" "_"
 _ID_Continue = _ID_Start + "0123456789"
 
 _Keywords = (
-    'struct',   'fn',   'enum',  'static',
-    'if',       'else', 'do',    'while',
-    'for',      'pub',  'let',   'break',
-    'continue', 'True', 'False', 'None',
-    'unsigned', 'int',  'fixed', 'float',
+    'struct',   'fn',    'enum',  'static',
+    'if',       'else',  'do',    'while',
+    'for',      'let',   'break', 'continue',
+    'unsigned', 'int',   'fixed', 'float',
+    'True',     'False', 'None',
 )
 
 _Num_Start = "0123456789"
