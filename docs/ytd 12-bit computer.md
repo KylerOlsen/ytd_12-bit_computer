@@ -456,3 +456,7 @@ that is apart of `pytd12dk`.
 | `ytd12nc` (b) | `ytd12nc` (a) | `pytd12dk` |
 | `ytd12nc` (c) | `ytd12nc` (b) | `ytd12nc` (a) |
 | `ytd12nc` (d) | `ytd12nc` (c) | `ytd12nc` (b) |
+
+# TODO / Ideas
+
+Remove `pub` keyword.
