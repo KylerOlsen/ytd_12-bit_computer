@@ -4,7 +4,7 @@
 from enum import Enum
 from typing import Sequence
 
-from .compiler_types import CompilerError, FileInfo
+from .compiler_types import CompilerError
 from . import lexer
 
 
@@ -163,7 +163,7 @@ class UnaryOperator(Enum):
     Negate = "-"
     BitwiseNOT = "~"
     BooleanNOT = "!"
-    Addressof = "@"
+    AddressOf = "@"
     Dereference = "$"
 
 
@@ -200,6 +200,10 @@ class BinaryOperator(Enum):
     GreaterOrEqualToThan = ">="
 
 
+class TernaryOperator(Enum):
+    TernaryConditional = "?"
+
+
 class DefaultDataType(Enum):
     unsigned = "unsigned"
     int = "int"
@@ -207,47 +211,50 @@ class DefaultDataType(Enum):
     float = "float"
 
 
-_Operator_Precedence = [
-    BinaryOperator.Assignment,
-    BinaryOperator.AdditionAssignment,
-    BinaryOperator.SubtractionAssignment,
-    BinaryOperator.MultiplicationAssignment,
-    BinaryOperator.DivisionAssignment,
-    BinaryOperator.ModulusAssignment,
-    BinaryOperator.BitwiseANDAssignment,
-    BinaryOperator.BitwiseORAssignment,
-    BinaryOperator.BitwiseXORAssignment,
-    BinaryOperator.LeftShiftAssignment,
-    BinaryOperator.RightShiftAssignment,
-    BinaryOperator.BooleanAND,
-    BinaryOperator.BooleanOR,
-    BinaryOperator.BooleanXOR,
-    BinaryOperator.EqualityComparison,
-    BinaryOperator.InequalityComparison,
-    BinaryOperator.LessThan,
-    BinaryOperator.LessOrEqualToThan,
-    BinaryOperator.GreaterThan,
-    BinaryOperator.GreaterOrEqualToThan,
-    BinaryOperator.Addition,
-    BinaryOperator.Subtraction,
-    BinaryOperator.Multiplication,
-    BinaryOperator.Division,
-    BinaryOperator.Modulus,
-    BinaryOperator.BitwiseAND,
-    BinaryOperator.BitwiseOR,
-    BinaryOperator.BitwiseXOR,
-    BinaryOperator.LeftShift,
-    BinaryOperator.RightShift,
-    UnaryOperator.BooleanNOT,
-    UnaryOperator.Negate,
-    UnaryOperator.PrefixIncrement,
-    UnaryOperator.PrefixDecrement,
-    UnaryOperator.PostfixIncrement,
-    UnaryOperator.PostfixDecrement,
-    UnaryOperator.BitwiseNOT,
+_Operator_Precedence: tuple[
+    UnaryOperator | BinaryOperator | TernaryOperator, ...
+] = (
+    UnaryOperator.AddressOf,
     UnaryOperator.Dereference,
-    UnaryOperator.Addressof,
-]
+    UnaryOperator.BitwiseNOT,
+    UnaryOperator.PostfixDecrement,
+    UnaryOperator.PostfixIncrement,
+    UnaryOperator.PrefixDecrement,
+    UnaryOperator.PrefixIncrement,
+    UnaryOperator.Negate,
+    UnaryOperator.BooleanNOT,
+    BinaryOperator.RightShift,
+    BinaryOperator.LeftShift,
+    BinaryOperator.BitwiseXOR,
+    BinaryOperator.BitwiseOR,
+    BinaryOperator.BitwiseAND,
+    BinaryOperator.Modulus,
+    BinaryOperator.Division,
+    BinaryOperator.Multiplication,
+    BinaryOperator.Subtraction,
+    BinaryOperator.Addition,
+    BinaryOperator.GreaterOrEqualToThan,
+    BinaryOperator.GreaterThan,
+    BinaryOperator.LessOrEqualToThan,
+    BinaryOperator.LessThan,
+    BinaryOperator.InequalityComparison,
+    BinaryOperator.EqualityComparison,
+    BinaryOperator.BooleanXOR,
+    BinaryOperator.BooleanOR,
+    BinaryOperator.BooleanAND,
+    TernaryOperator.TernaryConditional,
+    BinaryOperator.RightShiftAssignment,
+    BinaryOperator.LeftShiftAssignment,
+    BinaryOperator.BitwiseXORAssignment,
+    BinaryOperator.BitwiseORAssignment,
+    BinaryOperator.BitwiseANDAssignment,
+    BinaryOperator.ModulusAssignment,
+    BinaryOperator.DivisionAssignment,
+    BinaryOperator.MultiplicationAssignment,
+    BinaryOperator.SubtractionAssignment,
+    BinaryOperator.AdditionAssignment,
+    BinaryOperator.Assignment,
+)
 
 
 class Identifier:
@@ -430,12 +437,12 @@ class ForPreDef:
         identifier: Identifier,
         type: DataType,
         pointer: bool,
-        default: Literal | None,
+        assignment: Expression,
     ):
         self._identifier = identifier
         self._type = type
         self._pointer = pointer
-        self._default = default
+        self._assignment = assignment
 
 
 class ForBlock:
@@ -482,19 +489,22 @@ class DoBlock:
 
     _first_code: list[Statement]
     _condition: Expression
-    _second_code: list[Statement]
+    _second_code: list[Statement] | None
     _else: ElseBlock | None
 
     def __init__(
         self,
         first_code: list[Statement],
         condition: Expression,
-        second_code: list[Statement],
+        second_code: list[Statement] | None,
         else_block: ElseBlock | None,
     ):
         self._first_code = first_code[:]
         self._condition = condition
-        self._second_code = second_code[:]
+        if second_code:
+            self._second_code = second_code[:]
+        else:
+            self._second_code = None
         self._else = else_block
 
 
@@ -701,65 +711,102 @@ def _literal_map(literal: (
     elif isinstance(literal, lexer.StringLiteral):
         return StringLiteral(literal.value)
 
+def _get_nested_group(
+    tokens: list[lexer.Token],
+    encloses: tuple[str, str] = ('(',')'),
+) -> list[lexer.Token]:
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, encloses[0])
+    nested = 1
+    expr_len = -1
+    for i in range(len(tokens)):
+        if tokens[i].value == encloses[0]: nested += 1
+        elif tokens[i].value == encloses[1]: nested -= 1
+        if nested == 0:
+            expr_len = i
+            break
+    else:
+        raise UnexpectedEndOfTokenStream(
+            "Unexpected End of Token Stream.", tokens[-1].file_info)
+    expr_tokens = tokens[:expr_len]
+    del tokens[:expr_len+1]
+    return expr_tokens
+
+def _get_to_symbol(
+    tokens: list[lexer.Token],
+    symbol: str = ';',
+) -> list[lexer.Token]:
+    expr_len = -1
+    for i in range(len(tokens)):
+        if tokens[i].value == symbol:
+            expr_len = i
+            break
+    else:
+        raise UnexpectedEndOfTokenStream(
+            "Unexpected End of Token Stream.", tokens[-1].file_info)
+    expr_tokens = tokens[:expr_len]
+    del tokens[:expr_len+1]
+    return expr_tokens
+
 def _struct_sa(tokens: list[lexer.Token]) -> StructBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
-    temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '{')
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, '{')
     members: list[StructureMember] = []
-    while temp.value != '}':
-        temp = tokens.pop(0)
-        if isinstance(temp, lexer.Keyword):
-            _assert_token(ExpectedKeyword, temp, 'static')
-            temp = tokens.pop(0)
+    while token.value != '}':
+        token = tokens.pop(0)
+        if isinstance(token, lexer.Keyword):
+            _assert_token(ExpectedKeyword, token, 'static')
+            token = tokens.pop(0)
             static = True
         else:
             static = False
-        if isinstance(temp, lexer.Identifier):
-            member_id = Identifier(temp.value)
-            temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp, ':')
+        if isinstance(token, lexer.Identifier):
+            member_id = Identifier(token.value)
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token, ':')
             pointer, data_type = _data_type_sa(tokens)
-            temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp)
-            if temp.value not in [',', '=', '}']:
-                raise UnexpectedPunctuation(temp, [',', '=', '}'])
-            elif temp.value == '=':
-                temp = tokens.pop(0)
-                _assert_token_literal(temp)
-                literal = _literal_map(temp) # type: ignore
-                temp = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, temp)
-                if temp.value not in [',', '=', '}']:
-                    raise UnexpectedPunctuation(temp, [',', '=', '}'])
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token)
+            if token.value not in [',', '=', '}']:
+                raise UnexpectedPunctuation(token, [',', '=', '}'])
+            elif token.value == '=':
+                token = tokens.pop(0)
+                _assert_token_literal(token)
+                literal = _literal_map(token) # type: ignore
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in [',', '}']:
+                    raise UnexpectedPunctuation(token, [',', '}'])
             else: literal = None
             members.append(
                 StructureMember(member_id, data_type, pointer, static, literal))
         else:
-            raise UnexpectedToken(temp, ["Keyword", "Identifier"])
+            raise UnexpectedToken(token, ["Keyword", "Identifier"])
     return StructBlock(Identifier(identifier.value), members)
 
 def _enumeration_sa(tokens: list[lexer.Token]) -> EnumBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
-    temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '{')
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, '{')
     members: list[EnumMember] = []
-    while temp.value != '}':
-        temp = tokens.pop(0)
-        _assert_token(ExpectedIdentifier, temp)
-        member_id = Identifier(temp.value)
-        temp = tokens.pop(0)
-        _assert_token(ExpectedPunctuation, temp)
-        if temp.value not in [',', '=', '}']:
-            raise UnexpectedPunctuation(temp, [',', '=', '}'])
-        elif temp.value == '=':
-            temp = tokens.pop(0)
-            _assert_token(ExpectedNumberLiteral, temp)
-            temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp)
-            if temp.value not in [',', '}']:
-                raise UnexpectedPunctuation(temp, [',', '}'])
+    while token.value != '}':
+        token = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, token)
+        member_id = Identifier(token.value)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token)
+        if token.value not in [',', '=', '}']:
+            raise UnexpectedPunctuation(token, [',', '=', '}'])
+        elif token.value == '=':
+            token = tokens.pop(0)
+            _assert_token(ExpectedNumberLiteral, token)
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token)
+            if token.value not in [',', '}']:
+                raise UnexpectedPunctuation(token, [',', '}'])
         else: literal = None
         members.append(EnumMember(member_id, literal))
     return EnumBlock(Identifier(identifier.value), members)
@@ -767,41 +814,37 @@ def _enumeration_sa(tokens: list[lexer.Token]) -> EnumBlock:
 def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
-    temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '(')
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, '(')
     params: list[FunctionParameter] = []
-    while temp.value != ')':
-        temp = tokens.pop(0)
-        if isinstance(temp, lexer.Identifier):
-            member_id = Identifier(temp.value)
-            temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp, ':')
+    while token.value != ')':
+        token = tokens.pop(0)
+        if isinstance(token, lexer.Identifier):
+            member_id = Identifier(token.value)
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token, ':')
             pointer, data_type = _data_type_sa(tokens)
-            temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp)
-            if temp.value not in [',', '=', ')']:
-                raise UnexpectedPunctuation(temp, [',', '=', ')'])
-            elif temp.value == '=':
-                temp = tokens.pop(0)
-                _assert_token_literal(temp)
-                literal = _literal_map(temp) # type: ignore
-                temp = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, temp)
-                if temp.value not in [',', ')']:
-                    raise UnexpectedPunctuation(temp, [',', ')'])
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token)
+            if token.value not in [',', '=', ')']:
+                raise UnexpectedPunctuation(token, [',', '=', ')'])
+            elif token.value == '=':
+                token = tokens.pop(0)
+                _assert_token_literal(token)
+                literal = _literal_map(token) # type: ignore
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in [',', ')']:
+                    raise UnexpectedPunctuation(token, [',', ')'])
             else: literal = None
             params.append(
                 FunctionParameter(member_id, data_type, pointer, literal))
         else:
-            raise UnexpectedToken(temp, ["Keyword", "Identifier"])
-    temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '->')
+            raise UnexpectedToken(token, ["Keyword", "Identifier"])
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, '->')
     pointer, return_type = _data_type_sa(tokens)
-    temp = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, temp, '{')
-    code: list[Statement] = []
-    while tokens[0].value != '}':
-        code.append(_statement_sa(tokens))
+    code = _code_block_sa(tokens)
     return FunctionBlock(
         Identifier(identifier.value),
         params,
@@ -811,31 +854,208 @@ def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
     )
 
 def _data_type_sa(tokens: list[lexer.Token]) -> tuple[bool, DataType]:
-    temp = tokens.pop(0)
-    _assert_token_mult(temp, (
+    token = tokens.pop(0)
+    _assert_token_mult(token, (
         lexer.Keyword,
         lexer.Identifier,
         lexer.Punctuation,
     ))
-    if isinstance(temp, lexer.Punctuation):
-        _assert_token(ExpectedPunctuation, temp, '*')
+    if isinstance(token, lexer.Punctuation):
+        _assert_token(ExpectedPunctuation, token, '*')
         pointer = True
-        temp = tokens.pop(0)
-        _assert_token_mult(temp, (lexer.Keyword, lexer.Identifier))
+        token = tokens.pop(0)
+        _assert_token_mult(token, (lexer.Keyword, lexer.Identifier))
     else:
         pointer = False
-    if isinstance(temp, lexer.Keyword):
-        if temp.value not in DefaultDataType:
+    if isinstance(token, lexer.Keyword):
+        if token.value not in DefaultDataType:
             raise UnexpectedKeyword(
-                temp,
+                token,
                 [i.value for i in DefaultDataType],
             )
-        return pointer, DefaultDataType(temp.value)
+        return pointer, DefaultDataType(token.value)
     else:
-        return pointer, Identifier(temp.value)
+        return pointer, Identifier(token.value)
+
+def _code_block_sa(
+    tokens: list[lexer.Token],
+    encloses: tuple[str, str] = ('{','}'),
+) -> list[Statement]:
+    token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, token, encloses[0])
+    code: list[Statement] = []
+    while tokens[0].value != encloses[1]:
+        code.append(_statement_sa(tokens))
+    return code
+
+def _expression_sa(tokens: list[lexer.Token]) -> Expression:
+    if tokens[0] == '(' and tokens[-1] == ')':
+        return _expression_sa(tokens[1:-1])
+    elif len(tokens) == 1:
+        token = tokens.pop(0)
+        _assert_token_literal(token)
+        return _literal_map(token) # type: ignore
+
+    max_operator: int = -1
+    max_operator_precedence: int = -1
+    nested = 0
+    for i, token in enumerate(tokens):
+        if token.value == '(': nested += 1
+        elif token.value == ')':
+            if nested == 0:
+                raise UnexpectedPunctuation(token, "(' before ')", token.value)
+            nested -= 1
+        if nested == 0 and isinstance(token, lexer.Punctuation):
+            for j, operator in reversed(list(enumerate(_Operator_Precedence))):
+                if j <= max_operator_precedence:
+                    break
+                elif operator.value == token.value:
+                    max_operator = i
+                    max_operator_precedence = j
+                    break
+
+    if tokens[max_operator].value in UnaryOperator:
+        pass
+        # if tokens[max_operator].value in (
+        #     UnaryOperator.PostfixDecrement,
+        #     UnaryOperator.PostfixIncrement,
+        # ) and max_operator == len(tokens) - 1:
+        #     return UnaryExpression(
+        #         UnaryOperator(tokens[max_operator].value),
+        #         _expression_sa(tokens[:max_operator])
+        #     )
+    elif tokens[max_operator].value in BinaryOperator:
+        pass
+    elif tokens[max_operator].value in TernaryOperator:
+        condition = _expression_sa(tokens[:max_operator])
+        del tokens[:max_operator]
+        true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':')))
+        false_expr = _expression_sa(tokens)
+        return TernaryExpression(condition, true_expr, false_expr)
 
 def _statement_sa(tokens: list[lexer.Token]) -> Statement:
-    pass
+    token = tokens.pop(0)
+    if isinstance(token, lexer.Keyword):
+        match token.value:
+            case 'let' | 'static' as key:
+                static = key == 'static'
+                if static:
+                    token = tokens.pop(0)
+                    _assert_token(ExpectedKeyword, token, 'let')
+                identifier = tokens.pop(0)
+                _assert_token(ExpectedIdentifier, identifier)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token, ':')
+                pointer, data_type = _data_type_sa(tokens)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in ['=', ';']:
+                    raise UnexpectedPunctuation(token, ['=', ';'])
+                elif token.value == '=':
+                    token = tokens.pop(0)
+                    _assert_token_literal(token)
+                    literal = _literal_map(token) # type: ignore
+                    token = tokens.pop(0)
+                    _assert_token(ExpectedPunctuation, token)
+                    if token.value != ';':
+                        raise UnexpectedPunctuation(token, ';')
+                else: literal = None
+                return LetStatement(
+                    Identifier(identifier.value),
+                    data_type,
+                    pointer,
+                    static,
+                    literal,
+                )
+            case 'break' | 'continue' as key:
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token, ';')
+                return LoopStatements(key)
+            case 'if':
+                condition = _expression_sa(_get_nested_group(tokens))
+                code = _code_block_sa(tokens)
+                if tokens[0].value == 'else':
+                    else_block = ElseBlock(_code_block_sa(tokens))
+                else:
+                    else_block = None
+                return IfBlock(condition, code, else_block)
+            case 'do':
+                code1 = _code_block_sa(tokens)
+                token = tokens.pop(0)
+                _assert_token(ExpectedKeyword, token, 'while')
+                condition = _expression_sa(_get_nested_group(tokens))
+                if tokens[0].value == '{':
+                    code2 = _code_block_sa(tokens)
+                else:
+                    code2 = None
+                if tokens[0].value == 'else':
+                    else_block = ElseBlock(_code_block_sa(tokens))
+                else:
+                    else_block = None
+                return DoBlock(code1, condition, code2, else_block)
+            case 'while':
+                condition = _expression_sa(_get_nested_group(tokens))
+                code = _code_block_sa(tokens)
+                if tokens[0].value == 'else':
+                    else_block = ElseBlock(_code_block_sa(tokens))
+                else:
+                    else_block = None
+                return WhileBlock(condition, code, else_block)
+            case 'for':
+                three_expressions = _get_nested_group(tokens)
+                token = three_expressions.pop(0)
+                pre_loop_tokens: list[lexer.Token] = []
+                while token.value != ';':
+                    pre_loop_tokens.append(token)
+                    token = three_expressions.pop(0)
+                token = three_expressions.pop(0)
+                if (
+                    type(pre_loop_tokens[0]) is lexer.Identifier and
+                    pre_loop_tokens[1].value == ':'
+                ):
+                    identifier = Identifier(pre_loop_tokens.pop(0).value)
+                    token = pre_loop_tokens.pop(0)
+                    _assert_token(ExpectedPunctuation, token, ':')
+                    pointer, data_type = _data_type_sa(pre_loop_tokens)
+                    if pre_loop_tokens:
+                        token = pre_loop_tokens.pop(0)
+                        _assert_token(ExpectedPunctuation, token, '=')
+                        pre_loop_expr = _expression_sa(pre_loop_tokens)
+                    pre_loop = ForPreDef(
+                        identifier,
+                        data_type,
+                        pointer,
+                        pre_loop_expr,
+                    )
+                else:
+                    pre_loop = _expression_sa(pre_loop_tokens)
+                loop_condition_tokens: list[lexer.Token] = []
+                while token.value != ';':
+                    loop_condition_tokens.append(token)
+                    token = three_expressions.pop(0)
+                token = three_expressions.pop(0)
+                condition = _expression_sa(loop_condition_tokens)
+                post_loop = _expression_sa(three_expressions)
+                code = _code_block_sa(tokens)
+                if tokens[0].value == 'else':
+                    else_block = ElseBlock(_code_block_sa(tokens))
+                else:
+                    else_block = None
+                return ForBlock(
+                    pre_loop, condition, code, post_loop, else_block)
+            case key if key not in BuildInConst:
+                raise UnexpectedKeyword(token, [
+                    'static',
+                    'let',
+                    'break',
+                    'continue',
+                    'if',
+                    'do',
+                    'while',
+                    'for',
+                ] + [i.value for i in BuildInConst])
+    expr_tokens: list[lexer.Token] = [token] + _get_to_symbol(tokens)
+    return _expression_sa(expr_tokens)
 
 def _file_sa(tokens: list[lexer.Token]) -> File:
     children: list[Directive | StructBlock | FunctionBlock | EnumBlock] = []

@@ -244,11 +244,11 @@ by an `else block`.
 #### Do Loop
 
 A `do loop` begins with the `do` keyword, followed by a list enclosed in curly
-braces (`{` and `}`) of `statements`. It is then finished
-with the `while` keyword, followed by its condition, an `expression` enclosed
-in parentheses (`(` and `)`). It may then optionally be followed by another list
-enclosed in curly braces (`{` and `}`) of `statements` then
-again optionally by an `else block`.
+braces (`{` and `}`) of `statements`. It is then followed with the `while`
+keyword, then by its condition, an `expression` enclosed in parentheses
+(`(` and `)`). It may then optionally be followed by another list enclosed in
+curly braces (`{` and `}`) of `statements`. Finally the `do loop` may optionally
+be followed by an `else block`.
 
 #### While Loop
 
@@ -360,6 +360,7 @@ Here are all operators and their types and names in order of operator precedence
 | `^^` | Binary | Boolean XOR *Operator* |
 | `\|\|` | Binary | Boolean OR *Operator* |
 | `&&` | Binary | Boolean AND *Operator* |
+| `?` `:` | Ternary | Ternary Conditional *Operator* |
 | `>>=` | Binary | Right Shift Assignment *Operator* |
 | `<<=` | Binary | Left Shift Assignment *Operator* |
 | `^=` | Binary | Bitwise XOR Assignment *Operator* |
