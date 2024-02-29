@@ -8,6 +8,9 @@ from .compiler_types import CompilerError, FileInfo
 from . import lexer
 
 
+class UnexpectedEndOfTokenStream(CompilerError): pass
+
+
 class _ExpectedTokenBase(CompilerError):
 
     _token_type = lexer.Token
@@ -322,15 +325,15 @@ class FunctionArgument:
 class FunctionCall:
 
     _identifier: Identifier
-    _params: list[FunctionArgument]
+    _args: list[FunctionArgument]
 
     def __init__(
         self,
         identifier: Identifier,
-        params: list[FunctionArgument],
+        args: list[FunctionArgument],
     ):
         self._identifier = identifier
-        self._params = params
+        self._args = args
 
 
 class TernaryExpression:
@@ -535,19 +538,22 @@ class FunctionParameter:
 class FunctionBlock:
 
     _identifier: Identifier
-    _args: list[FunctionParameter]
+    _params: list[FunctionParameter]
+    _return_type_pointer: bool
     _return_type: DataType
     _code: list[Statement]
 
     def __init__(
         self,
         identifier: Identifier,
-        args: list[FunctionParameter],
+        params: list[FunctionParameter],
+        return_type_pointer: bool,
         return_type: DataType,
         code: list[Statement],
     ):
         self._identifier = identifier
-        self._args = args[:]
+        self._params = params[:]
+        self._return_type_pointer = return_type_pointer
         self._return_type = return_type
         self._code = code[:]
 
@@ -695,7 +701,7 @@ def _literal_map(literal: (
     elif isinstance(literal, lexer.StringLiteral):
         return StringLiteral(literal.value)
 
-def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
+def _struct_sa(tokens: list[lexer.Token]) -> StructBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
     temp = tokens.pop(0)
@@ -713,38 +719,19 @@ def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
             member_id = Identifier(temp.value)
             temp = tokens.pop(0)
             _assert_token(ExpectedPunctuation, temp, ':')
-            temp = tokens.pop(0)
-            _assert_token_mult(temp, (
-                lexer.Keyword,
-                lexer.Identifier,
-                lexer.Punctuation,
-            ))
-            if isinstance(temp, lexer.Punctuation):
-                _assert_token(ExpectedPunctuation, temp, '*')
-                pointer = True
-                temp = tokens.pop(0)
-                _assert_token_mult(temp, (lexer.Keyword, lexer.Identifier))
-            else:
-                pointer = False
-            if isinstance(temp, lexer.Keyword):
-                if temp.value not in DefaultDataType:
-                    raise UnexpectedKeyword(
-                        temp,
-                        [i.value for i in DefaultDataType],
-                    )
-                data_type = DefaultDataType(temp.value)
-            else:
-                data_type = Identifier(temp.value)
+            pointer, data_type = _data_type_sa(tokens)
             temp = tokens.pop(0)
             _assert_token(ExpectedPunctuation, temp)
-            if temp.value not in [',', '=']:
-                raise UnexpectedPunctuation(temp, [',', '='])
+            if temp.value not in [',', '=', '}']:
+                raise UnexpectedPunctuation(temp, [',', '=', '}'])
             elif temp.value == '=':
                 temp = tokens.pop(0)
                 _assert_token_literal(temp)
                 literal = _literal_map(temp) # type: ignore
                 temp = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, temp, ',')
+                _assert_token(ExpectedPunctuation, temp)
+                if temp.value not in [',', '=', '}']:
+                    raise UnexpectedPunctuation(temp, [',', '=', '}'])
             else: literal = None
             members.append(
                 StructureMember(member_id, data_type, pointer, static, literal))
@@ -752,7 +739,7 @@ def struct_syntactical_analyzer(tokens: list[lexer.Token]) -> StructBlock:
             raise UnexpectedToken(temp, ["Keyword", "Identifier"])
     return StructBlock(Identifier(identifier.value), members)
 
-def enumeration_syntactical_analyzer(tokens: list[lexer.Token]) -> EnumBlock:
+def _enumeration_sa(tokens: list[lexer.Token]) -> EnumBlock:
     identifier = tokens.pop(0)
     _assert_token(ExpectedIdentifier, identifier)
     temp = tokens.pop(0)
@@ -764,21 +751,93 @@ def enumeration_syntactical_analyzer(tokens: list[lexer.Token]) -> EnumBlock:
         member_id = Identifier(temp.value)
         temp = tokens.pop(0)
         _assert_token(ExpectedPunctuation, temp)
-        if temp.value not in [',', '=']:
-            raise UnexpectedPunctuation(temp, [',', '='])
+        if temp.value not in [',', '=', '}']:
+            raise UnexpectedPunctuation(temp, [',', '=', '}'])
         elif temp.value == '=':
             temp = tokens.pop(0)
             _assert_token(ExpectedNumberLiteral, temp)
             temp = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, temp, ',')
+            _assert_token(ExpectedPunctuation, temp)
+            if temp.value not in [',', '}']:
+                raise UnexpectedPunctuation(temp, [',', '}'])
         else: literal = None
         members.append(EnumMember(member_id, literal))
     return EnumBlock(Identifier(identifier.value), members)
 
-def function_syntactical_analyzer(tokens: list[lexer.Token]) -> FunctionBlock:
+def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
+    identifier = tokens.pop(0)
+    _assert_token(ExpectedIdentifier, identifier)
+    temp = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, temp, '(')
+    params: list[FunctionParameter] = []
+    while temp.value != ')':
+        temp = tokens.pop(0)
+        if isinstance(temp, lexer.Identifier):
+            member_id = Identifier(temp.value)
+            temp = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, temp, ':')
+            pointer, data_type = _data_type_sa(tokens)
+            temp = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, temp)
+            if temp.value not in [',', '=', ')']:
+                raise UnexpectedPunctuation(temp, [',', '=', ')'])
+            elif temp.value == '=':
+                temp = tokens.pop(0)
+                _assert_token_literal(temp)
+                literal = _literal_map(temp) # type: ignore
+                temp = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, temp)
+                if temp.value not in [',', ')']:
+                    raise UnexpectedPunctuation(temp, [',', ')'])
+            else: literal = None
+            params.append(
+                FunctionParameter(member_id, data_type, pointer, literal))
+        else:
+            raise UnexpectedToken(temp, ["Keyword", "Identifier"])
+    temp = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, temp, '->')
+    pointer, return_type = _data_type_sa(tokens)
+    temp = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, temp, '{')
+    code: list[Statement] = []
+    while tokens[0].value != '}':
+        code.append(_statement_sa(tokens))
+    return FunctionBlock(
+        Identifier(identifier.value),
+        params,
+        pointer,
+        return_type,
+        code,
+    )
+
+def _data_type_sa(tokens: list[lexer.Token]) -> tuple[bool, DataType]:
+    temp = tokens.pop(0)
+    _assert_token_mult(temp, (
+        lexer.Keyword,
+        lexer.Identifier,
+        lexer.Punctuation,
+    ))
+    if isinstance(temp, lexer.Punctuation):
+        _assert_token(ExpectedPunctuation, temp, '*')
+        pointer = True
+        temp = tokens.pop(0)
+        _assert_token_mult(temp, (lexer.Keyword, lexer.Identifier))
+    else:
+        pointer = False
+    if isinstance(temp, lexer.Keyword):
+        if temp.value not in DefaultDataType:
+            raise UnexpectedKeyword(
+                temp,
+                [i.value for i in DefaultDataType],
+            )
+        return pointer, DefaultDataType(temp.value)
+    else:
+        return pointer, Identifier(temp.value)
+
+def _statement_sa(tokens: list[lexer.Token]) -> Statement:
     pass
 
-def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
+def _file_sa(tokens: list[lexer.Token]) -> File:
     children: list[Directive | StructBlock | FunctionBlock | EnumBlock] = []
 
     while tokens:
@@ -790,19 +849,21 @@ def file_syntactical_analyzer(tokens: list[lexer.Token]) -> File:
             match token.value:
                 case 'struct':
                     children.append(
-                        struct_syntactical_analyzer(tokens))
+                        _struct_sa(tokens))
                 case 'enum':
                     children.append(
-                        enumeration_syntactical_analyzer(tokens))
+                        _enumeration_sa(tokens))
                 case 'fn':
                     children.append(
-                        function_syntactical_analyzer(tokens))
+                        _function_sa(tokens))
                 case _:
                     raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
+        else:
+            raise UnexpectedToken(token, "directive' or 'keyword")
 
     return File(children)
 
 
 def syntactical_analyzer(tokens: Sequence[lexer.Token]) -> File:
-    return file_syntactical_analyzer(list(tokens))
+    return _file_sa(list(tokens))
 

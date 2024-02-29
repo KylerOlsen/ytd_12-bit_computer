@@ -205,9 +205,9 @@ of *structure members*.
 
 ##### Structure Member
 
-A *structure member* begins with its `identifier`. After a colon (`:`) is its
-`data type`. It may then optionally be followed by an equal sign (`=`) and a
-`literal`.
+A *structure member* begins with its `identifier`, which may optionally be
+preceded with the `static` keyword. After a colon (`:`) is its `data type`. It
+may then optionally be followed by an equal sign (`=`) and a `literal`.
 
 #### enum
 
