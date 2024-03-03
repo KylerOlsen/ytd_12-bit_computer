@@ -915,23 +915,51 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
                     break
 
     if tokens[max_operator].value in UnaryOperator:
-        pass
-        # if tokens[max_operator].value in (
-        #     UnaryOperator.PostfixDecrement,
-        #     UnaryOperator.PostfixIncrement,
-        # ) and max_operator == len(tokens) - 1:
-        #     return UnaryExpression(
-        #         UnaryOperator(tokens[max_operator].value),
-        #         _expression_sa(tokens[:max_operator])
-        #     )
+        if tokens[max_operator].value in (
+            UnaryOperator.PostfixDecrement,
+            UnaryOperator.PostfixIncrement,
+        ) and max_operator == len(tokens) - 1:
+            operators = {
+                '--': UnaryOperator.PostfixDecrement,
+                '++': UnaryOperator.PostfixIncrement,
+            }
+            return UnaryExpression(
+                operators[tokens[max_operator].value],
+                _expression_sa(tokens[:max_operator]),
+            )
+        elif tokens[max_operator].value in (
+            UnaryOperator.PrefixDecrement,
+            UnaryOperator.PrefixIncrement,
+        ) and max_operator == 0:
+            operators = {
+                '--': UnaryOperator.PrefixDecrement,
+                '++': UnaryOperator.PrefixIncrement,
+            }
+            return UnaryExpression(
+                operators[tokens[max_operator].value],
+                _expression_sa(tokens[max_operator+1:]),
+            )
+        elif max_operator == 0:
+            return UnaryExpression(
+                UnaryOperator(tokens[max_operator].value),
+                _expression_sa(tokens[max_operator+1:]),
+            )
+        else: raise CompilerError(
+            "Operator Precedence Error", tokens[max_operator].file_info)
     elif tokens[max_operator].value in BinaryOperator:
-        pass
+            return BinaryExpression(
+                BinaryOperator(tokens[max_operator].value),
+                _expression_sa(tokens[:max_operator]),
+                _expression_sa(tokens[max_operator+1:]),
+            )
     elif tokens[max_operator].value in TernaryOperator:
         condition = _expression_sa(tokens[:max_operator])
         del tokens[:max_operator]
         true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':')))
         false_expr = _expression_sa(tokens)
         return TernaryExpression(condition, true_expr, false_expr)
+    else: raise CompilerError(
+            "Expression Error", tokens[max_operator].file_info)
 
 def _statement_sa(tokens: list[lexer.Token]) -> Statement:
     token = tokens.pop(0)
