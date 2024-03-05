@@ -1,0 +1,18 @@
+// Kyler Olsen
+// Source Code Test 1
+// Syntax Test
+# Dummy Directive
+
+fn test_func(arg1: int, arg2: unsigned = 10) -> fixed {
+    let var1: float;
+    var1 = (arg1 + arg2) / arg1;
+    var1 = var1 + test_func(arg2, arg1) + 15;
+    test_func = var1;
+}
+
+fn main() -> int {
+    let var1: int = 1;
+    let var2: unsigned = 1;
+    main = 0;
+    test_func(arg1=var1, arg2=var2);
+}

@@ -4,9 +4,15 @@
 from enum import Enum
 from typing import Sequence
 
-from .compiler_types import CompilerError
+from .compiler_types import CompilerError# , FileInfo
 from . import lexer
 
+
+    # _file_info: FileInfo
+
+    #     file_info: FileInfo,
+
+    #     self._file_info = file_info
 
 class UnexpectedEndOfTokenStream(CompilerError): pass
 
@@ -99,7 +105,7 @@ class UnexpectedToken(_UnexpectedTokenBase):
                 s = ""
                 for i in expected[:-1]:
                     s += i + "', '"
-                s = s[:-1] + "or '" + i
+                s = s[:-1] + "or '" + expected[-1]
                 expected = s
         found = found or type(token).__name__
         super().__init__(token, expected, found)
@@ -124,7 +130,7 @@ class UnexpectedPunctuation(_UnexpectedTokenBase):
 type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
 
 type Literal = (
-    BuildInConst |
+    BuiltInConst |
     NumberLiteral |
     CharLiteral |
     StringLiteral
@@ -141,25 +147,38 @@ type Expression = (
 
 type Statement = Expression | LetStatement | LoopStatements | NestableCodeBlock
 
-type DataType = DefaultDataType | Identifier
+type DataType = BuiltInDataType | Identifier
+
+type UnaryOperator = PostfixUnaryOperator | PrefixUnaryOperator
 
 
-class BuildInConst(Enum):
+class BuiltInConst(Enum):
     ConstTrue = "True"
     ConstFalse = "False"
     ConstNone = "None"
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Built-In Constant: {self.value}\n"
+        return s
 
 
 class LoopStatements(Enum):
     ContinueStatement = "continue"
     BreakStatement = "break"
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} {self.value.upper()}\n"
+        return s
 
-class UnaryOperator(Enum):
-    PostfixIncrement = "++"
-    PostfixDecrement = "--"
-    PrefixIncrement = "++"
-    PrefixDecrement = "--"
+
+class PostfixUnaryOperator(Enum):
+    Increment = "++"
+    Decrement = "--"
+
+
+class PrefixUnaryOperator(Enum):
+    Increment = "++"
+    Decrement = "--"
     Negate = "-"
     BitwiseNOT = "~"
     BooleanNOT = "!"
@@ -204,7 +223,7 @@ class TernaryOperator(Enum):
     TernaryConditional = "?"
 
 
-class DefaultDataType(Enum):
+class BuiltInDataType(Enum):
     unsigned = "unsigned"
     int = "int"
     fixed = "fixed"
@@ -214,15 +233,15 @@ class DefaultDataType(Enum):
 _Operator_Precedence: tuple[
     UnaryOperator | BinaryOperator | TernaryOperator, ...
 ] = (
-    UnaryOperator.AddressOf,
-    UnaryOperator.Dereference,
-    UnaryOperator.BitwiseNOT,
-    UnaryOperator.PostfixDecrement,
-    UnaryOperator.PostfixIncrement,
-    UnaryOperator.PrefixDecrement,
-    UnaryOperator.PrefixIncrement,
-    UnaryOperator.Negate,
-    UnaryOperator.BooleanNOT,
+    PrefixUnaryOperator.AddressOf,
+    PrefixUnaryOperator.Dereference,
+    PrefixUnaryOperator.BitwiseNOT,
+    PostfixUnaryOperator.Decrement,
+    PostfixUnaryOperator.Increment,
+    PrefixUnaryOperator.Decrement,
+    PrefixUnaryOperator.Increment,
+    PrefixUnaryOperator.Negate,
+    PrefixUnaryOperator.BooleanNOT,
     BinaryOperator.RightShift,
     BinaryOperator.LeftShift,
     BinaryOperator.BitwiseXOR,
@@ -267,6 +286,12 @@ class Identifier:
     ):
         self._content = content
 
+    def __str__(self) -> str: return self._content
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Identifier: {self._content}\n"
+        return s
+
 
 class StringLiteral:
 
@@ -277,6 +302,12 @@ class StringLiteral:
         content: str,
     ):
         self._content = content
+
+    def __str__(self) -> str: return self._content
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} String Literal: {self._content}\n"
+        return s
 
 
 class CharLiteral:
@@ -289,6 +320,12 @@ class CharLiteral:
     ):
         self._content = content
 
+    def __str__(self) -> str: return self._content
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Character Literal: {self._content}\n"
+        return s
+
 
 class NumberLiteral:
 
@@ -299,6 +336,12 @@ class NumberLiteral:
         content: str,
     ):
         self._content = content
+
+    def __str__(self) -> str: return self._content
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Number Literal: {self._content}\n"
+        return s
 
 
 class ArraySubscription:
@@ -314,6 +357,11 @@ class ArraySubscription:
         self._identifier = identifier
         self._index = index
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Array Subscription: {self._identifier}\n"
+        s += f"{pre_cont}└─ Index: {self._index}\n"
+        return s
+
 
 class FunctionArgument:
 
@@ -322,11 +370,17 @@ class FunctionArgument:
 
     def __init__(
         self,
-        identifier: Identifier,
+        identifier: Identifier | None,
         value: Expression,
     ):
         self._identifier = identifier
         self._value = value
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function Argument\n"
+        if self._identifier: s += f"{pre_cont}├─ Name: {self._identifier}\n"
+        s += f"{pre_cont}└─ Value: {self._value}\n"
+        return s
 
 
 class FunctionCall:
@@ -342,22 +396,40 @@ class FunctionCall:
         self._identifier = identifier
         self._args = args
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function Call: {self._identifier}\n"
+        if self._args:
+            for arg in self._args[:-1]:
+                s += arg.tree_str(pre_cont + "├─", pre_cont + "│ ")
+            s += self._args[-1].tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
 
 class TernaryExpression:
 
+    _operator: TernaryOperator
     _operand1: Expression
     _operand2: Expression
     _operand3: Expression
 
     def __init__(
         self,
+        operator: TernaryOperator,
         operand1: Expression,
         operand2: Expression,
         operand3: Expression,
     ):
+        self._operator = operator
         self._operand1 = operand1
         self._operand2 = operand2
         self._operand3 = operand3
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Ternary Expression: {self._operator}\n"
+        s += self._operand1.tree_str(pre_cont + "├─", pre_cont + "│ ")
+        s += self._operand2.tree_str(pre_cont + "├─", pre_cont + "│ ")
+        s += self._operand3.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
 
 
 class BinaryExpression:
@@ -376,6 +448,12 @@ class BinaryExpression:
         self._operand1 = operand1
         self._operand2 = operand2
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Binary Expression: {self._operator}\n"
+        s += self._operand1.tree_str(pre_cont + "├─", pre_cont + "│ ")
+        s += self._operand2.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
 
 class UnaryExpression:
 
@@ -389,6 +467,11 @@ class UnaryExpression:
     ):
         self._operator = operator
         self._operand = operand
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Unary Expression: {self._operator}\n"
+        s += self._operand.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
 
 
 class LetStatement:
@@ -413,6 +496,17 @@ class LetStatement:
         self._static = static
         self._assignment = assignment
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Let Statement: {self._identifier}\n"
+        s += pre_cont
+        s += '├─ Type: ' if self._assignment else '└─ Type: '
+        if self._static: s+= "static "
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        if self._assignment is not None:
+            s += f"{pre_cont}└─ Default Value: {self._assignment}\n"
+        return s
+
 
 class ElseBlock:
 
@@ -423,6 +517,15 @@ class ElseBlock:
         code: list[Statement],
     ):
         self._code = code[:]
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Else Block\n"
+        if self._code:
+            s += f"{pre_cont}└─ Code\n"
+            for code in self._code[:-1]:
+                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
+        return s
 
 
 class ForPreDef:
@@ -443,6 +546,14 @@ class ForPreDef:
         self._type = type
         self._pointer = pointer
         self._assignment = assignment
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
+        s += f"{pre_cont}├─ Type: "
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        s += f"{pre_cont}└─ Value: {self._assignment}\n"
+        return s
 
 
 class ForBlock:
@@ -467,6 +578,37 @@ class ForBlock:
         self._post_statement = post_statement
         self._else = else_block
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} If Statement\n"
+        if self._code or self._else is not None:
+            cond_pre = f"{pre_cont}├─"
+            cond_pre_cont = f"{pre_cont}│ "
+        else:
+            cond_pre = f"{pre_cont}└─"
+            cond_pre_cont = f"{pre_cont}  "
+        s += f"{cond_pre} Pre-Statement\n"
+        s += self._pre_statement.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        s += f"{cond_pre} Condition\n"
+        s += self._condition.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        s += f"{cond_pre} Post-Statement\n"
+        s += self._post_statement.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        if self._code:
+            if self._else is not None:
+                s += f"{pre_cont}├─ Code\n"
+                code_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Code\n"
+                code_pre = f"{pre_cont}  "
+            for code in self._code[:-1]:
+                s += code.tree_str(code_pre + "├─", code_pre + "│ ")
+            s += self._code[-1].tree_str(code_pre + "└─", code_pre + "  ")
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
 
 class WhileBlock:
 
@@ -483,6 +625,29 @@ class WhileBlock:
         self._condition = condition
         self._code = code[:]
         self._else = else_block
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} While Loop\n"
+        if self._code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        if self._code:
+            if self._else is not None:
+                s += f"{pre_cont}├─ Code\n"
+                code_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Code\n"
+                code_pre = f"{pre_cont}  "
+            for code in self._code[:-1]:
+                s += code.tree_str(code_pre + "├─", code_pre + "│ ")
+            s += self._code[-1].tree_str(code_pre + "└─", code_pre + "  ")
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
 
 
 class DoBlock:
@@ -507,6 +672,41 @@ class DoBlock:
             self._second_code = None
         self._else = else_block
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Do Loop\n"
+        if self._first_code:
+            if self._second_code or self._else is not None:
+                s += f"{pre_cont}├─ First Code\n"
+                code_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ First Code\n"
+                code_pre = f"{pre_cont}  "
+            for code in self._first_code[:-1]:
+                s += code.tree_str(code_pre + "├─", code_pre + "│ ")
+            s += self._first_code[-1].tree_str(
+                code_pre + "└─", code_pre + "  ")
+        if self._second_code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        if self._second_code:
+            if self._else is not None:
+                s += f"{pre_cont}├─ Second Code\n"
+                code_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Second Code\n"
+                code_pre = f"{pre_cont}  "
+            for code in self._second_code[:-1]:
+                s += code.tree_str(code_pre + "├─", code_pre + "│ ")
+            s += self._second_code[-1].tree_str(
+                code_pre + "└─", code_pre + "  ")
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
 
 class IfBlock:
 
@@ -523,6 +723,29 @@ class IfBlock:
         self._condition = condition
         self._code = code[:]
         self._else = else_block
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} If Statement\n"
+        if self._code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        if self._code:
+            if self._else is not None:
+                s += f"{pre_cont}├─ Code\n"
+                code_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Code\n"
+                code_pre = f"{pre_cont}  "
+            for code in self._code[:-1]:
+                s += code.tree_str(code_pre + "├─", code_pre + "│ ")
+            s += self._code[-1].tree_str(code_pre + "└─", code_pre + "  ")
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
 
 
 class FunctionParameter:
@@ -544,13 +767,23 @@ class FunctionParameter:
         self._pointer = pointer
         self._default = default
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function Parameter: {self._identifier}\n"
+        s += pre_cont
+        s += '├─ Type: ' if self._default else '└─ Type: '
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        if self._default:
+            s += f"{pre_cont}└─ Default Value: {self._default}\n"
+        return s
+
 
 class FunctionBlock:
 
     _identifier: Identifier
     _params: list[FunctionParameter]
     _return_type_pointer: bool
-    _return_type: DataType
+    _return_type: DataType | None
     _code: list[Statement]
 
     def __init__(
@@ -558,7 +791,7 @@ class FunctionBlock:
         identifier: Identifier,
         params: list[FunctionParameter],
         return_type_pointer: bool,
-        return_type: DataType,
+        return_type: DataType | None,
         code: list[Statement],
     ):
         self._identifier = identifier
@@ -566,6 +799,32 @@ class FunctionBlock:
         self._return_type_pointer = return_type_pointer
         self._return_type = return_type
         self._code = code[:]
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function: {self._identifier}\n"
+        if self._params:
+            if self._code or self._return_type is not None:
+                s += f"{pre_cont}├─ Parameters\n"
+                params_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Parameters\n"
+                params_pre = f"{pre_cont}  "
+            for param in self._params[:-1]:
+                s += param.tree_str(params_pre + "├─", params_pre + "│ ")
+            s += self._params[-1].tree_str(params_pre + "└─", params_pre + "  ")
+        if self._return_type is not None:
+            if self._code:
+                s += f"{pre_cont}├─ Return Type: "
+            else:
+                s += f"{pre_cont}└─ Return Type: "
+            if self._return_type_pointer: s+= "@"
+            s += f"{self._return_type}\n"
+        if self._code:
+            s += f"{pre_cont}└─ Code\n"
+            for code in self._code[:-1]:
+                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
+        return s
 
 
 class EnumMember:
@@ -581,6 +840,12 @@ class EnumMember:
         self._identifier = identifier
         self._value = value
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Enum Member: {self._identifier}\n"
+        if self._value is not None:
+            s += f"{pre_cont}└─ Value: {self._value}\n"
+        return s
+
 
 class EnumBlock:
 
@@ -594,6 +859,14 @@ class EnumBlock:
     ):
         self._identifier = identifier
         self._members = members[:]
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Enum: {self._identifier}\n"
+        if self._members:
+            for member in self._members[:-1]:
+                s += member.tree_str(pre_cont + "├─", pre_cont + "│ ")
+            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
+        return s
 
 
 class StructureMember:
@@ -618,6 +891,17 @@ class StructureMember:
         self._static = static
         self._default = default
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Struct Member: {self._identifier}\n"
+        s += pre_cont
+        s += '├─ Type: ' if self._default else '└─ Type: '
+        if self._static: s+= "static "
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        if self._default is not None:
+            s += f"{pre_cont}└─ Default Value: {self._default}\n"
+        return s
+
 
 class StructBlock:
 
@@ -632,6 +916,14 @@ class StructBlock:
         self._identifier = identifier
         self._members = members[:]
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Struct: {self._identifier}\n"
+        if self._members:
+            for member in self._members[:-1]:
+                s += member.tree_str(pre_cont + "├─", pre_cont + "│ ")
+            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
+        return s
+
 
 class Directive:
 
@@ -643,6 +935,9 @@ class Directive:
     ):
         self._content = content
 
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        return f"{pre} Directive: {self._content}\n"
+
 
 class File:
 
@@ -653,6 +948,14 @@ class File:
         children: list[Directive | StructBlock | FunctionBlock | EnumBlock],
     ):
         self._children = children[:]
+
+    def tree_str(self) -> str:
+        s: str = "File\n"
+        if self._children:
+            for child in self._children[:-1]:
+                s += child.tree_str("├─", "│ ")
+            s += self._children[-1].tree_str("└─", "  ")
+        return s
 
 
 def _assert_token(
@@ -693,8 +996,8 @@ def _assert_token_literal(
             type(token).__name__,
         )
     if isinstance(token, lexer.Keyword):
-        if token.value not in BuildInConst:
-            raise UnexpectedKeyword(token, [i.value for i in DefaultDataType])
+        if token.value not in BuiltInConst:
+            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataType])
 
 def _literal_map(literal: (
     lexer.Keyword |
@@ -703,7 +1006,45 @@ def _literal_map(literal: (
     lexer.StringLiteral
 )) -> Literal:
     if isinstance(literal, lexer.Keyword):
-        return BuildInConst(literal.value)
+        return BuiltInConst(literal.value)
+    elif isinstance(literal, lexer.NumberLiteral):
+        return NumberLiteral(literal.value)
+    elif isinstance(literal, lexer.CharLiteral):
+        return CharLiteral(literal.value)
+    elif isinstance(literal, lexer.StringLiteral):
+        return StringLiteral(literal.value)
+
+def _assert_token_value(
+    token: lexer.Token,
+):
+    token_types = (
+        lexer.Identifier,
+        lexer.Keyword,
+        lexer.NumberLiteral,
+        lexer.CharLiteral,
+        lexer.StringLiteral,
+    )
+    if not isinstance(token, token_types):
+        raise ExpectedLiteral(
+            token,
+            [i.__name__ for i in token_types], # type: ignore
+            type(token).__name__,
+        )
+    if isinstance(token, lexer.Keyword):
+        if token.value not in BuiltInConst:
+            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataType])
+
+def _value_map(literal: (
+    lexer.Identifier |
+    lexer.Keyword |
+    lexer.NumberLiteral |
+    lexer.CharLiteral |
+    lexer.StringLiteral
+)) -> Literal | Identifier:
+    if isinstance(literal, lexer.Identifier):
+        return Identifier(literal.value)
+    elif isinstance(literal, lexer.Keyword):
+        return BuiltInConst(literal.value)
     elif isinstance(literal, lexer.NumberLiteral):
         return NumberLiteral(literal.value)
     elif isinstance(literal, lexer.CharLiteral):
@@ -734,11 +1075,11 @@ def _get_nested_group(
 
 def _get_to_symbol(
     tokens: list[lexer.Token],
-    symbol: str = ';',
+    symbols: str | Sequence[str] = ';',
 ) -> list[lexer.Token]:
     expr_len = -1
     for i in range(len(tokens)):
-        if tokens[i].value == symbol:
+        if tokens[i].value in symbols:
             expr_len = i
             break
     else:
@@ -819,7 +1160,9 @@ def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
     params: list[FunctionParameter] = []
     while token.value != ')':
         token = tokens.pop(0)
-        if isinstance(token, lexer.Identifier):
+        if isinstance(token, lexer.Punctuation):
+            _assert_token(ExpectedPunctuation, token, ')')
+        elif isinstance(token, lexer.Identifier):
             member_id = Identifier(token.value)
             token = tokens.pop(0)
             _assert_token(ExpectedPunctuation, token, ':')
@@ -840,11 +1183,12 @@ def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
             params.append(
                 FunctionParameter(member_id, data_type, pointer, literal))
         else:
-            raise UnexpectedToken(token, ["Keyword", "Identifier"])
+            raise UnexpectedToken(
+                token, ["Keyword", "Identifier", "Punctuation"])
     token = tokens.pop(0)
     _assert_token(ExpectedPunctuation, token, '->')
     pointer, return_type = _data_type_sa(tokens)
-    code = _code_block_sa(tokens)
+    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
     return FunctionBlock(
         Identifier(identifier.value),
         params,
@@ -861,40 +1205,39 @@ def _data_type_sa(tokens: list[lexer.Token]) -> tuple[bool, DataType]:
         lexer.Punctuation,
     ))
     if isinstance(token, lexer.Punctuation):
-        _assert_token(ExpectedPunctuation, token, '*')
+        _assert_token(ExpectedPunctuation, token, '@')
         pointer = True
         token = tokens.pop(0)
         _assert_token_mult(token, (lexer.Keyword, lexer.Identifier))
     else:
         pointer = False
     if isinstance(token, lexer.Keyword):
-        if token.value not in DefaultDataType:
+        if token.value not in BuiltInDataType:
             raise UnexpectedKeyword(
                 token,
-                [i.value for i in DefaultDataType],
+                [i.value for i in BuiltInDataType],
             )
-        return pointer, DefaultDataType(token.value)
+        return pointer, BuiltInDataType(token.value)
     else:
         return pointer, Identifier(token.value)
 
-def _code_block_sa(
-    tokens: list[lexer.Token],
-    encloses: tuple[str, str] = ('{','}'),
-) -> list[Statement]:
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, encloses[0])
+def _code_block_sa(tokens: list[lexer.Token]) -> list[Statement]:
     code: list[Statement] = []
-    while tokens[0].value != encloses[1]:
+    while tokens:
         code.append(_statement_sa(tokens))
     return code
 
 def _expression_sa(tokens: list[lexer.Token]) -> Expression:
-    if tokens[0] == '(' and tokens[-1] == ')':
+    print([(type(i).__name__, i.value) for i in tokens])
+    if not tokens:
+        raise UnexpectedEndOfTokenStream(
+            "Unexpected Expression.", None) # type: ignore
+    if tokens[0].value == '(' and tokens[-1].value == ')':
         return _expression_sa(tokens[1:-1])
     elif len(tokens) == 1:
         token = tokens.pop(0)
-        _assert_token_literal(token)
-        return _literal_map(token) # type: ignore
+        _assert_token_value(token)
+        return _value_map(token) # type: ignore
 
     max_operator: int = -1
     max_operator_precedence: int = -1
@@ -905,7 +1248,7 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
             if nested == 0:
                 raise UnexpectedPunctuation(token, "(' before ')", token.value)
             nested -= 1
-        if nested == 0 and isinstance(token, lexer.Punctuation):
+        elif nested == 0 and isinstance(token, lexer.Punctuation):
             for j, operator in reversed(list(enumerate(_Operator_Precedence))):
                 if j <= max_operator_precedence:
                     break
@@ -914,38 +1257,42 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
                     max_operator_precedence = j
                     break
 
-    if tokens[max_operator].value in UnaryOperator:
-        if tokens[max_operator].value in (
-            UnaryOperator.PostfixDecrement,
-            UnaryOperator.PostfixIncrement,
-        ) and max_operator == len(tokens) - 1:
-            operators = {
-                '--': UnaryOperator.PostfixDecrement,
-                '++': UnaryOperator.PostfixIncrement,
-            }
-            return UnaryExpression(
-                operators[tokens[max_operator].value],
-                _expression_sa(tokens[:max_operator]),
-            )
-        elif tokens[max_operator].value in (
-            UnaryOperator.PrefixDecrement,
-            UnaryOperator.PrefixIncrement,
-        ) and max_operator == 0:
-            operators = {
-                '--': UnaryOperator.PrefixDecrement,
-                '++': UnaryOperator.PrefixIncrement,
-            }
-            return UnaryExpression(
-                operators[tokens[max_operator].value],
-                _expression_sa(tokens[max_operator+1:]),
-            )
-        elif max_operator == 0:
-            return UnaryExpression(
-                UnaryOperator(tokens[max_operator].value),
-                _expression_sa(tokens[max_operator+1:]),
-            )
-        else: raise CompilerError(
-            "Operator Precedence Error", tokens[max_operator].file_info)
+    if max_operator == -1:
+        function_identifier = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, function_identifier)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, '(')
+        function_args: list[FunctionArgument] = []
+        while tokens:
+            arg_tokens = _get_to_symbol(tokens, (',', ')'))
+            if arg_tokens:
+                if len(arg_tokens) > 1 and arg_tokens[1].value == '=':
+                    _assert_token(ExpectedIdentifier, arg_tokens[0])
+                    arg_identifier = Identifier(arg_tokens[0].value)
+                    del arg_tokens[:2]
+                else:
+                    arg_identifier = None
+                function_args.append(FunctionArgument(
+                    arg_identifier, _expression_sa(arg_tokens)))
+        return FunctionCall(
+            Identifier(function_identifier.value), function_args)
+
+    if (
+        tokens[max_operator].value in PostfixUnaryOperator and
+        max_operator == len(tokens) - 1
+    ):
+        return UnaryExpression(
+            PostfixUnaryOperator(tokens[max_operator].value),
+            _expression_sa(tokens[:max_operator]),
+        )
+    elif (
+        tokens[max_operator].value in PrefixUnaryOperator and
+        max_operator == 0
+    ):
+        return UnaryExpression(
+            PrefixUnaryOperator(tokens[max_operator].value),
+            _expression_sa(tokens[max_operator+1:]),
+        )
     elif tokens[max_operator].value in BinaryOperator:
             return BinaryExpression(
                 BinaryOperator(tokens[max_operator].value),
@@ -957,7 +1304,12 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
         del tokens[:max_operator]
         true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':')))
         false_expr = _expression_sa(tokens)
-        return TernaryExpression(condition, true_expr, false_expr)
+        return TernaryExpression(
+            TernaryOperator.TernaryConditional,
+            condition,
+            true_expr,
+            false_expr,
+        )
     else: raise CompilerError(
             "Expression Error", tokens[max_operator].file_info)
 
@@ -1071,7 +1423,7 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                     else_block = None
                 return ForBlock(
                     pre_loop, condition, code, post_loop, else_block)
-            case key if key not in BuildInConst:
+            case key if key not in BuiltInConst:
                 raise UnexpectedKeyword(token, [
                     'static',
                     'let',
@@ -1081,7 +1433,7 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                     'do',
                     'while',
                     'for',
-                ] + [i.value for i in BuildInConst])
+                ] + [i.value for i in BuiltInConst])
     expr_tokens: list[lexer.Token] = [token] + _get_to_symbol(tokens)
     return _expression_sa(expr_tokens)
 

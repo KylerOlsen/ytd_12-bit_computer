@@ -21,6 +21,12 @@ class FileInfo:
         self._col = col
         self._length = length
 
+    def __repr__(self) -> str:
+        return (
+            f"{type(self).__name__}"
+            f"('{self._filename}',{self._line},{self._col},{self._length})"
+        )
+
 
 class CompilerError(Exception):
 

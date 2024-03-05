@@ -1,0 +1,93 @@
+// Kyler Olsen
+// Source Code Test 2
+// Syntax Test
+# Dummy Directive
+
+struct Point {
+    static points: @Point = 0,
+    static count: int = 0,
+    x: int = 0,
+    y: int = 0,
+    z: int,
+    random: @int
+}
+
+enum Colors { RED, GREEN, BLUE = 7 }
+
+fn test_func(arg1: int, arg2: unsigned = 10) -> fixed {
+    let var1: float;
+    var1 = (arg1 + arg2) / arg1;
+    var1 = var1 + test_func(arg2, arg1) + 15;
+    test_func = var1;
+}
+
+fn test_func2() -> Point {
+    test++;
+    test--;
+    --test;
+    ++test;
+    -test;
+    !test;
+    $test;
+    ~test;
+    @test;
+
+    test >> test;
+    test << test;
+    test ^ test;
+    test | test;
+    test & test;
+    test % test;
+    test / test;
+    test * test;
+    test - test;
+    test + test;
+    test >= test;
+    test > test;
+    test <= test;
+    test < test;
+    test != test;
+    test == test;
+    test ^^ test;
+    test || test;
+    test && test;
+    test >>= test;
+    test <<= test;
+    test ^= test;
+    test |= test;
+    test &= test;
+    test %= test;
+    test /= test;
+    test *= test;
+    test -= test;
+    test += test;
+    test = test;
+
+    test ? test : test;
+
+    test = None;
+    test = False;
+    test = True;
+    test = 1234;
+    test = 0xff1;
+    test = .156;
+    test = 15e5;
+    test = 0o1526;
+    test = 0b1010;
+    test = '5';
+    test = 'g';
+    test = '\n';
+    test = '\'';
+    test = '\\';
+    test = '"';
+    test = "Hello World!";
+    test = "This is \"cool\"!";
+}
+
+fn main() -> int {
+    let var1: int = 1;
+    let var2: unsigned = 1;
+    main = 0;
+    test_func(arg1=var1, arg2=var2);
+    test_func2();
+}
