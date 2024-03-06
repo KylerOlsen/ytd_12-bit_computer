@@ -142,7 +142,8 @@ type Expression = (
     UnaryExpression |
     BinaryExpression |
     TernaryExpression |
-    FunctionCall
+    FunctionCall |
+    NoOperation
 )
 
 type Statement = Expression | LetStatement | LoopStatements | NestableCodeBlock
@@ -167,7 +168,7 @@ class LoopStatements(Enum):
     BreakStatement = "break"
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} {self.value.upper()}\n"
+        s: str = f"{pre} {self.value.lower()}\n"
         return s
 
 
@@ -274,6 +275,13 @@ _Operator_Precedence: tuple[
     BinaryOperator.AdditionAssignment,
     BinaryOperator.Assignment,
 )
+
+
+class NoOperation:
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Nop\n"
+        return s
 
 
 class Identifier:
@@ -533,14 +541,14 @@ class ForPreDef:
     _identifier: Identifier
     _type: DataType
     _pointer: bool
-    _assignment: Expression
+    _assignment: Expression | None
 
     def __init__(
         self,
         identifier: Identifier,
         type: DataType,
         pointer: bool,
-        assignment: Expression,
+        assignment: Expression | None,
     ):
         self._identifier = identifier
         self._type = type
@@ -549,10 +557,11 @@ class ForPreDef:
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
-        s += f"{pre_cont}├─ Type: "
+        if self._assignment: s += f"{pre_cont}├─ Type: "
+        else: s += f"{pre_cont}└─ Type: "
         if self._pointer: s+= "@"
         s += f"{self._type}\n"
-        s += f"{pre_cont}└─ Value: {self._assignment}\n"
+        if self._assignment: s += f"{pre_cont}└─ Value: {self._assignment}\n"
         return s
 
 
@@ -579,7 +588,7 @@ class ForBlock:
         self._else = else_block
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} If Statement\n"
+        s: str = f"{pre} For Loop\n"
         if self._code or self._else is not None:
             cond_pre = f"{pre_cont}├─"
             cond_pre_cont = f"{pre_cont}│ "
@@ -675,12 +684,8 @@ class DoBlock:
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Do Loop\n"
         if self._first_code:
-            if self._second_code or self._else is not None:
-                s += f"{pre_cont}├─ First Code\n"
-                code_pre = f"{pre_cont}│ "
-            else:
-                s += f"{pre_cont}└─ First Code\n"
-                code_pre = f"{pre_cont}  "
+            s += f"{pre_cont}├─ First Code\n"
+            code_pre = f"{pre_cont}│ "
             for code in self._first_code[:-1]:
                 s += code.tree_str(code_pre + "├─", code_pre + "│ ")
             s += self._first_code[-1].tree_str(
@@ -950,7 +955,7 @@ class File:
         self._children = children[:]
 
     def tree_str(self) -> str:
-        s: str = "File\n"
+        s: str = " File\n"
         if self._children:
             for child in self._children[:-1]:
                 s += child.tree_str("├─", "│ ")
@@ -1353,31 +1358,59 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                 return LoopStatements(key)
             case 'if':
                 condition = _expression_sa(_get_nested_group(tokens))
-                code = _code_block_sa(tokens)
-                if tokens[0].value == 'else':
-                    else_block = ElseBlock(_code_block_sa(tokens))
+                if tokens[0].value == '{':
+                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
+                else:
+                    code = [_statement_sa(tokens)]
+                if tokens and tokens[0].value == 'else':
+                    token = tokens.pop(0)
+                    if tokens[0].value == '{':
+                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
+                            tokens, ('{','}'))))
+                    else:
+                        else_block = ElseBlock([_statement_sa(tokens)])
                 else:
                     else_block = None
                 return IfBlock(condition, code, else_block)
             case 'do':
-                code1 = _code_block_sa(tokens)
+                if tokens[0].value == '{':
+                    code1 = _code_block_sa(_get_nested_group(tokens, ('{','}')))
+                else:
+                    code1 = [_statement_sa(tokens)]
                 token = tokens.pop(0)
                 _assert_token(ExpectedKeyword, token, 'while')
                 condition = _expression_sa(_get_nested_group(tokens))
                 if tokens[0].value == '{':
-                    code2 = _code_block_sa(tokens)
+                    code2 = _code_block_sa(_get_nested_group(tokens, ('{','}')))
+                elif tokens[0].value != 'else':
+                    code2 = [_statement_sa(tokens)]
+                    if isinstance(code2[0], NoOperation):
+                        code2 = None
                 else:
                     code2 = None
-                if tokens[0].value == 'else':
-                    else_block = ElseBlock(_code_block_sa(tokens))
+                if tokens and tokens[0].value == 'else':
+                    token = tokens.pop(0)
+                    if tokens[0].value == '{':
+                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
+                            tokens, ('{','}'))))
+                    else:
+                        else_block = ElseBlock([_statement_sa(tokens)])
                 else:
                     else_block = None
                 return DoBlock(code1, condition, code2, else_block)
             case 'while':
                 condition = _expression_sa(_get_nested_group(tokens))
-                code = _code_block_sa(tokens)
-                if tokens[0].value == 'else':
-                    else_block = ElseBlock(_code_block_sa(tokens))
+                if tokens[0].value == '{':
+                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
+                else:
+                    code = [_statement_sa(tokens)]
+                if tokens and tokens[0].value == 'else':
+                    token = tokens.pop(0)
+                    if tokens[0].value == '{':
+                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
+                            tokens, ('{','}'))))
+                    else:
+                        else_block = ElseBlock([_statement_sa(tokens)])
                 else:
                     else_block = None
                 return WhileBlock(condition, code, else_block)
@@ -1388,9 +1421,8 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                 while token.value != ';':
                     pre_loop_tokens.append(token)
                     token = three_expressions.pop(0)
-                token = three_expressions.pop(0)
                 if (
-                    type(pre_loop_tokens[0]) is lexer.Identifier and
+                    isinstance(pre_loop_tokens[0], lexer.Identifier) and
                     pre_loop_tokens[1].value == ':'
                 ):
                     identifier = Identifier(pre_loop_tokens.pop(0).value)
@@ -1401,6 +1433,8 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                         token = pre_loop_tokens.pop(0)
                         _assert_token(ExpectedPunctuation, token, '=')
                         pre_loop_expr = _expression_sa(pre_loop_tokens)
+                    else:
+                        pre_loop_expr = None
                     pre_loop = ForPreDef(
                         identifier,
                         data_type,
@@ -1409,16 +1443,24 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                     )
                 else:
                     pre_loop = _expression_sa(pre_loop_tokens)
+                token = three_expressions.pop(0)
                 loop_condition_tokens: list[lexer.Token] = []
                 while token.value != ';':
                     loop_condition_tokens.append(token)
                     token = three_expressions.pop(0)
-                token = three_expressions.pop(0)
                 condition = _expression_sa(loop_condition_tokens)
                 post_loop = _expression_sa(three_expressions)
-                code = _code_block_sa(tokens)
-                if tokens[0].value == 'else':
-                    else_block = ElseBlock(_code_block_sa(tokens))
+                if tokens[0].value == '{':
+                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
+                else:
+                    code = [_statement_sa(tokens)]
+                if tokens and tokens[0].value == 'else':
+                    token = tokens.pop(0)
+                    if tokens[0].value == '{':
+                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
+                            tokens, ('{','}'))))
+                    else:
+                        else_block = ElseBlock([_statement_sa(tokens)])
                 else:
                     else_block = None
                 return ForBlock(
@@ -1434,6 +1476,8 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                     'while',
                     'for',
                 ] + [i.value for i in BuiltInConst])
+    elif token.value == ';':
+        return NoOperation()
     expr_tokens: list[lexer.Token] = [token] + _get_to_symbol(tokens)
     return _expression_sa(expr_tokens)
 

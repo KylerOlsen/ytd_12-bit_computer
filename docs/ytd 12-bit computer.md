@@ -237,35 +237,36 @@ and a `literal`.
 #### If Statement
 
 An `if statement` begins with the `if` keyword, followed by its condition, an
-`expression` enclosed in parentheses (`(` and `)`), then a list enclosed in
-curly braces (`{` and `}`) of `statements`. It may then optionally be followed
-by an `else block`.
+`expression` enclosed in parentheses (`(` and `)`), then a single `statement`
+or a list enclosed in curly braces (`{` and `}`) of `statements`. It may then
+optionally be followed by an `else block`.
 
 #### Do Loop
 
-A `do loop` begins with the `do` keyword, followed by a list enclosed in curly
-braces (`{` and `}`) of `statements`. It is then followed with the `while`
-keyword, then by its condition, an `expression` enclosed in parentheses
-(`(` and `)`). It may then optionally be followed by another list enclosed in
-curly braces (`{` and `}`) of `statements`. Finally the `do loop` may optionally
-be followed by an `else block`.
+A `do loop` begins with the `do` keyword, followed by a single `statement` or a
+list enclosed in curly braces (`{` and `}`) of `statements`. It is then followed
+with the `while` keyword, then by its condition, an `expression` enclosed in
+parentheses (`(` and `)`). It may then optionally be followed by a single
+`statement` or another list enclosed in curly braces (`{` and `}`) of
+`statements`. Finally the `do loop` may optionally be followed by an
+`else block`.
 
 #### While Loop
 
 A `while loop` begins with the `while` keyword, followed by its condition, an
-`expression` enclosed in parentheses (`(` and `)`), then a list enclosed in
-curly braces (`{` and `}`) of `statements`. It may then
+`expression` enclosed in parentheses (`(` and `)`), then a single `statement`
+or a list enclosed in curly braces (`{` and `}`) of `statements`. It may then
 optionally be followed by an `else block`.
 
 #### For Loop
 
 A `for loop` begins with the `for` keyword, followed by three expressions
-enclosed in parentheses (`(` and `)`), separated by semicolons (`;`). The first
-expression is a *pre-loop expression*, the second is its condition which is a
-normal `expression`, and the last is its post-loop expression which is another
-normal `expression`. It is ended with a list enclosed in curly braces
-(`{` and `}`) of `statements`. It may then optionally be
-followed by an `else block`.
+enclosed in parentheses (`(` and `)`), separated by semicolons (`;`). The
+first expression is a *pre-loop expression*, the second is its condition which
+is a normal `expression`, and the last is its post-loop expression which is
+another normal `expression`. It is ended with a single `statement` or a list
+enclosed in curly braces (`{` and `}`) of `statements`. It may then optionally
+be followed by an `else block`.
 
 ##### Pre-Loop Expression
 
@@ -275,8 +276,8 @@ then an equal sign (`=`) followed by an `expression`.
 
 #### Else Block
 
-An `else block` begins with the `else` keyword, followed by a list enclosed in
-curly braces (`{` and `}`) of `statements`.
+An `else block` begins with the `else` keyword, followed by a single
+`statement` or a list enclosed in curly braces (`{` and `}`) of `statements`.
 
 #### Let Statement
 

@@ -82,6 +82,131 @@ fn test_func2() -> Point {
     test = '"';
     test = "Hello World!";
     test = "This is \"cool\"!";
+
+    break;
+    continue;
+
+    if (test >= 10);
+
+    if (test >= 20)
+        test -= 2;
+    test -= 3;
+
+    if (test >= 20)
+        test -= 2;
+    else
+        test -= 3;
+
+    if (test >= 30) {
+        test -= 4;
+        test -= 5;
+    }
+
+    if (test >= 40) {
+        test -= 6;
+    } else {
+        test += 15;
+    }
+
+    if (test >= 50) {
+        test -= 7;
+    } else if (test >= 60) {
+        test--;
+    } else {
+        test += 16;
+    }
+
+    do
+        test += 17;
+    while (test);
+
+    do
+        test += 18;
+    while (test)
+        test += 19;
+
+    do
+        test += 20;
+    while (test)
+    else
+        test += 21;
+
+    do
+        test += 22;
+    while (test)
+        test += 23;
+    else
+        test += 24;
+
+    do
+        test += 25;
+    while (test)
+        test += 26;
+    else if (test == 32)
+        test += 27;
+
+    do {
+        test += 18;
+    } while (test);
+
+    do {
+        test += 29;
+    } while (test) {
+        test += 30;
+    }
+
+    do {
+        test += 31;
+    } while (test)
+    else {
+        test += 32;
+    }
+
+    do {
+        test += 33;
+    } while (test) {
+        test += 34;
+    } else {
+        test += 35;
+    }
+
+    while (test >= 20)
+        test -= 2;
+    test -= 3;
+
+    while (test >= 20)
+        test -= 2;
+    else
+        test -= 3;
+
+    while (test >= 30) {
+        test -= 4;
+        test -= 5;
+    }
+
+    while (test >= 40) {
+        test -= 6;
+    } else {
+        test += 15;
+    }
+
+	for (i: int = 0; i < length; i++)
+		$(inData + i) ^= $(pass + ((i + offset) % pLength));
+
+	for (i: int = 0; i < length; i++)
+		$(inData + i) ^= $(pass + ((i + offset) % pLength));
+    else
+        test = 16;
+
+	for (i: int; i < length; i++) {
+		$(inData + i) ^= $(pass + ((i + offset) % pLength));
+	}
+
+	for (i = 0; i < length; i++) {
+		$(inData + i) ^= $(pass + ((i + offset) % pLength));
+	} else {
+        test = 17;
+    }
 }
 
 fn main() -> int {
