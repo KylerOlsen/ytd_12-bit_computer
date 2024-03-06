@@ -317,11 +317,6 @@ separated list enclosed in parentheses (`(` and `)`) of *function arguments*.
 A *function argument* is an `expression` that may optionally be preceded by an
 `identifier` which is immediately followed by an equal sign (`=`).
 
-##### Array Subscription
-
-An `array subscription` starts with an `identifier` followed by an `expression`
-enclosed in square brackets (`[` and `]`).
-
 ##### Enclosed Expression
 
 An `enclosed expression` is simply an `expression` enclosed in parentheses
