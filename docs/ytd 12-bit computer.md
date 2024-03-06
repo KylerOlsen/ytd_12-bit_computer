@@ -246,10 +246,9 @@ optionally be followed by an `else block`.
 A `do loop` begins with the `do` keyword, followed by a single `statement` or a
 list enclosed in curly braces (`{` and `}`) of `statements`. It is then followed
 with the `while` keyword, then by its condition, an `expression` enclosed in
-parentheses (`(` and `)`). It may then optionally be followed by a single
-`statement` or another list enclosed in curly braces (`{` and `}`) of
-`statements`. Finally the `do loop` may optionally be followed by an
-`else block`.
+parentheses (`(` and `)`). It is then followed by a single `statement` or
+another list enclosed in curly braces (`{` and `}`) of `statements`. Finally
+the `do loop` may optionally be followed by an `else block`.
 
 #### While Loop
 
