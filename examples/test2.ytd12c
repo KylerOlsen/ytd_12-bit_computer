@@ -22,6 +22,7 @@ fn test_func(arg1: int, arg2: unsigned = 10) -> fixed {
 }
 
 fn test_func2() -> Point {
+    Point.points;
     test++;
     test--;
     --test;

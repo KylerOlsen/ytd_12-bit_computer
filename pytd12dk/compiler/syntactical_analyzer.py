@@ -257,6 +257,7 @@ class BinaryOperatorEnum(Enum):
     BitwiseXOR = "^"
     LeftShift = "<<"
     RightShift = ">>"
+    MemberOf = "."
     Assignment = "="
     AdditionAssignment = "+="
     SubtractionAssignment = "-="
@@ -375,6 +376,7 @@ _Operator_Precedence: tuple[
     PrefixUnaryOperatorEnum.Increment,
     PrefixUnaryOperatorEnum.Negate,
     PrefixUnaryOperatorEnum.BooleanNOT,
+    BinaryOperatorEnum.MemberOf,
     BinaryOperatorEnum.RightShift,
     BinaryOperatorEnum.LeftShift,
     BinaryOperatorEnum.BitwiseXOR,

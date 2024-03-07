@@ -336,6 +336,7 @@ Here are all operators and their types and names in order of operator precedence
 | `++` | Unary (Prefix) | Prefix Increment *Operator* |
 | `-` | Unary (Prefix) | Negate *Operator* |
 | `!` | Unary (Prefix) | Boolean NOT *Operator* |
+| `.` | Binary | Member of *Operator* |
 | `>>` | Binary | Right Shift *Operator* |
 | `<<` | Binary | Left Shift *Operator* |
 | `^` | Binary | Bitwise XOR *Operator* |
