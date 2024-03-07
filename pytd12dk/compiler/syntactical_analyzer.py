@@ -239,10 +239,11 @@ class UnaryOperator:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
-    def __str__(self) -> str: return self._content.value
+    def __str__(self) -> str: return (
+        f"{type(self._content).__name__[:-4]}.{self._content.name}")
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Unary Operator: {self._content.value}\n"
+        s: str = f"{pre} Unary Operator: {self}\n"
         return s
 
 
@@ -296,10 +297,11 @@ class BinaryOperator:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
-    def __str__(self) -> str: return self._content.value
+    def __str__(self) -> str: return (
+        f"{type(self._content).__name__[:-4]}.{self._content.name}")
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Binary Operator: {self._content.value}\n"
+        s: str = f"{pre} Binary Operator: {self}\n"
         return s
 
 
@@ -323,10 +325,11 @@ class TernaryOperator:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
-    def __str__(self) -> str: return self._content.value
+    def __str__(self) -> str: return (
+        f"{type(self._content).__name__[:-4]}.{self._content.name}")
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Ternary Operator: {self._content.value}\n"
+        s: str = f"{pre} Ternary Operator: {self}\n"
         return s
 
 
