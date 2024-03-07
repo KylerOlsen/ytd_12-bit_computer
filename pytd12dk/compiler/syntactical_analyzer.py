@@ -4,15 +4,9 @@
 from enum import Enum
 from typing import Sequence
 
-from .compiler_types import CompilerError# , FileInfo
+from .compiler_types import CompilerError , FileInfo
 from . import lexer
 
-
-    # _file_info: FileInfo
-
-    #     file_info: FileInfo,
-
-    #     self._file_info = file_info
 
 class UnexpectedEndOfTokenStream(CompilerError): pass
 
@@ -150,34 +144,70 @@ type Statement = Expression | LetStatement | LoopStatements | NestableCodeBlock
 
 type DataType = BuiltInDataType | Identifier
 
-type UnaryOperator = PostfixUnaryOperator | PrefixUnaryOperator
 
-
-class BuiltInConst(Enum):
+class BuiltInConstEnum(Enum):
     ConstTrue = "True"
     ConstFalse = "False"
     ConstNone = "None"
 
+
+class BuiltInConst:
+
+    _content: BuiltInConstEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: BuiltInConstEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Built-In Constant: {self.value}\n"
+        s: str = f"{pre} Built-In Constant: {self._content.value}\n"
         return s
 
 
-class LoopStatements(Enum):
+class LoopStatementsEnum(Enum):
     ContinueStatement = "continue"
     BreakStatement = "break"
 
+
+class LoopStatements:
+
+    _content: LoopStatementsEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: LoopStatementsEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} {self.value.lower()}\n"
+        s: str = f"{pre} {self._content.value.lower()}\n"
         return s
 
 
-class PostfixUnaryOperator(Enum):
+class PostfixUnaryOperatorEnum(Enum):
     Increment = "++"
     Decrement = "--"
 
 
-class PrefixUnaryOperator(Enum):
+class PrefixUnaryOperatorEnum(Enum):
     Increment = "++"
     Decrement = "--"
     Negate = "-"
@@ -187,7 +217,30 @@ class PrefixUnaryOperator(Enum):
     Dereference = "$"
 
 
-class BinaryOperator(Enum):
+class UnaryOperator:
+
+    _content: PostfixUnaryOperatorEnum | PrefixUnaryOperatorEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: PostfixUnaryOperatorEnum | PrefixUnaryOperatorEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Unary Operator: {self._content.value}\n"
+        return s
+
+
+class BinaryOperatorEnum(Enum):
     Addition = "+"
     Subtraction = "-"
     Multiplication = "*"
@@ -220,64 +273,148 @@ class BinaryOperator(Enum):
     GreaterOrEqualToThan = ">="
 
 
-class TernaryOperator(Enum):
+class BinaryOperator:
+
+    _content: BinaryOperatorEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: BinaryOperatorEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Binary Operator: {self._content.value}\n"
+        return s
+
+
+class TernaryOperatorEnum(Enum):
     TernaryConditional = "?"
 
 
-class BuiltInDataType(Enum):
+class TernaryOperator:
+
+    _content: TernaryOperatorEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: TernaryOperatorEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Ternary Operator: {self._content.value}\n"
+        return s
+
+
+class BuiltInDataTypeEnum(Enum):
     unsigned = "unsigned"
     int = "int"
     fixed = "fixed"
     float = "float"
 
 
+class BuiltInDataType:
+
+    _content: BuiltInDataTypeEnum
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        content: BuiltInDataTypeEnum,
+        file_info: FileInfo,
+    ):
+        self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def __str__(self) -> str: return self._content.value
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Built-In Data Type: {self._content.value}\n"
+        return s
+
+
 _Operator_Precedence: tuple[
-    UnaryOperator | BinaryOperator | TernaryOperator, ...
+    PostfixUnaryOperatorEnum |
+    PrefixUnaryOperatorEnum |
+    BinaryOperatorEnum |
+    TernaryOperatorEnum,
+    ...
 ] = (
-    PrefixUnaryOperator.AddressOf,
-    PrefixUnaryOperator.Dereference,
-    PrefixUnaryOperator.BitwiseNOT,
-    PostfixUnaryOperator.Decrement,
-    PostfixUnaryOperator.Increment,
-    PrefixUnaryOperator.Decrement,
-    PrefixUnaryOperator.Increment,
-    PrefixUnaryOperator.Negate,
-    PrefixUnaryOperator.BooleanNOT,
-    BinaryOperator.RightShift,
-    BinaryOperator.LeftShift,
-    BinaryOperator.BitwiseXOR,
-    BinaryOperator.BitwiseOR,
-    BinaryOperator.BitwiseAND,
-    BinaryOperator.Modulus,
-    BinaryOperator.Division,
-    BinaryOperator.Multiplication,
-    BinaryOperator.Subtraction,
-    BinaryOperator.Addition,
-    BinaryOperator.GreaterOrEqualToThan,
-    BinaryOperator.GreaterThan,
-    BinaryOperator.LessOrEqualToThan,
-    BinaryOperator.LessThan,
-    BinaryOperator.InequalityComparison,
-    BinaryOperator.EqualityComparison,
-    BinaryOperator.BooleanXOR,
-    BinaryOperator.BooleanOR,
-    BinaryOperator.BooleanAND,
-    TernaryOperator.TernaryConditional,
-    BinaryOperator.RightShiftAssignment,
-    BinaryOperator.LeftShiftAssignment,
-    BinaryOperator.BitwiseXORAssignment,
-    BinaryOperator.BitwiseORAssignment,
-    BinaryOperator.BitwiseANDAssignment,
-    BinaryOperator.ModulusAssignment,
-    BinaryOperator.DivisionAssignment,
-    BinaryOperator.MultiplicationAssignment,
-    BinaryOperator.SubtractionAssignment,
-    BinaryOperator.AdditionAssignment,
-    BinaryOperator.Assignment,
+    PrefixUnaryOperatorEnum.AddressOf,
+    PrefixUnaryOperatorEnum.Dereference,
+    PrefixUnaryOperatorEnum.BitwiseNOT,
+    PostfixUnaryOperatorEnum.Decrement,
+    PostfixUnaryOperatorEnum.Increment,
+    PrefixUnaryOperatorEnum.Decrement,
+    PrefixUnaryOperatorEnum.Increment,
+    PrefixUnaryOperatorEnum.Negate,
+    PrefixUnaryOperatorEnum.BooleanNOT,
+    BinaryOperatorEnum.RightShift,
+    BinaryOperatorEnum.LeftShift,
+    BinaryOperatorEnum.BitwiseXOR,
+    BinaryOperatorEnum.BitwiseOR,
+    BinaryOperatorEnum.BitwiseAND,
+    BinaryOperatorEnum.Modulus,
+    BinaryOperatorEnum.Division,
+    BinaryOperatorEnum.Multiplication,
+    BinaryOperatorEnum.Subtraction,
+    BinaryOperatorEnum.Addition,
+    BinaryOperatorEnum.GreaterOrEqualToThan,
+    BinaryOperatorEnum.GreaterThan,
+    BinaryOperatorEnum.LessOrEqualToThan,
+    BinaryOperatorEnum.LessThan,
+    BinaryOperatorEnum.InequalityComparison,
+    BinaryOperatorEnum.EqualityComparison,
+    BinaryOperatorEnum.BooleanXOR,
+    BinaryOperatorEnum.BooleanOR,
+    BinaryOperatorEnum.BooleanAND,
+    TernaryOperatorEnum.TernaryConditional,
+    BinaryOperatorEnum.RightShiftAssignment,
+    BinaryOperatorEnum.LeftShiftAssignment,
+    BinaryOperatorEnum.BitwiseXORAssignment,
+    BinaryOperatorEnum.BitwiseORAssignment,
+    BinaryOperatorEnum.BitwiseANDAssignment,
+    BinaryOperatorEnum.ModulusAssignment,
+    BinaryOperatorEnum.DivisionAssignment,
+    BinaryOperatorEnum.MultiplicationAssignment,
+    BinaryOperatorEnum.SubtractionAssignment,
+    BinaryOperatorEnum.AdditionAssignment,
+    BinaryOperatorEnum.Assignment,
 )
 
 
 class NoOperation:
+
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        file_info: FileInfo,
+    ):
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Nop\n"
@@ -287,12 +424,18 @@ class NoOperation:
 class Identifier:
 
     _content: str
+    _file_info: FileInfo
 
     def __init__(
         self,
         content: str,
+        file_info: FileInfo,
     ):
         self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return self._content
 
@@ -304,12 +447,18 @@ class Identifier:
 class StringLiteral:
 
     _content: str
+    _file_info: FileInfo
 
     def __init__(
         self,
         content: str,
+        file_info: FileInfo,
     ):
         self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return self._content
 
@@ -321,12 +470,18 @@ class StringLiteral:
 class CharLiteral:
 
     _content: str
+    _file_info: FileInfo
 
     def __init__(
         self,
         content: str,
+        file_info: FileInfo,
     ):
         self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return self._content
 
@@ -338,12 +493,18 @@ class CharLiteral:
 class NumberLiteral:
 
     _content: str
+    _file_info: FileInfo
 
     def __init__(
         self,
         content: str,
+        file_info: FileInfo,
     ):
         self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return self._content
 
@@ -352,37 +513,24 @@ class NumberLiteral:
         return s
 
 
-class ArraySubscription:
-
-    _identifier: Identifier
-    _index: Expression
-
-    def __init__(
-        self,
-        identifier: Identifier,
-        index: Expression,
-    ):
-        self._identifier = identifier
-        self._index = index
-
-    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Array Subscription: {self._identifier}\n"
-        s += f"{pre_cont}└─ Index: {self._index}\n"
-        return s
-
-
 class FunctionArgument:
 
     _identifier: Identifier | None
     _value: Expression
+    _file_info: FileInfo
 
     def __init__(
         self,
         identifier: Identifier | None,
         value: Expression,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._value = value
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Argument\n"
@@ -395,14 +543,20 @@ class FunctionCall:
 
     _identifier: Identifier
     _args: list[FunctionArgument]
+    _file_info: FileInfo
 
     def __init__(
         self,
         identifier: Identifier,
         args: list[FunctionArgument],
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._args = args
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Call: {self._identifier}\n"
@@ -419,6 +573,7 @@ class TernaryExpression:
     _operand1: Expression
     _operand2: Expression
     _operand3: Expression
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -426,11 +581,16 @@ class TernaryExpression:
         operand1: Expression,
         operand2: Expression,
         operand3: Expression,
+        file_info: FileInfo,
     ):
         self._operator = operator
         self._operand1 = operand1
         self._operand2 = operand2
         self._operand3 = operand3
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Ternary Expression: {self._operator}\n"
@@ -445,16 +605,22 @@ class BinaryExpression:
     _operator: BinaryOperator
     _operand1: Expression
     _operand2: Expression
+    _file_info: FileInfo
 
     def __init__(
         self,
         operator: BinaryOperator,
         operand1: Expression,
         operand2: Expression,
+        file_info: FileInfo,
     ):
         self._operator = operator
         self._operand1 = operand1
         self._operand2 = operand2
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Binary Expression: {self._operator}\n"
@@ -467,14 +633,20 @@ class UnaryExpression:
 
     _operator: UnaryOperator
     _operand: Expression
+    _file_info: FileInfo
 
     def __init__(
         self,
         operator: UnaryOperator,
         operand: Expression,
+        file_info: FileInfo,
     ):
         self._operator = operator
         self._operand = operand
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Unary Expression: {self._operator}\n"
@@ -489,6 +661,7 @@ class LetStatement:
     _pointer: bool
     _static: bool
     _assignment: Expression | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -497,12 +670,17 @@ class LetStatement:
         pointer: bool,
         static: bool,
         assignment: Literal | None,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._type = type
         self._pointer = pointer
         self._static = static
         self._assignment = assignment
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Let Statement: {self._identifier}\n"
@@ -515,16 +693,56 @@ class LetStatement:
             s += f"{pre_cont}└─ Default Value: {self._assignment}\n"
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], token: lexer.Token) -> "LetStatement":
+        start_fi: FileInfo = token.file_info
+        static = token.value == 'static'
+        if static:
+            token = tokens.pop(0)
+            _assert_token(ExpectedKeyword, token, 'let')
+        identifier = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, identifier)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, ':')
+        pointer, data_type = _data_type_sa(tokens)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token)
+        if token.value not in ['=', ';']:
+            raise UnexpectedPunctuation(token, ['=', ';'])
+        elif token.value == '=':
+            token = tokens.pop(0)
+            _assert_token_literal(token)
+            literal = _literal_map(token) # type: ignore
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token)
+            if token.value != ';':
+                raise UnexpectedPunctuation(token, ';')
+        else: literal = None
+        return LetStatement(
+            Identifier(identifier.value, identifier.file_info),
+            data_type,
+            pointer,
+            static,
+            literal,
+            start_fi + token.file_info,
+        )
+
 
 class ElseBlock:
 
     _code: list[Statement]
+    _file_info: FileInfo
 
     def __init__(
         self,
         code: list[Statement],
+        file_info: FileInfo,
     ):
         self._code = code[:]
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Else Block\n"
@@ -535,6 +753,21 @@ class ElseBlock:
             s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token]) -> "ElseBlock | None":
+        if tokens and tokens[0].value == 'else':
+            else_token = tokens.pop(0)
+            if tokens[0].value == '{':
+                else_tokens = _get_nested_group(tokens, ('{','}'))[1]
+                fi = else_token.file_info + else_tokens[-1].file_info
+                return ElseBlock(_code_block_sa(else_tokens), fi)
+            else:
+                statement = _statement_sa(tokens)
+                fi = else_token.file_info + statement.file_info
+                return ElseBlock([statement], fi)
+        else:
+            return None
+
 
 class ForPreDef:
 
@@ -542,6 +775,7 @@ class ForPreDef:
     _type: DataType
     _pointer: bool
     _assignment: Expression | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -549,11 +783,16 @@ class ForPreDef:
         type: DataType,
         pointer: bool,
         assignment: Expression | None,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._type = type
         self._pointer = pointer
         self._assignment = assignment
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
@@ -572,6 +811,7 @@ class ForBlock:
     _code: list[Statement]
     _post_statement: Expression
     _else: ElseBlock | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -580,12 +820,17 @@ class ForBlock:
         code: list[Statement],
         post_statement: Expression,
         else_block: ElseBlock | None,
+        file_info: FileInfo,
     ):
         self._pre_statement = pre_statement
         self._condition = condition
         self._code = code[:]
         self._post_statement = post_statement
         self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop\n"
@@ -618,22 +863,74 @@ class ForBlock:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "ForBlock":
+        three_expressions = _get_nested_group(tokens)[1]
+        pre_loop_tokens = _get_to_symbol(three_expressions)[0]
+        if (
+            isinstance(pre_loop_tokens[0], lexer.Identifier) and
+            pre_loop_tokens[1].value == ':'
+        ):
+            id_token = pre_loop_tokens.pop(0)
+            identifier = Identifier(id_token.value, id_token.file_info)
+            token = pre_loop_tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token, ':')
+            pointer, data_type = _data_type_sa(pre_loop_tokens)
+            if pre_loop_tokens:
+                token = pre_loop_tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token, '=')
+                pre_loop_expr = _expression_sa(pre_loop_tokens)
+            else:
+                pre_loop_expr = None
+            if pre_loop_expr is not None:
+                fi = id_token.file_info + pre_loop_expr.file_info
+            else:
+                fi = id_token.file_info + data_type.file_info
+            pre_loop = ForPreDef(
+                identifier,
+                data_type,
+                pointer,
+                pre_loop_expr,
+                fi,
+            )
+        else:
+            pre_loop = _expression_sa(pre_loop_tokens)
+        loop_condition_tokens = _get_to_symbol(three_expressions)[0]
+        condition = _expression_sa(loop_condition_tokens)
+        post_loop = _expression_sa(three_expressions)
+        if tokens[0].value == '{':
+            code = _code_block_sa(_get_nested_group(tokens, ('{','}'))[1])
+        else:
+            code = [_statement_sa(tokens)]
+        else_block = ElseBlock._sa(tokens)
+        if else_block is not None:
+            fi = stoken.file_info + else_block.file_info
+        else:
+            fi = stoken.file_info + code[-1].file_info
+        return ForBlock(pre_loop, condition, code, post_loop, else_block, fi)
+
 
 class WhileBlock:
 
     _condition: Expression
     _code: list[Statement]
     _else: ElseBlock | None
+    _file_info: FileInfo
 
     def __init__(
         self,
         condition: Expression,
         code: list[Statement],
         else_block: ElseBlock | None,
+        file_info: FileInfo,
     ):
         self._condition = condition
         self._code = code[:]
         self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} While Loop\n"
@@ -658,6 +955,21 @@ class WhileBlock:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], token: lexer.Token) -> "WhileBlock":
+        condition = _expression_sa(_get_nested_group(tokens)[1])
+        if tokens[0].value == '{':
+            code_tokens = _get_nested_group(tokens, ('{','}'))[1]
+            code = _code_block_sa(code_tokens)
+        else:
+            code = [_statement_sa(tokens)]
+        else_block = ElseBlock._sa(tokens)
+        if else_block is not None:
+            fi = token.file_info + else_block.file_info
+        else:
+            fi = token.file_info + code[-1].file_info
+        return WhileBlock(condition, code, else_block, fi)
+
 
 class DoBlock:
 
@@ -665,6 +977,7 @@ class DoBlock:
     _condition: Expression
     _second_code: list[Statement] | None
     _else: ElseBlock | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -672,6 +985,7 @@ class DoBlock:
         condition: Expression,
         second_code: list[Statement] | None,
         else_block: ElseBlock | None,
+        file_info: FileInfo,
     ):
         self._first_code = first_code[:]
         self._condition = condition
@@ -680,6 +994,10 @@ class DoBlock:
         else:
             self._second_code = None
         self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Do Loop\n"
@@ -712,22 +1030,58 @@ class DoBlock:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "DoBlock":
+        if tokens[0].value == '{':
+            code1_tokens = _get_nested_group(tokens, ('{','}'))[1]
+            code1 = _code_block_sa(code1_tokens)
+        else:
+            code1 = [_statement_sa(tokens)]
+        token = tokens.pop(0)
+        _assert_token(ExpectedKeyword, token, 'while')
+        condition_tokens = _get_nested_group(tokens)[1]
+        last_token = condition_tokens[-1]
+        condition = _expression_sa(condition_tokens)
+        if tokens[0].value == '{':
+            code2_tokens = _get_nested_group(tokens, ('{','}'))[1]
+            last_token = code2_tokens[-1]
+            code2 = _code_block_sa(code2_tokens)
+        elif tokens[0].value != 'else':
+            last_token = tokens[0]
+            code2 = [_statement_sa(tokens)]
+            if isinstance(code2[0], NoOperation):
+                code2 = None
+        else:
+            code2 = None
+        else_block = ElseBlock._sa(tokens)
+        if else_block is not None:
+            fi = stoken.file_info + else_block.file_info
+        else:
+            fi = stoken.file_info + last_token.file_info
+        return DoBlock(code1, condition, code2, else_block, fi)
+
 
 class IfBlock:
 
     _condition: Expression
     _code: list[Statement]
     _else: ElseBlock | None
+    _file_info: FileInfo
 
     def __init__(
         self,
         condition: Expression,
         code: list[Statement],
         else_block: ElseBlock | None,
+        file_info: FileInfo,
     ):
         self._condition = condition
         self._code = code[:]
         self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} If Statement\n"
@@ -752,6 +1106,20 @@ class IfBlock:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], token: lexer.Token) -> "IfBlock":
+        condition = _expression_sa(_get_nested_group(tokens)[1])
+        if tokens[0].value == '{':
+            code = _code_block_sa(_get_nested_group(tokens, ('{','}'))[1])
+        else:
+            code = [_statement_sa(tokens)]
+        else_block = ElseBlock._sa(tokens)
+        if else_block is not None:
+            fi = token.file_info + else_block.file_info
+        else:
+            fi = token.file_info + code[-1].file_info
+        return IfBlock(condition, code, else_block, fi)
+
 
 class FunctionParameter:
 
@@ -759,6 +1127,7 @@ class FunctionParameter:
     _type: DataType
     _pointer: bool
     _default: Literal | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -766,11 +1135,16 @@ class FunctionParameter:
         type: DataType,
         pointer: bool,
         default: Literal | None,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._type = type
         self._pointer = pointer
         self._default = default
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Parameter: {self._identifier}\n"
@@ -790,6 +1164,7 @@ class FunctionBlock:
     _return_type_pointer: bool
     _return_type: DataType | None
     _code: list[Statement]
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -798,12 +1173,17 @@ class FunctionBlock:
         return_type_pointer: bool,
         return_type: DataType | None,
         code: list[Statement],
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._params = params[:]
         self._return_type_pointer = return_type_pointer
         self._return_type = return_type
         self._code = code[:]
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function: {self._identifier}\n"
@@ -831,19 +1211,77 @@ class FunctionBlock:
             s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "FunctionBlock":
+        identifier = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, identifier)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, '(')
+        params: list[FunctionParameter] = []
+        while token.value != ')':
+            token = tokens.pop(0)
+            if isinstance(token, lexer.Punctuation):
+                _assert_token(ExpectedPunctuation, token, ')')
+            elif isinstance(token, lexer.Identifier):
+                member_id = Identifier(token.value, token.file_info)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token, ':')
+                pointer, data_type = _data_type_sa(tokens)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in [',', '=', ')']:
+                    raise UnexpectedPunctuation(token, [',', '=', ')'])
+                elif token.value == '=':
+                    token = tokens.pop(0)
+                    _assert_token_literal(token)
+                    literal = _literal_map(token) # type: ignore
+                    token = tokens.pop(0)
+                    _assert_token(ExpectedPunctuation, token)
+                    if token.value not in [',', ')']:
+                        raise UnexpectedPunctuation(token, [',', ')'])
+                else: literal = None
+                if literal is not None:
+                    fi = member_id.file_info + literal.file_info
+                else:
+                    fi = member_id.file_info + data_type.file_info
+                params.append(FunctionParameter(
+                    member_id, data_type, pointer, literal, fi))
+            else:
+                raise UnexpectedToken(
+                    token, ["Keyword", "Identifier", "Punctuation"])
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, '->')
+        pointer, return_type = _data_type_sa(tokens)
+        code = _code_block_sa(_get_nested_group(tokens, ('{','}'))[1])
+        fi = token.file_info + code[-1].file_info
+        return FunctionBlock(
+            Identifier(identifier.value, identifier.file_info),
+            params,
+            pointer,
+            return_type,
+            code,
+            fi,
+        )
+
 
 class EnumMember:
 
     _identifier: Identifier
     _value: NumberLiteral | None
+    _file_info: FileInfo
 
     def __init__(
         self,
         identifier: Identifier,
         value: NumberLiteral | None,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._value = value
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum Member: {self._identifier}\n"
@@ -856,14 +1294,20 @@ class EnumBlock:
 
     _identifier: Identifier
     _members: list[EnumMember]
+    _file_info: FileInfo
 
     def __init__(
         self,
         identifier: Identifier,
         members: list[EnumMember],
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._members = members[:]
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum: {self._identifier}\n"
@@ -873,6 +1317,42 @@ class EnumBlock:
             s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "EnumBlock":
+        identifier = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, identifier)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, '{')
+        members: list[EnumMember] = []
+        while token.value != '}':
+            token = tokens.pop(0)
+            _assert_token(ExpectedIdentifier, token)
+            member_id = Identifier(token.value, token.file_info)
+            token = tokens.pop(0)
+            _assert_token(ExpectedPunctuation, token)
+            if token.value not in [',', '=', '}']:
+                raise UnexpectedPunctuation(token, [',', '=', '}'])
+            elif token.value == '=':
+                token = tokens.pop(0)
+                _assert_token(ExpectedNumberLiteral, token)
+                literal = NumberLiteral(token.value, token.file_info)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in [',', '}']:
+                    raise UnexpectedPunctuation(token, [',', '}'])
+            else: literal = None
+            if literal is not None:
+                fi = member_id.file_info + literal.file_info
+            else:
+                fi = member_id.file_info
+            members.append(EnumMember(member_id, literal, fi))
+        fi = stoken.file_info + token.file_info
+        return EnumBlock(
+            Identifier(identifier.value, identifier.file_info),
+            members,
+            fi,
+        )
+
 
 class StructureMember:
 
@@ -881,6 +1361,7 @@ class StructureMember:
     _pointer: bool
     _static: bool
     _default: Literal | None
+    _file_info: FileInfo
 
     def __init__(
         self,
@@ -889,12 +1370,17 @@ class StructureMember:
         pointer: bool,
         static: bool,
         default: Literal | None,
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._type = type
         self._pointer = pointer
         self._static = static
         self._default = default
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Struct Member: {self._identifier}\n"
@@ -912,14 +1398,20 @@ class StructBlock:
 
     _identifier: Identifier
     _members: list[StructureMember]
+    _file_info: FileInfo
 
     def __init__(
         self,
         identifier: Identifier,
         members: list[StructureMember],
+        file_info: FileInfo,
     ):
         self._identifier = identifier
         self._members = members[:]
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Struct: {self._identifier}\n"
@@ -929,16 +1421,77 @@ class StructBlock:
             s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
         return s
 
+    @staticmethod
+    def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "StructBlock":
+        identifier = tokens.pop(0)
+        _assert_token(ExpectedIdentifier, identifier)
+        token = tokens.pop(0)
+        _assert_token(ExpectedPunctuation, token, '{')
+        members: list[StructureMember] = []
+        while token.value != '}':
+            token = tokens.pop(0)
+            if isinstance(token, lexer.Keyword):
+                _assert_token(ExpectedKeyword, token, 'static')
+                static_token = token
+                token = tokens.pop(0)
+                static = True
+            else:
+                static = False
+            if isinstance(token, lexer.Identifier):
+                member_id = Identifier(token.value, token.file_info)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token, ':')
+                pointer, data_type = _data_type_sa(tokens)
+                token = tokens.pop(0)
+                _assert_token(ExpectedPunctuation, token)
+                if token.value not in [',', '=', '}']:
+                    raise UnexpectedPunctuation(token, [',', '=', '}'])
+                elif token.value == '=':
+                    token = tokens.pop(0)
+                    _assert_token_literal(token)
+                    literal = _literal_map(token) # type: ignore
+                    token = tokens.pop(0)
+                    _assert_token(ExpectedPunctuation, token)
+                    if token.value not in [',', '}']:
+                        raise UnexpectedPunctuation(token, [',', '}'])
+                else: literal = None
+                if literal is not None:
+                    if static:
+                        fi = static_token.file_info + literal.file_info
+                    else:
+                        fi = member_id.file_info + literal.file_info
+                else:
+                    if static:
+                        fi = static_token.file_info + data_type.file_info
+                    else:
+                        fi = member_id.file_info + data_type.file_info
+                members.append(StructureMember(
+                    member_id, data_type, pointer, static, literal, fi))
+            else:
+                raise UnexpectedToken(token, ["Keyword", "Identifier"])
+        fi = stoken.file_info + token.file_info
+        return StructBlock(
+            Identifier(identifier.value, identifier.file_info),
+            members,
+            fi,
+        )
+
 
 class Directive:
 
     _content: str
+    _file_info: FileInfo
 
     def __init__(
         self,
         content: str,
+        file_info: FileInfo,
     ):
         self._content = content
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         return f"{pre} Directive: {self._content}\n"
@@ -947,12 +1500,18 @@ class Directive:
 class File:
 
     _children: list[Directive | StructBlock | FunctionBlock | EnumBlock]
+    _file_info: FileInfo
 
     def __init__(
         self,
         children: list[Directive | StructBlock | FunctionBlock | EnumBlock],
+        file_info: FileInfo,
     ):
         self._children = children[:]
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self) -> str:
         s: str = " File\n"
@@ -961,6 +1520,31 @@ class File:
                 s += child.tree_str("├─", "│ ")
             s += self._children[-1].tree_str("└─", "  ")
         return s
+
+    @staticmethod
+    def _sa(tokens: list[lexer.Token]) -> "File":
+        children: list[Directive | StructBlock | FunctionBlock | EnumBlock] = []
+        file_fi: FileInfo = tokens[0].file_info + tokens[-1].file_info
+
+        while tokens:
+            token = tokens.pop(0)
+            _assert_token_mult(token, (lexer.Directive, lexer.Keyword))
+            if isinstance(token, lexer.Directive):
+                children.append(Directive(token.value, token.file_info))
+            elif isinstance(token, lexer.Keyword):
+                match token.value:
+                    case 'struct':
+                        children.append(StructBlock._sa(tokens, token))
+                    case 'enum':
+                        children.append(EnumBlock._sa(tokens, token))
+                    case 'fn':
+                        children.append(FunctionBlock._sa(tokens, token))
+                    case _:
+                        raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
+            else:
+                raise UnexpectedToken(token, "directive' or 'keyword")
+
+        return File(children, file_fi)
 
 
 def _assert_token(
@@ -1001,8 +1585,8 @@ def _assert_token_literal(
             type(token).__name__,
         )
     if isinstance(token, lexer.Keyword):
-        if token.value not in BuiltInConst:
-            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataType])
+        if token.value not in BuiltInConstEnum:
+            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataTypeEnum])
 
 def _literal_map(literal: (
     lexer.Keyword |
@@ -1011,13 +1595,13 @@ def _literal_map(literal: (
     lexer.StringLiteral
 )) -> Literal:
     if isinstance(literal, lexer.Keyword):
-        return BuiltInConst(literal.value)
+        return BuiltInConst(BuiltInConstEnum(literal.value), literal.file_info)
     elif isinstance(literal, lexer.NumberLiteral):
-        return NumberLiteral(literal.value)
+        return NumberLiteral(literal.value, literal.file_info)
     elif isinstance(literal, lexer.CharLiteral):
-        return CharLiteral(literal.value)
+        return CharLiteral(literal.value, literal.file_info)
     elif isinstance(literal, lexer.StringLiteral):
-        return StringLiteral(literal.value)
+        return StringLiteral(literal.value, literal.file_info)
 
 def _assert_token_value(
     token: lexer.Token,
@@ -1036,8 +1620,11 @@ def _assert_token_value(
             type(token).__name__,
         )
     if isinstance(token, lexer.Keyword):
-        if token.value not in BuiltInConst:
-            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataType])
+        if token.value not in BuiltInConstEnum:
+            raise UnexpectedKeyword(
+                token,
+                [i.value for i in BuiltInDataTypeEnum]
+            )
 
 def _value_map(literal: (
     lexer.Identifier |
@@ -1047,22 +1634,22 @@ def _value_map(literal: (
     lexer.StringLiteral
 )) -> Literal | Identifier:
     if isinstance(literal, lexer.Identifier):
-        return Identifier(literal.value)
+        return Identifier(literal.value, literal.file_info)
     elif isinstance(literal, lexer.Keyword):
-        return BuiltInConst(literal.value)
+        return BuiltInConst(BuiltInConstEnum(literal.value), literal.file_info)
     elif isinstance(literal, lexer.NumberLiteral):
-        return NumberLiteral(literal.value)
+        return NumberLiteral(literal.value, literal.file_info)
     elif isinstance(literal, lexer.CharLiteral):
-        return CharLiteral(literal.value)
+        return CharLiteral(literal.value, literal.file_info)
     elif isinstance(literal, lexer.StringLiteral):
-        return StringLiteral(literal.value)
+        return StringLiteral(literal.value, literal.file_info)
 
 def _get_nested_group(
     tokens: list[lexer.Token],
     encloses: tuple[str, str] = ('(',')'),
-) -> list[lexer.Token]:
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, encloses[0])
+) -> tuple[lexer.Token, list[lexer.Token], lexer.Token]:
+    first_token = tokens.pop(0)
+    _assert_token(ExpectedPunctuation, first_token, encloses[0])
     nested = 1
     expr_len = -1
     for i in range(len(tokens)):
@@ -1075,13 +1662,14 @@ def _get_nested_group(
         raise UnexpectedEndOfTokenStream(
             "Unexpected End of Token Stream.", tokens[-1].file_info)
     expr_tokens = tokens[:expr_len]
+    last_token = tokens[expr_len]
     del tokens[:expr_len+1]
-    return expr_tokens
+    return first_token, expr_tokens, last_token
 
 def _get_to_symbol(
     tokens: list[lexer.Token],
     symbols: str | Sequence[str] = ';',
-) -> list[lexer.Token]:
+) -> tuple[list[lexer.Token], lexer.Token]:
     expr_len = -1
     for i in range(len(tokens)):
         if tokens[i].value in symbols:
@@ -1091,116 +1679,9 @@ def _get_to_symbol(
         raise UnexpectedEndOfTokenStream(
             "Unexpected End of Token Stream.", tokens[-1].file_info)
     expr_tokens = tokens[:expr_len]
+    last_token = tokens[expr_len]
     del tokens[:expr_len+1]
-    return expr_tokens
-
-def _struct_sa(tokens: list[lexer.Token]) -> StructBlock:
-    identifier = tokens.pop(0)
-    _assert_token(ExpectedIdentifier, identifier)
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, '{')
-    members: list[StructureMember] = []
-    while token.value != '}':
-        token = tokens.pop(0)
-        if isinstance(token, lexer.Keyword):
-            _assert_token(ExpectedKeyword, token, 'static')
-            token = tokens.pop(0)
-            static = True
-        else:
-            static = False
-        if isinstance(token, lexer.Identifier):
-            member_id = Identifier(token.value)
-            token = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, token, ':')
-            pointer, data_type = _data_type_sa(tokens)
-            token = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, token)
-            if token.value not in [',', '=', '}']:
-                raise UnexpectedPunctuation(token, [',', '=', '}'])
-            elif token.value == '=':
-                token = tokens.pop(0)
-                _assert_token_literal(token)
-                literal = _literal_map(token) # type: ignore
-                token = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, token)
-                if token.value not in [',', '}']:
-                    raise UnexpectedPunctuation(token, [',', '}'])
-            else: literal = None
-            members.append(
-                StructureMember(member_id, data_type, pointer, static, literal))
-        else:
-            raise UnexpectedToken(token, ["Keyword", "Identifier"])
-    return StructBlock(Identifier(identifier.value), members)
-
-def _enumeration_sa(tokens: list[lexer.Token]) -> EnumBlock:
-    identifier = tokens.pop(0)
-    _assert_token(ExpectedIdentifier, identifier)
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, '{')
-    members: list[EnumMember] = []
-    while token.value != '}':
-        token = tokens.pop(0)
-        _assert_token(ExpectedIdentifier, token)
-        member_id = Identifier(token.value)
-        token = tokens.pop(0)
-        _assert_token(ExpectedPunctuation, token)
-        if token.value not in [',', '=', '}']:
-            raise UnexpectedPunctuation(token, [',', '=', '}'])
-        elif token.value == '=':
-            token = tokens.pop(0)
-            _assert_token(ExpectedNumberLiteral, token)
-            token = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, token)
-            if token.value not in [',', '}']:
-                raise UnexpectedPunctuation(token, [',', '}'])
-        else: literal = None
-        members.append(EnumMember(member_id, literal))
-    return EnumBlock(Identifier(identifier.value), members)
-
-def _function_sa(tokens: list[lexer.Token]) -> FunctionBlock:
-    identifier = tokens.pop(0)
-    _assert_token(ExpectedIdentifier, identifier)
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, '(')
-    params: list[FunctionParameter] = []
-    while token.value != ')':
-        token = tokens.pop(0)
-        if isinstance(token, lexer.Punctuation):
-            _assert_token(ExpectedPunctuation, token, ')')
-        elif isinstance(token, lexer.Identifier):
-            member_id = Identifier(token.value)
-            token = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, token, ':')
-            pointer, data_type = _data_type_sa(tokens)
-            token = tokens.pop(0)
-            _assert_token(ExpectedPunctuation, token)
-            if token.value not in [',', '=', ')']:
-                raise UnexpectedPunctuation(token, [',', '=', ')'])
-            elif token.value == '=':
-                token = tokens.pop(0)
-                _assert_token_literal(token)
-                literal = _literal_map(token) # type: ignore
-                token = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, token)
-                if token.value not in [',', ')']:
-                    raise UnexpectedPunctuation(token, [',', ')'])
-            else: literal = None
-            params.append(
-                FunctionParameter(member_id, data_type, pointer, literal))
-        else:
-            raise UnexpectedToken(
-                token, ["Keyword", "Identifier", "Punctuation"])
-    token = tokens.pop(0)
-    _assert_token(ExpectedPunctuation, token, '->')
-    pointer, return_type = _data_type_sa(tokens)
-    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-    return FunctionBlock(
-        Identifier(identifier.value),
-        params,
-        pointer,
-        return_type,
-        code,
-    )
+    return expr_tokens, last_token
 
 def _data_type_sa(tokens: list[lexer.Token]) -> tuple[bool, DataType]:
     token = tokens.pop(0)
@@ -1217,14 +1698,15 @@ def _data_type_sa(tokens: list[lexer.Token]) -> tuple[bool, DataType]:
     else:
         pointer = False
     if isinstance(token, lexer.Keyword):
-        if token.value not in BuiltInDataType:
+        if token.value not in BuiltInDataTypeEnum:
             raise UnexpectedKeyword(
                 token,
-                [i.value for i in BuiltInDataType],
+                [i.value for i in BuiltInDataTypeEnum],
             )
-        return pointer, BuiltInDataType(token.value)
+        return pointer, BuiltInDataType(
+            BuiltInDataTypeEnum(token.value), token.file_info)
     else:
-        return pointer, Identifier(token.value)
+        return pointer, Identifier(token.value, token.file_info)
 
 def _code_block_sa(tokens: list[lexer.Token]) -> list[Statement]:
     code: list[Statement] = []
@@ -1233,7 +1715,7 @@ def _code_block_sa(tokens: list[lexer.Token]) -> list[Statement]:
     return code
 
 def _expression_sa(tokens: list[lexer.Token]) -> Expression:
-    print([(type(i).__name__, i.value) for i in tokens])
+    # print([str(i) for i in tokens])
     if not tokens:
         raise UnexpectedEndOfTokenStream(
             "Unexpected Expression.", None) # type: ignore
@@ -1269,52 +1751,74 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
         _assert_token(ExpectedPunctuation, token, '(')
         function_args: list[FunctionArgument] = []
         while tokens:
-            arg_tokens = _get_to_symbol(tokens, (',', ')'))
+            arg_tokens, last_token = _get_to_symbol(tokens, (',', ')'))
             if arg_tokens:
                 if len(arg_tokens) > 1 and arg_tokens[1].value == '=':
                     _assert_token(ExpectedIdentifier, arg_tokens[0])
-                    arg_identifier = Identifier(arg_tokens[0].value)
+                    arg_identifier = Identifier(
+                        arg_tokens[0].value,
+                        arg_tokens[0].file_info,
+                    )
                     del arg_tokens[:2]
                 else:
                     arg_identifier = None
-                function_args.append(FunctionArgument(
-                    arg_identifier, _expression_sa(arg_tokens)))
+                expression = _expression_sa(arg_tokens)
+                if arg_identifier is not None:
+                    fi = arg_identifier.file_info + expression.file_info
+                else:
+                    fi = expression.file_info
+                function_args.append(
+                    FunctionArgument(arg_identifier, expression, fi))
+        fi = function_identifier.file_info + last_token.file_info
         return FunctionCall(
-            Identifier(function_identifier.value), function_args)
+            Identifier(
+                function_identifier.value,
+                function_identifier.file_info,
+            ),
+            function_args,
+            fi,
+        )
 
     if (
-        tokens[max_operator].value in PostfixUnaryOperator and
+        tokens[max_operator].value in PostfixUnaryOperatorEnum and
         max_operator == len(tokens) - 1
     ):
-        return UnaryExpression(
-            PostfixUnaryOperator(tokens[max_operator].value),
-            _expression_sa(tokens[:max_operator]),
+        operator = UnaryOperator(
+            PostfixUnaryOperatorEnum(tokens[max_operator].value),
+            tokens[max_operator].file_info,
         )
+        expression = _expression_sa(tokens[:max_operator])
+        fi = expression.file_info + operator.file_info
+        return UnaryExpression(operator, expression, fi)
     elif (
-        tokens[max_operator].value in PrefixUnaryOperator and
+        tokens[max_operator].value in PrefixUnaryOperatorEnum and
         max_operator == 0
     ):
-        return UnaryExpression(
-            PrefixUnaryOperator(tokens[max_operator].value),
-            _expression_sa(tokens[max_operator+1:]),
+        operator = UnaryOperator(
+            PrefixUnaryOperatorEnum(tokens[max_operator].value),
+            tokens[max_operator].file_info,
         )
-    elif tokens[max_operator].value in BinaryOperator:
-            return BinaryExpression(
-                BinaryOperator(tokens[max_operator].value),
-                _expression_sa(tokens[:max_operator]),
-                _expression_sa(tokens[max_operator+1:]),
-            )
-    elif tokens[max_operator].value in TernaryOperator:
+        expression = _expression_sa(tokens[max_operator + 1:])
+        fi = operator.file_info + expression.file_info
+        return UnaryExpression(operator, expression, fi)
+    elif tokens[max_operator].value in BinaryOperatorEnum:
+        operator = BinaryOperator(
+            BinaryOperatorEnum(tokens[max_operator].value),
+            tokens[max_operator].file_info,
+        )
+        expression1 = _expression_sa(tokens[:max_operator])
+        expression2 = _expression_sa(tokens[max_operator + 1:])
+        fi = expression1.file_info + expression2.file_info
+        return BinaryExpression(operator, expression1, expression2, fi)
+    elif tokens[max_operator].value in TernaryOperatorEnum:
         condition = _expression_sa(tokens[:max_operator])
         del tokens[:max_operator]
-        true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':')))
+        operator = TernaryOperator(
+            TernaryOperatorEnum.TernaryConditional, tokens[0].file_info)
+        true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':'))[1])
         false_expr = _expression_sa(tokens)
-        return TernaryExpression(
-            TernaryOperator.TernaryConditional,
-            condition,
-            true_expr,
-            false_expr,
-        )
+        fi = condition.file_info + false_expr.file_info
+        return TernaryExpression(operator, condition, true_expr, false_expr, fi)
     else: raise CompilerError(
             "Expression Error", tokens[max_operator].file_info)
 
@@ -1322,150 +1826,23 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
     token = tokens.pop(0)
     if isinstance(token, lexer.Keyword):
         match token.value:
-            case 'let' | 'static' as key:
-                static = key == 'static'
-                if static:
-                    token = tokens.pop(0)
-                    _assert_token(ExpectedKeyword, token, 'let')
-                identifier = tokens.pop(0)
-                _assert_token(ExpectedIdentifier, identifier)
-                token = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, token, ':')
-                pointer, data_type = _data_type_sa(tokens)
-                token = tokens.pop(0)
-                _assert_token(ExpectedPunctuation, token)
-                if token.value not in ['=', ';']:
-                    raise UnexpectedPunctuation(token, ['=', ';'])
-                elif token.value == '=':
-                    token = tokens.pop(0)
-                    _assert_token_literal(token)
-                    literal = _literal_map(token) # type: ignore
-                    token = tokens.pop(0)
-                    _assert_token(ExpectedPunctuation, token)
-                    if token.value != ';':
-                        raise UnexpectedPunctuation(token, ';')
-                else: literal = None
-                return LetStatement(
-                    Identifier(identifier.value),
-                    data_type,
-                    pointer,
-                    static,
-                    literal,
-                )
+            case 'let' | 'static':
+                return LetStatement._sa(tokens, token)
             case 'break' | 'continue' as key:
+                fi = token.file_info
                 token = tokens.pop(0)
                 _assert_token(ExpectedPunctuation, token, ';')
-                return LoopStatements(key)
+                return LoopStatements(
+                    LoopStatementsEnum(key), fi + token.file_info)
             case 'if':
-                condition = _expression_sa(_get_nested_group(tokens))
-                if tokens[0].value == '{':
-                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-                else:
-                    code = [_statement_sa(tokens)]
-                if tokens and tokens[0].value == 'else':
-                    token = tokens.pop(0)
-                    if tokens[0].value == '{':
-                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
-                            tokens, ('{','}'))))
-                    else:
-                        else_block = ElseBlock([_statement_sa(tokens)])
-                else:
-                    else_block = None
-                return IfBlock(condition, code, else_block)
+                return IfBlock._sa(tokens, token)
             case 'do':
-                if tokens[0].value == '{':
-                    code1 = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-                else:
-                    code1 = [_statement_sa(tokens)]
-                token = tokens.pop(0)
-                _assert_token(ExpectedKeyword, token, 'while')
-                condition = _expression_sa(_get_nested_group(tokens))
-                if tokens[0].value == '{':
-                    code2 = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-                elif tokens[0].value != 'else':
-                    code2 = [_statement_sa(tokens)]
-                    if isinstance(code2[0], NoOperation):
-                        code2 = None
-                else:
-                    code2 = None
-                if tokens and tokens[0].value == 'else':
-                    token = tokens.pop(0)
-                    if tokens[0].value == '{':
-                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
-                            tokens, ('{','}'))))
-                    else:
-                        else_block = ElseBlock([_statement_sa(tokens)])
-                else:
-                    else_block = None
-                return DoBlock(code1, condition, code2, else_block)
+                return DoBlock._sa(tokens, token)
             case 'while':
-                condition = _expression_sa(_get_nested_group(tokens))
-                if tokens[0].value == '{':
-                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-                else:
-                    code = [_statement_sa(tokens)]
-                if tokens and tokens[0].value == 'else':
-                    token = tokens.pop(0)
-                    if tokens[0].value == '{':
-                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
-                            tokens, ('{','}'))))
-                    else:
-                        else_block = ElseBlock([_statement_sa(tokens)])
-                else:
-                    else_block = None
-                return WhileBlock(condition, code, else_block)
+                return WhileBlock._sa(tokens, token)
             case 'for':
-                three_expressions = _get_nested_group(tokens)
-                token = three_expressions.pop(0)
-                pre_loop_tokens: list[lexer.Token] = []
-                while token.value != ';':
-                    pre_loop_tokens.append(token)
-                    token = three_expressions.pop(0)
-                if (
-                    isinstance(pre_loop_tokens[0], lexer.Identifier) and
-                    pre_loop_tokens[1].value == ':'
-                ):
-                    identifier = Identifier(pre_loop_tokens.pop(0).value)
-                    token = pre_loop_tokens.pop(0)
-                    _assert_token(ExpectedPunctuation, token, ':')
-                    pointer, data_type = _data_type_sa(pre_loop_tokens)
-                    if pre_loop_tokens:
-                        token = pre_loop_tokens.pop(0)
-                        _assert_token(ExpectedPunctuation, token, '=')
-                        pre_loop_expr = _expression_sa(pre_loop_tokens)
-                    else:
-                        pre_loop_expr = None
-                    pre_loop = ForPreDef(
-                        identifier,
-                        data_type,
-                        pointer,
-                        pre_loop_expr,
-                    )
-                else:
-                    pre_loop = _expression_sa(pre_loop_tokens)
-                token = three_expressions.pop(0)
-                loop_condition_tokens: list[lexer.Token] = []
-                while token.value != ';':
-                    loop_condition_tokens.append(token)
-                    token = three_expressions.pop(0)
-                condition = _expression_sa(loop_condition_tokens)
-                post_loop = _expression_sa(three_expressions)
-                if tokens[0].value == '{':
-                    code = _code_block_sa(_get_nested_group(tokens, ('{','}')))
-                else:
-                    code = [_statement_sa(tokens)]
-                if tokens and tokens[0].value == 'else':
-                    token = tokens.pop(0)
-                    if tokens[0].value == '{':
-                        else_block = ElseBlock(_code_block_sa(_get_nested_group(
-                            tokens, ('{','}'))))
-                    else:
-                        else_block = ElseBlock([_statement_sa(tokens)])
-                else:
-                    else_block = None
-                return ForBlock(
-                    pre_loop, condition, code, post_loop, else_block)
-            case key if key not in BuiltInConst:
+                return ForBlock._sa(tokens, token)
+            case key if key not in BuiltInConstEnum:
                 raise UnexpectedKeyword(token, [
                     'static',
                     'let',
@@ -1475,39 +1852,12 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
                     'do',
                     'while',
                     'for',
-                ] + [i.value for i in BuiltInConst])
+                ] + [i.value for i in BuiltInConstEnum])
     elif token.value == ';':
-        return NoOperation()
-    expr_tokens: list[lexer.Token] = [token] + _get_to_symbol(tokens)
+        return NoOperation(token.file_info)
+    expr_tokens: list[lexer.Token] = [token] + _get_to_symbol(tokens)[0]
     return _expression_sa(expr_tokens)
 
-def _file_sa(tokens: list[lexer.Token]) -> File:
-    children: list[Directive | StructBlock | FunctionBlock | EnumBlock] = []
-
-    while tokens:
-        token = tokens.pop(0)
-        _assert_token_mult(token, (lexer.Directive, lexer.Keyword))
-        if isinstance(token, lexer.Directive):
-            children.append(Directive(token.value))
-        elif isinstance(token, lexer.Keyword):
-            match token.value:
-                case 'struct':
-                    children.append(
-                        _struct_sa(tokens))
-                case 'enum':
-                    children.append(
-                        _enumeration_sa(tokens))
-                case 'fn':
-                    children.append(
-                        _function_sa(tokens))
-                case _:
-                    raise ExpectedKeyword(token, "struct', 'enum', or 'fn")
-        else:
-            raise UnexpectedToken(token, "directive' or 'keyword")
-
-    return File(children)
-
-
 def syntactical_analyzer(tokens: Sequence[lexer.Token]) -> File:
-    return _file_sa(list(tokens))
+    return File._sa(list(tokens))
 
