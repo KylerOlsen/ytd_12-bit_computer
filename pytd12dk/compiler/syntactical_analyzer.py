@@ -8,7 +8,9 @@ from .compiler_types import CompilerError , FileInfo
 from . import lexer
 
 
-class SyntaxError(CompilerError): pass
+class SyntaxError(CompilerError):
+
+    _compiler_error_type = "Syntax"
 
 
 class UnexpectedEndOfTokenStream(SyntaxError): pass
@@ -82,7 +84,7 @@ class _UnexpectedTokenBase(_ExpectedTokenBase):
                 s = ""
                 for i in expected[:-1]:
                     s += i + "', '"
-                s = s[:-1] + "or '" + i
+                s = s[:-1] + "or '" + expected[-1]
                 expected = s
             else:
                 expected = expected[0]
@@ -1620,7 +1622,8 @@ def _assert_token_literal(
         )
     if isinstance(token, lexer.Keyword):
         if token.value not in BuiltInConstEnum:
-            raise UnexpectedKeyword(token, [i.value for i in BuiltInDataTypeEnum])
+            raise UnexpectedKeyword(
+                token, [i.value for i in BuiltInDataTypeEnum])
 
 def _literal_map(literal: (
     lexer.Keyword |

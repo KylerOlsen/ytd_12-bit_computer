@@ -1,7 +1,6 @@
 # Kyler Olsen
 # Feb 2024
 
-from textwrap import indent
 from typing import Sequence
 import argparse
 
@@ -24,24 +23,7 @@ def _compile(args: argparse.Namespace):
 
 def compile(args: argparse.Namespace):
     try: _compile(args)
-    except LexerError as e:
-        print(
-            f"[Lexical Error] {type(e).__name__}:\n"
-            f"{indent(str(e), '   |', lambda _: True)}"
-        )
-        # raise
-    except SyntaxError as e:
-        print(
-            f"[Syntax Error] {type(e).__name__}:\n"
-            f"{indent(str(e), '   |', lambda _: True)}"
-        )
-        # raise
-    except CompilerError as e:
-        print(
-            f"[Compiler Error] {type(e).__name__}:\n"
-            f"{indent(str(e), '   |', lambda _: True)}"
-        )
-        # raise
+    except CompilerError as e: print(e.compiler_error())
     except Exception as e:
         raise Exception(
             "You found an error in the compiler!\n"

@@ -7,7 +7,9 @@ from typing import ClassVar, Sequence
 from .compiler_types import CompilerError, FileInfo
 
 
-class LexerError(CompilerError): pass
+class LexerError(CompilerError):
+
+    _compiler_error_type = "Lexical"
 
 
 class _InterTokenType(Enum):
