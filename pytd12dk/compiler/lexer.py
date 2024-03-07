@@ -7,6 +7,9 @@ from typing import ClassVar, Sequence
 from .compiler_types import CompilerError, FileInfo
 
 
+class LexerError(CompilerError): pass
+
+
 class _InterTokenType(Enum):
     Generic = 'Generic'
     Directive = 'Directive'
@@ -125,12 +128,6 @@ _Punctuation = (
     "{",   "}",   "[",  "]",  "(",  ")",
     "?",   ".",   "->", ",",  ";",  ":",
 )
-
-
-class LexerError(CompilerError):
-
-    def __init__(self, message: str, file_info: FileInfo):
-        super().__init__(message, file_info)
 
 
 class Token:

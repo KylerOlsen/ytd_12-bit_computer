@@ -8,10 +8,13 @@ from .compiler_types import CompilerError , FileInfo
 from . import lexer
 
 
-class UnexpectedEndOfTokenStream(CompilerError): pass
+class SyntaxError(CompilerError): pass
 
 
-class _ExpectedTokenBase(CompilerError):
+class UnexpectedEndOfTokenStream(SyntaxError): pass
+
+
+class _ExpectedTokenBase(SyntaxError):
 
     _token_type = lexer.Token
 
@@ -119,6 +122,9 @@ class UnexpectedStringLiteral(_UnexpectedTokenBase):
     _type_name = lexer.StringLiteral
 class UnexpectedPunctuation(_UnexpectedTokenBase):
     _type_name = lexer.Punctuation
+
+
+class ExpressionError(Exception): pass
 
 
 type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
@@ -865,8 +871,8 @@ class ForBlock:
 
     @staticmethod
     def _sa(tokens: list[lexer.Token], stoken: lexer.Token) -> "ForBlock":
-        three_expressions = _get_nested_group(tokens)[1]
-        pre_loop_tokens = _get_to_symbol(three_expressions)[0]
+        _, three_expressions, closing_parentheses = _get_nested_group(tokens)
+        pre_loop_tokens, semicolon = _get_to_symbol(three_expressions)
         if (
             isinstance(pre_loop_tokens[0], lexer.Identifier) and
             pre_loop_tokens[1].value == ':'
@@ -879,6 +885,9 @@ class ForBlock:
             if pre_loop_tokens:
                 token = pre_loop_tokens.pop(0)
                 _assert_token(ExpectedPunctuation, token, '=')
+                if not pre_loop_tokens:
+                    fi = semicolon.file_info
+                    raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
                 pre_loop_expr = _expression_sa(pre_loop_tokens)
             else:
                 pre_loop_expr = None
@@ -894,9 +903,18 @@ class ForBlock:
                 fi,
             )
         else:
+            if not pre_loop_tokens:
+                fi = semicolon.file_info
+                raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
             pre_loop = _expression_sa(pre_loop_tokens)
-        loop_condition_tokens = _get_to_symbol(three_expressions)[0]
+        loop_condition_tokens, semicolon = _get_to_symbol(three_expressions)
+        if not loop_condition_tokens:
+            fi = semicolon.file_info
+            raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
         condition = _expression_sa(loop_condition_tokens)
+        if not three_expressions:
+            fi = closing_parentheses.file_info
+            raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
         post_loop = _expression_sa(three_expressions)
         if tokens[0].value == '{':
             code = _code_block_sa(_get_nested_group(tokens, ('{','}'))[1])
@@ -957,7 +975,11 @@ class WhileBlock:
 
     @staticmethod
     def _sa(tokens: list[lexer.Token], token: lexer.Token) -> "WhileBlock":
-        condition = _expression_sa(_get_nested_group(tokens)[1])
+        _, condition_tokens, closing_parentheses = _get_nested_group(tokens)
+        if not condition_tokens:
+            fi = closing_parentheses.file_info
+            raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
+        condition = _expression_sa(condition_tokens)
         if tokens[0].value == '{':
             code_tokens = _get_nested_group(tokens, ('{','}'))[1]
             code = _code_block_sa(code_tokens)
@@ -1039,7 +1061,10 @@ class DoBlock:
             code1 = [_statement_sa(tokens)]
         token = tokens.pop(0)
         _assert_token(ExpectedKeyword, token, 'while')
-        condition_tokens = _get_nested_group(tokens)[1]
+        _, condition_tokens, closing_parentheses = _get_nested_group(tokens)
+        if not condition_tokens:
+            fi = closing_parentheses.file_info
+            raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
         last_token = condition_tokens[-1]
         condition = _expression_sa(condition_tokens)
         if tokens[0].value == '{':
@@ -1108,7 +1133,11 @@ class IfBlock:
 
     @staticmethod
     def _sa(tokens: list[lexer.Token], token: lexer.Token) -> "IfBlock":
-        condition = _expression_sa(_get_nested_group(tokens)[1])
+        _, condition_tokens, closing_parentheses = _get_nested_group(tokens)
+        if not condition_tokens:
+            fi = closing_parentheses.file_info
+            raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
+        condition = _expression_sa(condition_tokens)
         if tokens[0].value == '{':
             code = _code_block_sa(_get_nested_group(tokens, ('{','}'))[1])
         else:
@@ -1579,7 +1608,7 @@ def _assert_token_literal(
         lexer.StringLiteral,
     )
     if not isinstance(token, token_types):
-        raise ExpectedLiteral(
+        raise UnexpectedToken(
             token,
             [i.__name__ for i in token_types], # type: ignore
             type(token).__name__,
@@ -1614,7 +1643,7 @@ def _assert_token_value(
         lexer.StringLiteral,
     )
     if not isinstance(token, token_types):
-        raise ExpectedLiteral(
+        raise UnexpectedToken(
             token,
             [i.__name__ for i in token_types], # type: ignore
             type(token).__name__,
@@ -1717,16 +1746,18 @@ def _code_block_sa(tokens: list[lexer.Token]) -> list[Statement]:
     return code
 
 def _expression_sa(tokens: list[lexer.Token]) -> Expression:
-    # print([str(i) for i in tokens])
     if not tokens:
-        raise UnexpectedEndOfTokenStream(
-            "Unexpected Expression.", None) # type: ignore
-    if tokens[0].value == '(' and tokens[-1].value == ')':
-        return _expression_sa(tokens[1:-1])
+        raise ExpressionError("Expected Expression.")
     elif len(tokens) == 1:
         token = tokens.pop(0)
         _assert_token_value(token)
         return _value_map(token) # type: ignore
+    elif tokens[0].value == '(' and tokens[-1].value == ')':
+        if not tokens[1:-1]:
+            fi = tokens[0].file_info + tokens[-1].file_info
+            raise UnexpectedEndOfTokenStream(
+                "Expected expression between '(' and ')'.", fi)
+        return _expression_sa(tokens[1:-1])
 
     max_operator: int = -1
     max_operator_precedence: int = -1
@@ -1764,6 +1795,9 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
                     del arg_tokens[:2]
                 else:
                     arg_identifier = None
+                if not arg_tokens:
+                    fi = last_token.file_info
+                    raise UnexpectedEndOfTokenStream("Expected Expression.", fi)
                 expression = _expression_sa(arg_tokens)
                 if arg_identifier is not None:
                     fi = arg_identifier.file_info + expression.file_info
@@ -1789,6 +1823,12 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
             PostfixUnaryOperatorEnum(tokens[max_operator].value),
             tokens[max_operator].file_info,
         )
+        if not tokens[:max_operator]:
+            fi = tokens[max_operator].file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression before '{tokens[max_operator].value}'.",
+                fi,
+            )
         expression = _expression_sa(tokens[:max_operator])
         fi = expression.file_info + operator.file_info
         return UnaryExpression(operator, expression, fi)
@@ -1800,6 +1840,12 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
             PrefixUnaryOperatorEnum(tokens[max_operator].value),
             tokens[max_operator].file_info,
         )
+        if not tokens[max_operator + 1:]:
+            fi = tokens[max_operator].file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression after '{tokens[max_operator].value}'.",
+                fi,
+            )
         expression = _expression_sa(tokens[max_operator + 1:])
         fi = operator.file_info + expression.file_info
         return UnaryExpression(operator, expression, fi)
@@ -1808,20 +1854,52 @@ def _expression_sa(tokens: list[lexer.Token]) -> Expression:
             BinaryOperatorEnum(tokens[max_operator].value),
             tokens[max_operator].file_info,
         )
+        if not tokens[:max_operator]:
+            fi = tokens[max_operator].file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression before '{tokens[max_operator].value}'.",
+                fi,
+            )
         expression1 = _expression_sa(tokens[:max_operator])
+        if not tokens[max_operator + 1:]:
+            fi = tokens[max_operator].file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression after '{tokens[max_operator].value}'.",
+                fi,
+            )
         expression2 = _expression_sa(tokens[max_operator + 1:])
         fi = expression1.file_info + expression2.file_info
         return BinaryExpression(operator, expression1, expression2, fi)
     elif tokens[max_operator].value in TernaryOperatorEnum:
+        if not tokens[:max_operator]:
+            fi = tokens[max_operator].file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression before '{tokens[max_operator].value}'.",
+                fi,
+            )
         condition = _expression_sa(tokens[:max_operator])
         del tokens[:max_operator]
         operator = TernaryOperator(
             TernaryOperatorEnum.TernaryConditional, tokens[0].file_info)
-        true_expr = _expression_sa(_get_nested_group(tokens, ('?', ':'))[1])
+        first_op, true_tokens, second_op = _get_nested_group(tokens, ('?', ':'))
+        if not true_tokens:
+            fi = first_op.file_info + second_op.file_info
+            raise UnexpectedEndOfTokenStream(
+                "Expected expression between "
+                f"'{first_op.value}' and '{second_op.value}'.",
+                fi,
+            )
+        true_expr = _expression_sa(true_tokens)
+        if not tokens:
+            fi = second_op.file_info
+            raise UnexpectedEndOfTokenStream(
+                f"Expected expression after '{second_op.value}'.",
+                fi,
+            )
         false_expr = _expression_sa(tokens)
         fi = condition.file_info + false_expr.file_info
         return TernaryExpression(operator, condition, true_expr, false_expr, fi)
-    else: raise CompilerError(
+    else: raise SyntaxError(
             "Expression Error", tokens[max_operator].file_info)
 
 def _statement_sa(tokens: list[lexer.Token]) -> Statement:

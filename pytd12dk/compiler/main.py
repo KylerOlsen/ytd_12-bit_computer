@@ -1,30 +1,53 @@
 # Kyler Olsen
 # Feb 2024
 
+from textwrap import indent
 from typing import Sequence
 import argparse
 
 from .compiler_types import CompilerError
-from .lexer import lexer
-from .syntactical_analyzer import syntactical_analyzer
+from .lexer import lexer, LexerError
+from .syntactical_analyzer import syntactical_analyzer, SyntaxError
 
-def compile(args: argparse.Namespace):
-    try: tokens = lexer(args.input_file.read(), args.input_file.name)
-    except CompilerError as e:
-        print(type(e).__name__+':', e)
-        return
+
+def _compile(args: argparse.Namespace):
+    tokens = lexer(args.input_file.read(), args.input_file.name)
 
     if args.token_file:
         for token in tokens:
             args.token_file.write(str(token) + "\n")
 
-    try: syntax = syntactical_analyzer(tokens)
-    except CompilerError as e:
-        print(type(e).__name__+':', e)
-        return
+    syntax = syntactical_analyzer(tokens)
 
     if args.syntax_file:
         args.syntax_file.write(syntax.tree_str())
+
+def compile(args: argparse.Namespace):
+    try: _compile(args)
+    except LexerError as e:
+        print(
+            f"[Lexical Error] {type(e).__name__}:\n"
+            f"{indent(str(e), '   |', lambda _: True)}"
+        )
+        # raise
+    except SyntaxError as e:
+        print(
+            f"[Syntax Error] {type(e).__name__}:\n"
+            f"{indent(str(e), '   |', lambda _: True)}"
+        )
+        # raise
+    except CompilerError as e:
+        print(
+            f"[Compiler Error] {type(e).__name__}:\n"
+            f"{indent(str(e), '   |', lambda _: True)}"
+        )
+        # raise
+    except Exception as e:
+        raise Exception(
+            "You found an error in the compiler!\n"
+            "\tPlease report this issue on Github:\n"
+            "\thttps://github.com/KylerOlsen/ytd_12-bit_computer/issues"
+        ) from e
 
 def parser(parser: argparse.ArgumentParser):
     parser.add_argument(

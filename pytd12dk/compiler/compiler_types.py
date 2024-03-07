@@ -67,21 +67,20 @@ class CompilerError(Exception):
 
     def __init__(self, message: str, file_info: FileInfo):
         new_message = message
-        if file_info is not None:
-            new_message += (
-                f"\nIn file {file_info.filename} at line {file_info.line} "
-            )
-            if file_info.lines:
-                new_message += f"to line {file_info.line + file_info.lines}"
-                with open(file_info.filename, 'r') as file:
-                    new_message += ''.join(
-                        file.readlines()[
-                            file_info.line-1:file_info.line + file_info.lines])
-            else:
-                new_message += f"col {file_info.col}\n\n"
-                with open(file_info.filename, 'r') as file:
-                    new_message += file.readlines()[file_info.line-1]
-                new_message += ' ' * (
-                    file_info.col - 1) + '^' * file_info.length
+        new_message += (
+            f"\nIn file {file_info.filename} at line {file_info.line} "
+        )
+        if file_info.lines:
+            new_message += f"to line {file_info.line + file_info.lines}"
+            with open(file_info.filename, 'r') as file:
+                new_message += ''.join(
+                    file.readlines()[
+                        file_info.line-1:file_info.line + file_info.lines])
+        else:
+            new_message += f"col {file_info.col}\n\n"
+            with open(file_info.filename, 'r') as file:
+                new_message += file.readlines()[file_info.line-1]
+            new_message += ' ' * (
+                file_info.col - 1) + '^' * file_info.length
 
         super().__init__(new_message)
