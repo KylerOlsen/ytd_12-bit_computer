@@ -4,17 +4,24 @@
 from typing import Sequence
 import argparse
 
+from .compiler_types import CompilerError
 from .lexer import lexer
 from .syntactical_analyzer import syntactical_analyzer
 
 def compile(args: argparse.Namespace):
-    tokens = lexer(args.input_file.read(), args.input_file.name)
+    try: tokens = lexer(args.input_file.read(), args.input_file.name)
+    except CompilerError as e:
+        print(type(e).__name__+':', e)
+        return
 
     if args.token_file:
         for token in tokens:
             args.token_file.write(str(token) + "\n")
 
-    syntax = syntactical_analyzer(tokens)
+    try: syntax = syntactical_analyzer(tokens)
+    except CompilerError as e:
+        print(type(e).__name__+':', e)
+        return
 
     if args.syntax_file:
         args.syntax_file.write(syntax.tree_str())
