@@ -1660,7 +1660,9 @@ def _get_nested_group(
             break
     else:
         raise UnexpectedEndOfTokenStream(
-            "Unexpected End of Token Stream.", tokens[-1].file_info)
+            f"Expected '{encloses[1]}' but found '{tokens[-1].value}'.",
+            tokens[-1].file_info,
+        )
     expr_tokens = tokens[:expr_len]
     last_token = tokens[expr_len]
     del tokens[:expr_len+1]
