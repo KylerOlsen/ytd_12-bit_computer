@@ -71,7 +71,7 @@ About
 - Typing Discipline: ~~Typeless~~ Static, Weak
 - Platform: ytd 12-bit computer,
 ytd 12-bit emulator (from *pytd12dk*, multi-platform)
-- License: *Tentatively MIT*
+- License: MIT
 - Filename extension: `.ytd12c`
 - Compiler Implementations: `pytd12dk` (Python),
 `ytd12nc` (*bootstrapped compiler*)
@@ -432,23 +432,7 @@ compiler, assembler with linker, and emulator.
 ## ytd12nc
 
 `ytd12nc` (ytd 12-bit native compiler) is a compiler and assembler with linker
-set written in the native high-level programming language and assembly language
+written in the native high-level programming language and assembly language
 to compile software for the ytd 12-bit computer natively.
 
 Currently development of `ytd12nc` has not yet started.
-
-### Bootstrapping
-
-In order to compile the the compiler, we need a compiler to compile it. This
-process is called *bootstrapping* as it is like pulling ourselves up by our
-bootstraps. This requires writing a compiler in assembly language or another
-high-level programming language. In our case we are lucky to have the compiler
-that is apart of `pytd12dk`.
-
-| Compiler | *Compiler* Compiler | *Compiler Compiler* Compiler |
-| --- | --- | --- |
-| `pytd12dk` | `CPython` | `gcc`, `clang`, or other C compiler |
-| `ytd12nc` (a) | `pytd12dk` | `CPython` |
-| `ytd12nc` (b) | `ytd12nc` (a) | `pytd12dk` |
-| `ytd12nc` (c) | `ytd12nc` (b) | `ytd12nc` (a) |
-| `ytd12nc` (d) | `ytd12nc` (c) | `ytd12nc` (b) |

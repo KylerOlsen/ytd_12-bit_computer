@@ -5,8 +5,8 @@ from typing import Sequence
 import argparse
 
 from .compiler_types import CompilerError
-from .lexer import lexer, LexerError
-from .syntactical_analyzer import syntactical_analyzer, SyntaxError
+from .lexer import lexer
+from .syntactical_analyzer import syntactical_analyzer
 
 
 def _compile(args: argparse.Namespace):
