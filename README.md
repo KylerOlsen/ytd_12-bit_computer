@@ -456,6 +456,16 @@ semicolon (`;`).
 
 ### Semantics
 
+**NOTICE: This section describes the plan on how the semantical analyzer will be
+implemented in the `pytd12dk` implementation.**
+
+First the semantical analyzer converts the syntax tree into an instruction list.
+
+### Directive Compilation
+
+Currently directives are discarded by the compiler. In future versions of the
+language, directives will be used.
+
 ## pytd12dk
 
 `pytd12dk` (Python ytd 12-bit development kit) is a tool set written in Python
@@ -579,17 +589,17 @@ Here are the pre-configured virtual machine(s) included with `pytd12dk`.
 
 The machine `tty` includes a tty IO device.
 
-Writing to address `0x7FD` outputs a signed integer.
+- Writing to address `0x7FD` outputs a signed integer.
 
-Writing to address `0x7FE` outputs an unsigned integer.
+- Writing to address `0x7FE` outputs an unsigned integer.
 
-Writing to address `0x7FF` outputs an ASCII/UTF-8 character.
+- Writing to address `0x7FF` outputs an ASCII/UTF-8 character.
 
-<!-- Reading from address `0x7FD` inputs a signed integer. -->
+<!-- - Reading from address `0x7FD` inputs a signed integer. -->
 
-<!-- Reading from address `0x7FE` inputs an unsigned integer. -->
+<!-- - Reading from address `0x7FE` inputs an unsigned integer. -->
 
-Reading from address `0x7FF` inputs an ASCII/UTF-8 character.
+- Reading from address `0x7FF` inputs an ASCII/UTF-8 character.
 
 ## ytd12nc
 
