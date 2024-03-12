@@ -13,14 +13,14 @@ currently in development.
 
 ### Registers
 
-- `ZR`
-- `PC`
-- `SP`
-- `MP`
-- `D0`
-- `D1`
-- `D2`
-- `D3`
+- `ZR`: Zero Register
+- `PC`: Program Counter
+- `SP`: Stack Pointer
+- `MP`: Memory Pointer
+- `D0`: Data 0
+- `D1`: Data 1
+- `D2`: Data 2
+- `D3`: Data 3
 
 ### Zero Operand Instructions
 
@@ -33,33 +33,72 @@ currently in development.
 
 ### One Operand Instructions
 
-- `GLA` `Destination Register`
-- `GET` `Destination Register`
-- `LOD` `Destination Register`
-- `STR` `Source Register`
-- `POP` `Destination Register`
-- `PSH` `Source Register`
-- `LIU` `Immediate Value`
-- `LDI` `Immediate Value`
-- `LDI` :`Label`
-- `LIL` `Immediate Value`
+- `GLA` *`Destination Register`*
+- `GET` *`Destination Register`*
+- `LOD` *`Destination Register`*
+- `STR` *`Source Register`*
+- `POP` *`Destination Register`*
+- `PSH` *`Source Register`*
+- `LIU` *`Immediate Value (Integer)`*
+- `LDI` *`Immediate Value (Integer)`*
+- `LDI` `:`*`Label`*
+- `LIL` *`Immediate Value (Integer)`*
 
 ### Two Operand Instructions
 
-- `LSH` `Destination Register` `Source Register`
-- `RSH` `Destination Register` `Source Register`
-- `INC` `Destination Register` `Source Register`
-- `DEC` `Destination Register` `Source Register`
+- `LSH` *`Destination Register`* *`Source Register`*
+- `RSH` *`Destination Register`* *`Source Register`*
+- `INC` *`Destination Register`* *`Source Register`*
+- `DEC` *`Destination Register`* *`Source Register`*
 
 ### Three Operand Instructions
 
-- `AND` `Destination Register` `Source Register A` `Source Register B`
-- `OR` `Destination Register` `Source Register A` `Source Register B`
-- `SUB` `Destination Register` `Source Register A` `Source Register B`
-- `XOR` `Destination Register` `Source Register A` `Source Register B`
-- `NOR` `Destination Register` `Source Register A` `Source Register B`
-- `NAD` `Destination Register` `Source Register A` `Source Register B`
-- `ADD` `Destination Register` `Source Register A` `Source Register B`
+- `AND` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `OR` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `SUB` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `XOR` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `NOR` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `NAD` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+- `ADD` *`Destination Register`* *`Source Register A`* *`Source Register B`*
+
+### Labels
+
+*`Label`*`:`
+
+### Memory Location
+
+`.`*`Integer`*
+
+### Example
+
+```
+; Yeahbut - Feb 2024
+; Fibonacci
+
+.0x0
+main:
+    ; Initialize Fibonacci values
+    ldi 1
+    or D0 MP ZR
+    or D1 ZR ZR
+    or D2 ZR ZR
+
+loop:
+    ; Output current value
+    liu 0x1f
+    lil 0x3D
+    str D0
+
+    ; Move values down
+    or D2 D1 ZR
+    or D1 D0 ZR
+
+    ; Add last two values to get the next value
+    add D0 D1 D2
+
+    ldi :loop
+    or PC MP ZR
+```
 
 ## High Level Language
 *WIP*
@@ -68,7 +107,7 @@ About
 - Paradigm: Multi-Paradigm: Procedural (Imperative), Structured
 - Designer: Kyler Olsen
 - Created: Mar 2024
-- Typing Discipline: Static, Weak
+- Typing Discipline: Static, Weak, Manifest
 - Platform: ytd 12-bit computer,
 ytd 12-bit emulator (from *pytd12dk*, multi-platform)
 - License: MIT
@@ -91,9 +130,9 @@ Single-line comments start with `//` and end at the end of a line.
 
 Multi-line comments start with `/*` and end with `*/`.
 
-**pytd12dk implementation detail**: Comments and their content are ultimately
-ignored by the lexer after they are tokenized. There are no comments in the
-output of the lexer.
+**pytd12dk implementation detail**: Comments and their content are ignored by
+the lexer after they are tokenized. There are no comments in the output of
+the lexer.
 
 #### Identifiers
 
