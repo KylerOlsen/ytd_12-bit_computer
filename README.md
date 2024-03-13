@@ -456,14 +456,14 @@ semicolon (`;`).
 
 ### Semantics
 
-**NOTICE: This section describes the plan on how the semantical analyzer will be
-implemented in the `pytd12dk` implementation.**
+<!-- **NOTICE: This section describes the plan on how the semantical analyzer will be
+implemented in the `pytd12dk` implementation.** -->
 
-First the semantical analyzer converts the syntax tree into an instruction list.
+<!-- First the semantical analyzer converts the syntax tree into an instruction list. -->
 
 ### Directive Compilation
 
-Currently directives are discarded by the compiler. In future versions of the
+Currently directives are ignored by the compiler. In future versions of the
 language, directives will be used.
 
 ## pytd12dk
