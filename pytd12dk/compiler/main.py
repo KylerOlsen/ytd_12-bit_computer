@@ -7,6 +7,7 @@ import argparse
 from .compiler_types import CompilerError
 from .lexer import lexer
 from .syntactical_analyzer import syntactical_analyzer
+from .semantical_analyzer import semantical_analyzer
 
 
 def _compile(args: argparse.Namespace):
@@ -16,10 +17,15 @@ def _compile(args: argparse.Namespace):
         for token in tokens:
             args.token_file.write(str(token) + "\n")
 
-    syntax = syntactical_analyzer(tokens)
+    syntax_tree = syntactical_analyzer(tokens)
 
     if args.syntax_file:
-        args.syntax_file.write(syntax.tree_str())
+        args.syntax_file.write(syntax_tree.tree_str())
+
+    annotated_syntax_tree = semantical_analyzer(syntax_tree)
+
+    if args.annotated_file:
+        args.annotated_file.write(annotated_syntax_tree.tree_str())
 
 def compile(args: argparse.Namespace):
     try: _compile(args)
@@ -39,6 +45,8 @@ def parser(parser: argparse.ArgumentParser):
         '-t', '--token_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.add_argument(
         '-x', '--syntax_file', type=argparse.FileType('w', encoding='utf-8'))
+    parser.add_argument(
+        '-n', '--annotated_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.set_defaults(func=compile)
 
 def main(argv: Sequence[str] | None = None):

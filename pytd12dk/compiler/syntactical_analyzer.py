@@ -2,9 +2,9 @@
 # Feb 2024
 
 from enum import Enum
-from typing import Sequence
+from typing import Iterable, Sequence
 
-from .compiler_types import CompilerError , FileInfo
+from .compiler_types import CompilerError, FileInfo
 from . import lexer
 
 
@@ -1547,6 +1547,15 @@ class File:
         self._file_info = file_info
 
     @property
+    def children(self) -> list[
+        Directive |
+        StructBlock |
+        FunctionBlock |
+        EnumBlock
+    ]:
+        return self._children[:]
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self) -> str:
@@ -1948,4 +1957,3 @@ def _statement_sa(tokens: list[lexer.Token]) -> Statement:
 
 def syntactical_analyzer(tokens: Sequence[lexer.Token]) -> File:
     return File._sa(list(tokens))
-
