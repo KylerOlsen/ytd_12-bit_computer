@@ -41,7 +41,7 @@ currently in development.
 - `PSH` *`Source Register`*
 - `LIU` *`Immediate Value (Integer)`*
 - `LDI` *`Immediate Value (Integer)`*
-- `LDI` `:`*`Label`*
+- `LDI` :*`Label`*
 - `LIL` *`Immediate Value (Integer)`*
 
 ### Two Operand Instructions
@@ -63,11 +63,11 @@ currently in development.
 
 ### Labels
 
-*`Label`*`:`
+*`Label`*:
 
 ### Memory Location
 
-`.`*`Integer`*
+.*`Integer`*
 
 ### Example
 

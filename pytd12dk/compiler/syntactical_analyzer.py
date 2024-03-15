@@ -450,6 +450,9 @@ class Identifier:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def content(self) -> str: return self._content
+
     def __str__(self) -> str: return self._content
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -472,6 +475,9 @@ class StringLiteral:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def content(self) -> str: return self._content
 
     def __str__(self) -> str: return self._content
 
@@ -496,6 +502,9 @@ class CharLiteral:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def content(self) -> str: return self._content
+
     def __str__(self) -> str: return self._content
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -518,6 +527,9 @@ class NumberLiteral:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def content(self) -> str: return self._content
 
     def __str__(self) -> str: return self._content
 
@@ -545,6 +557,9 @@ class FunctionArgument:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def identifier(self) -> Identifier | None: return self._identifier
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Argument\n"
         if self._identifier: s += f"{pre_cont}├─ Name: {self._identifier}\n"
@@ -570,6 +585,9 @@ class FunctionCall:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Call: {self._identifier}\n"
@@ -694,6 +712,9 @@ class LetStatement:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Let Statement: {self._identifier}\n"
@@ -1182,6 +1203,9 @@ class FunctionParameter:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Parameter: {self._identifier}\n"
         s += pre_cont
@@ -1217,6 +1241,21 @@ class FunctionBlock:
         self._return_type = return_type
         self._code = code[:]
         self._file_info = file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
+    @property
+    def params(self) -> list[FunctionParameter]: return self._params[:]
+
+    @property
+    def return_type_pointer(self) -> bool: return self._return_type_pointer
+
+    @property
+    def return_type(self) -> DataType | None: return self._return_type
+
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
@@ -1319,6 +1358,9 @@ class EnumMember:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum Member: {self._identifier}\n"
         if self._value is not None:
@@ -1345,12 +1387,15 @@ class EnumBlock:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum: {self._identifier}\n"
         if self._members:
             for member in self._members[:-1]:
                 s += member.tree_str(pre_cont + "├─", pre_cont + "│ ")
-            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
+            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
     @staticmethod
@@ -1418,6 +1463,9 @@ class StructureMember:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Struct Member: {self._identifier}\n"
         s += pre_cont
@@ -1448,6 +1496,9 @@ class StructBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Struct: {self._identifier}\n"

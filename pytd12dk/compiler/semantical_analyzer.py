@@ -2,17 +2,67 @@
 # Mar 2024
 
 from enum import Enum
-from typing import Any
 
 from .compiler_types import CompilerError, FileInfo
 from . import syntactical_analyzer
+
+
+class SyntaxError(CompilerError):
+
+    _compiler_error_type = "Semantic"
+
+
+type SymbolDefinitionTypes = (
+    InternalDefinition |
+    syntactical_analyzer.LetStatement |
+    syntactical_analyzer.ForPreDef |
+    syntactical_analyzer.StructBlock |
+    FunctionBlock |
+    syntactical_analyzer.EnumBlock
+)
+
+
+type SymbolReferenceTypes = (
+    syntactical_analyzer.Identifier |
+    syntactical_analyzer.StructBlock |
+    FunctionBlock |
+    syntactical_analyzer.EnumBlock
+)
+
+
+class InternalDefinition:
+
+    _identifier: syntactical_analyzer.Identifier
+    _type: syntactical_analyzer.DataType
+    _pointer: bool
+
+    def __init__(
+        self,
+        identifier: syntactical_analyzer.Identifier,
+        type: syntactical_analyzer.DataType,
+        pointer: bool,
+    ):
+        self._identifier = identifier
+        self._type = type
+        self._pointer = pointer
+
+    @property
+    def identifier(self) -> syntactical_analyzer.Identifier:
+        return self._identifier
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Let Statement: {self._identifier}\n"
+        s += pre_cont
+        s += '└─ Type: '
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        return s
 
 
 class SymbolType(Enum):
     struct = "struct"
     enum = "enum"
     function = "function"
-    builtin = "builtin"
     variable = "variable"
 
 
@@ -21,11 +71,18 @@ class Symbol:
     _name: str
     _static: bool
     _symbol_type: SymbolType
-    _references: list[Any]
+    _definition: SymbolDefinitionTypes
+    _references: list[SymbolReferenceTypes]
 
-    def __init__(self, name: str, symbol_type: SymbolType):
+    def __init__(
+        self,
+        name: str,
+        symbol_type: SymbolType,
+        definition: SymbolDefinitionTypes,
+    ):
         self._name = name
         self._symbol_type = symbol_type
+        self._definition = definition
         self._references = []
 
     @property
@@ -36,6 +93,9 @@ class Symbol:
 
     @property
     def references(self): return self._references[:]
+
+    def add_reference(self, ref: SymbolReferenceTypes):
+        self._references.append(ref)
 
 
 class SymbolTable:
@@ -105,12 +165,107 @@ class SymbolTable:
         else: return f"{pre} o-{title}-o\n"
 
 
+class FunctionBlock:
+
+    _identifier: syntactical_analyzer.Identifier
+    _params: list[syntactical_analyzer.FunctionParameter]
+    _return_type_pointer: bool
+    _return_type: syntactical_analyzer.DataType | None
+    _members: list[syntactical_analyzer.LetStatement]
+    _code: list[syntactical_analyzer.Statement]
+    _file_info: FileInfo
+    _symbol_table: SymbolTable
+
+    def __init__(
+        self,
+        identifier: syntactical_analyzer.Identifier,
+        params: list[syntactical_analyzer.FunctionParameter],
+        return_type_pointer: bool,
+        return_type: syntactical_analyzer.DataType | None,
+        members: list[syntactical_analyzer.LetStatement],
+        code: list[syntactical_analyzer.Statement],
+        file_info: FileInfo,
+        symbol_table: SymbolTable,
+    ):
+        self._identifier = identifier
+        self._params = params[:]
+        self._return_type_pointer = return_type_pointer
+        self._return_type = return_type
+        self._members = members[:]
+        self._code = code[:]
+        self._file_info = file_info
+        self._symbol_table = symbol_table
+
+    @property
+    def identifier(self) -> syntactical_analyzer.Identifier:
+        return self._identifier
+
+    @property
+    def params(self) -> list[syntactical_analyzer.FunctionParameter]:
+        return self._params[:]
+
+    @property
+    def return_type_pointer(self) -> bool: return self._return_type_pointer
+
+    @property
+    def return_type(self) -> syntactical_analyzer.DataType | None:
+        return self._return_type
+
+    @property
+    def members(self) -> list[syntactical_analyzer.LetStatement]:
+        return self._members[:]
+
+    @property
+    def code(self) -> list[syntactical_analyzer.Statement]: return self._code[:]
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function: {self._identifier}\n"
+        if self._params or self._code or self._return_type is not None:
+            s += self._symbol_table.table_str("GLOBAL", "├─", "│ ")
+        else:
+            s += self._symbol_table.table_str("GLOBAL", "└─", "  ")
+        if self._params:
+            if self._code or self._return_type is not None:
+                s += f"{pre_cont}├─ Parameters\n"
+                params_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Parameters\n"
+                params_pre = f"{pre_cont}  "
+            for param in self._params[:-1]:
+                s += param.tree_str(params_pre + "├─", params_pre + "│ ")
+            s += self._params[-1].tree_str(params_pre + "└─", params_pre + "  ")
+        if self._return_type is not None:
+            if self._code:
+                s += f"{pre_cont}├─ Return Type: "
+            else:
+                s += f"{pre_cont}└─ Return Type: "
+            if self._return_type_pointer: s+= "@"
+            s += f"{self._return_type}\n"
+        if self._code:
+            s += f"{pre_cont}└─ Code\n"
+            for code in self._code[:-1]:
+                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
+        return s
+
+    @staticmethod
+    def _sa(
+        func: syntactical_analyzer.FunctionBlock,
+        parent_table: SymbolTable,
+    ) -> "FunctionBlock":
+        symbol_table = SymbolTable(parent_table)
+
+
+
 class File:
 
     _children: list[
         syntactical_analyzer.Directive |
         syntactical_analyzer.StructBlock |
-        syntactical_analyzer.FunctionBlock |
+        FunctionBlock |
         syntactical_analyzer.EnumBlock
     ]
     _file_info: FileInfo
@@ -121,14 +276,15 @@ class File:
         children: list[
             syntactical_analyzer.Directive |
             syntactical_analyzer.StructBlock |
-            syntactical_analyzer.FunctionBlock |
+            FunctionBlock |
             syntactical_analyzer.EnumBlock
         ],
         file_info: FileInfo,
+        symbol_table: SymbolTable,
     ):
         self._children = children[:]
         self._file_info = file_info
-        self._symbol_table = SymbolTable()
+        self._symbol_table = symbol_table
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
@@ -146,17 +302,51 @@ class File:
 
     @staticmethod
     def _sa(syntax_tree: syntactical_analyzer.File) -> "File":
-        file = File(syntax_tree.children, syntax_tree._file_info)
-        for child in file._children:
+        symbol_table = SymbolTable()
+        children: list[
+            syntactical_analyzer.Directive |
+            syntactical_analyzer.StructBlock |
+            FunctionBlock |
+            syntactical_analyzer.EnumBlock
+        ] = []
+        for child in syntax_tree.children:
             symbol: Symbol | None = None
             if isinstance(child, syntactical_analyzer.StructBlock):
-                symbol = Symbol(child._identifier._content, SymbolType.struct)
+                symbol = Symbol(
+                    child.identifier.content,
+                    SymbolType.struct,
+                    child,
+                )
             elif isinstance(child, syntactical_analyzer.FunctionBlock):
-                symbol = Symbol(child._identifier._content, SymbolType.function)
+                symbol = Symbol(
+                    child.identifier.content,
+                    SymbolType.function,
+                    child, # type: ignore
+                )
             elif isinstance(child, syntactical_analyzer.EnumBlock):
-                symbol = Symbol(child._identifier._content, SymbolType.enum)
+                symbol = Symbol(
+                    child.identifier.content,
+                    SymbolType.enum,
+                    child,
+                )
             if symbol is not None:
-                file._symbol_table.add(symbol)
+                symbol_table.add(symbol)
+        for child in syntax_tree.children:
+            new_child: (
+                syntactical_analyzer.Directive |
+                syntactical_analyzer.StructBlock |
+                FunctionBlock |
+                syntactical_analyzer.EnumBlock
+            )
+            if isinstance(child, syntactical_analyzer.FunctionBlock):
+                new_child = FunctionBlock._sa(child, symbol_table)
+                symbol_table.get(
+                    child.identifier.content
+                )._definition = new_child # type: ignore
+            else:
+                new_child = child
+            children.append(new_child)
+        file = File(children, syntax_tree._file_info, symbol_table)
         return file
 
 
