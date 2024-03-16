@@ -7,13 +7,9 @@ from .compiler_types import CompilerError, FileInfo
 from . import syntactical_analyzer
 
 
-class SyntaxError(CompilerError):
-
-    _compiler_error_type = "Semantic"
-
-
 type SymbolDefinitionTypes = (
     InternalDefinition |
+    syntactical_analyzer.FunctionParameter |
     syntactical_analyzer.LetStatement |
     syntactical_analyzer.ForPreDef |
     syntactical_analyzer.StructBlock |
@@ -28,6 +24,123 @@ type SymbolReferenceTypes = (
     FunctionBlock |
     syntactical_analyzer.EnumBlock
 )
+
+
+type Identifier = syntactical_analyzer.Identifier | CompoundIdentifier
+
+
+type Statement = (
+    syntactical_analyzer.Expression |
+    syntactical_analyzer.LetStatement |
+    syntactical_analyzer.LoopStatements |
+    syntactical_analyzer.NestableCodeBlock |
+    Identifier
+)
+
+
+BaseValues: tuple[type, ...] = (
+    syntactical_analyzer.BuiltInConst,
+    syntactical_analyzer.NumberLiteral,
+    syntactical_analyzer.CharLiteral,
+    syntactical_analyzer.StringLiteral,
+    syntactical_analyzer.Identifier,
+    syntactical_analyzer.FunctionCall,
+)
+
+
+NestableCodeBlocks: tuple[type, ...] = (
+    syntactical_analyzer.ForBlock,
+    syntactical_analyzer.WhileBlock,
+    syntactical_analyzer.DoBlock,
+    syntactical_analyzer.IfBlock,
+)
+
+
+class SyntaxError(CompilerError):
+
+    _compiler_error_type = "Semantic"
+
+
+class VariableAlreadyDeclared(SyntaxError):
+
+    def __init__(
+        self,
+        new: SymbolDefinitionTypes,
+        existing: SymbolDefinitionTypes,
+    ):
+        message = (
+            f"The variable '{new.identifier.content}' was already "
+            f"declared at {str(existing.file_info)}" # type: ignore
+        )
+        super().__init__(message, new.file_info) # type: ignore
+
+
+class UndeclaredVariable(SyntaxError):
+
+    def __init__(
+        self,
+        variable: SymbolDefinitionTypes,
+    ):
+        message = (
+            f"The variable '{variable.identifier.content}' is undeclared."
+        )
+        super().__init__(message, variable.file_info) # type: ignore
+
+
+class InvalidOperand(SyntaxError):
+
+    def __init__(
+        self,
+        operator: (
+            syntactical_analyzer.TernaryExpression |
+            syntactical_analyzer.BinaryExpression |
+            syntactical_analyzer.UnaryExpression
+        ),
+        operand: Statement,
+    ):
+        message = (
+            f"The operand at '{operand}' is invalid for the "
+            f"operator '{operator.operator.content.value}'."
+        )
+        super().__init__(
+            message,
+            operand.file_info, # type: ignore
+            operator.file_info, # type: ignore
+        )
+
+
+class CompoundIdentifier:
+
+    _owner: Identifier
+    _member: Identifier
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        owner: Identifier,
+        member: Identifier,
+        file_info: FileInfo,
+    ):
+        self._owner = owner
+        self._member = member
+        self._file_info = file_info
+
+    @property
+    def owner(self) -> Identifier: return self._owner
+
+    @property
+    def member(self) -> Identifier: return self._member
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} CompoundIdentifier\n"
+        s += f"{pre_cont}├─ Owner\n"
+        s += self._owner.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        s += f"{pre_cont}└─ Member\n"
+        s += self._member.tree_str(pre_cont + "  └─", pre_cont + "    ")
+        return s
 
 
 class InternalDefinition:
@@ -92,7 +205,11 @@ class Symbol:
     def symbol_type(self) -> SymbolType: return self._symbol_type
 
     @property
-    def references(self): return self._references[:]
+    def references(self) -> list[SymbolReferenceTypes]:
+        return self._references[:]
+
+    @property
+    def definition(self) -> SymbolDefinitionTypes: return self._definition
 
     def add_reference(self, ref: SymbolReferenceTypes):
         self._references.append(ref)
@@ -223,12 +340,19 @@ class FunctionBlock:
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function: {self._identifier}\n"
-        if self._params or self._code or self._return_type is not None:
-            s += self._symbol_table.table_str("GLOBAL", "├─", "│ ")
+        if (
+            self._params or
+            self._code or
+            self._return_type is not None or
+            self._members
+        ):
+            s += self._symbol_table.table_str(
+                self.identifier.content, "├─", "│ ")
         else:
-            s += self._symbol_table.table_str("GLOBAL", "└─", "  ")
+            s += self._symbol_table.table_str(
+                self.identifier.content, "└─", "  ")
         if self._params:
-            if self._code or self._return_type is not None:
+            if self._code or self._return_type is not None or self._members:
                 s += f"{pre_cont}├─ Parameters\n"
                 params_pre = f"{pre_cont}│ "
             else:
@@ -238,12 +362,21 @@ class FunctionBlock:
                 s += param.tree_str(params_pre + "├─", params_pre + "│ ")
             s += self._params[-1].tree_str(params_pre + "└─", params_pre + "  ")
         if self._return_type is not None:
-            if self._code:
+            if self._code or self._members:
                 s += f"{pre_cont}├─ Return Type: "
             else:
                 s += f"{pre_cont}└─ Return Type: "
             if self._return_type_pointer: s+= "@"
             s += f"{self._return_type}\n"
+        if self._members:
+            if self._code:
+                s += f"{pre_cont}├─ Members: "
+            else:
+                s += f"{pre_cont}└─ Members: "
+            for code in self._members[:-1]:
+                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._members[-1].tree_str(
+                pre_cont + "  └─", pre_cont + "    ")
         if self._code:
             s += f"{pre_cont}└─ Code\n"
             for code in self._code[:-1]:
@@ -257,7 +390,48 @@ class FunctionBlock:
         parent_table: SymbolTable,
     ) -> "FunctionBlock":
         symbol_table = SymbolTable(parent_table)
+        for param in func.params:
+            try:
+                symbol_table.add(Symbol(
+                    param.identifier.content, SymbolType.variable, param))
+            except KeyError:
+                raise VariableAlreadyDeclared(
+                    param,
+                    symbol_table.get(param.identifier.content).definition,
+                )
+        members: list[syntactical_analyzer.LetStatement] = []
+        code: list[syntactical_analyzer.Statement] = []
+        for statement in func.code:
+            if isinstance(statement, syntactical_analyzer.LetStatement):
+                try:
+                    symbol_table.add(Symbol(
+                        statement.identifier.content,
+                        SymbolType.variable, statement,
+                    ))
+                except KeyError:
+                    raise VariableAlreadyDeclared(
+                        statement,
+                        symbol_table.get(
+                            statement.identifier.content
+                        ).definition,
+                    )
+                if statement.static:
+                    members.append(statement)
+                else:
+                    code.append(statement)
+            else:
+                code.append(statement)
 
+        return FunctionBlock(
+            func.identifier,
+            func.params,
+            func.return_type_pointer,
+            func.return_type,
+            members,
+            code,
+            func.file_info,
+            symbol_table,
+        )
 
 
 class File:
@@ -349,6 +523,56 @@ class File:
         file = File(children, syntax_tree._file_info, symbol_table)
         return file
 
+
+def _get_all_operands(
+    expression: syntactical_analyzer.Expression,
+) -> list[syntactical_analyzer.Expression]:
+    if isinstance(
+        expression,
+        BaseValues + (
+            syntactical_analyzer.LoopStatements,
+            syntactical_analyzer.NoOperation,
+        ),
+    ):
+        return [expression]
+    elif isinstance(expression, syntactical_analyzer.UnaryExpression):
+        return _get_all_operands(expression.operand)
+    elif isinstance(expression, syntactical_analyzer.BinaryExpression):
+        return (
+            _get_all_operands(expression.operand1) +
+            _get_all_operands(expression.operand2)
+        )
+    elif isinstance(expression, syntactical_analyzer.TernaryExpression):
+        return (
+            _get_all_operands(expression.operand1) +
+            _get_all_operands(expression.operand2) +
+            _get_all_operands(expression.operand3)
+        )
+
+def _flatten_statement(
+    statement: syntactical_analyzer.Statement,
+) -> list[syntactical_analyzer.Statement]:
+    if isinstance(statement, NestableCodeBlocks):
+        return [statement]
+    elif isinstance(
+        statement,
+        BaseValues + (
+            syntactical_analyzer.LoopStatements,
+            syntactical_analyzer.NoOperation,
+        ),
+    ):
+        return [statement]
+    elif isinstance(statement, syntactical_analyzer.UnaryExpression):
+        if isinstance(statement.operand, BaseValues):
+            return [statement]
+    elif isinstance(statement, syntactical_analyzer.BinaryExpression):
+        if (
+            statement.operator.content ==
+            syntactical_analyzer.BinaryOperatorEnum.MemberOf
+        ):
+            pass
+    elif isinstance(statement, syntactical_analyzer.TernaryExpression):
+        pass
 
 def semantical_analyzer(syntax_tree: syntactical_analyzer.File) -> File:
     return File._sa(syntax_tree)

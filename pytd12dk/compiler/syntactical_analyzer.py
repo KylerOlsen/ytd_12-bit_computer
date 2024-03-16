@@ -2,10 +2,36 @@
 # Feb 2024
 
 from enum import Enum
-from typing import Iterable, Sequence
+from typing import Sequence
 
 from .compiler_types import CompilerError, FileInfo
 from . import lexer
+
+
+type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
+
+type Literal = (
+    BuiltInConst |
+    NumberLiteral |
+    CharLiteral |
+    StringLiteral
+)
+
+type Expression = (
+    Literal |
+    Identifier |
+    UnaryExpression |
+    BinaryExpression |
+    TernaryExpression |
+    FunctionCall |
+    NoOperation
+)
+
+type Statement = Expression | LetStatement | LoopStatements | NestableCodeBlock
+
+type DataType = BuiltInDataType | Identifier
+
+type Operator = UnaryOperator | BinaryOperator | TernaryOperator
 
 
 class SyntaxError(CompilerError):
@@ -129,30 +155,6 @@ class UnexpectedPunctuation(_UnexpectedTokenBase):
 class ExpressionError(Exception): pass
 
 
-type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
-
-type Literal = (
-    BuiltInConst |
-    NumberLiteral |
-    CharLiteral |
-    StringLiteral
-)
-
-type Expression = (
-    Literal |
-    Identifier |
-    UnaryExpression |
-    BinaryExpression |
-    TernaryExpression |
-    FunctionCall |
-    NoOperation
-)
-
-type Statement = Expression | LetStatement | LoopStatements | NestableCodeBlock
-
-type DataType = BuiltInDataType | Identifier
-
-
 class BuiltInConstEnum(Enum):
     ConstTrue = "True"
     ConstFalse = "False"
@@ -239,6 +241,10 @@ class UnaryOperator:
         self._file_info = file_info
 
     @property
+    def content(self) -> PostfixUnaryOperatorEnum | PrefixUnaryOperatorEnum:
+        return self._content
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return (
@@ -297,6 +303,9 @@ class BinaryOperator:
         self._file_info = file_info
 
     @property
+    def content(self) -> BinaryOperatorEnum: return self._content
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def __str__(self) -> str: return (
@@ -323,6 +332,9 @@ class TernaryOperator:
     ):
         self._content = content
         self._file_info = file_info
+
+    @property
+    def content(self) -> TernaryOperatorEnum: return self._content
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
@@ -621,6 +633,18 @@ class TernaryExpression:
         self._file_info = file_info
 
     @property
+    def operator(self) -> TernaryOperator: return self._operator
+
+    @property
+    def operand1(self) -> Expression: return self._operand1
+
+    @property
+    def operand2(self) -> Expression: return self._operand2
+
+    @property
+    def operand3(self) -> Expression: return self._operand3
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -651,6 +675,15 @@ class BinaryExpression:
         self._file_info = file_info
 
     @property
+    def operator(self) -> BinaryOperator: return self._operator
+
+    @property
+    def operand1(self) -> Expression: return self._operand1
+
+    @property
+    def operand2(self) -> Expression: return self._operand2
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -677,6 +710,12 @@ class UnaryExpression:
         self._file_info = file_info
 
     @property
+    def operator(self) -> UnaryOperator: return self._operator
+
+    @property
+    def operand(self) -> Expression: return self._operand
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -691,7 +730,7 @@ class LetStatement:
     _type: DataType
     _pointer: bool
     _static: bool
-    _assignment: Expression | None
+    _assignment: Literal | None
     _file_info: FileInfo
 
     def __init__(
@@ -711,10 +750,16 @@ class LetStatement:
         self._file_info = file_info
 
     @property
-    def file_info(self) -> FileInfo: return self._file_info
+    def identifier(self) -> Identifier: return self._identifier
 
     @property
-    def identifier(self) -> Identifier: return self._identifier
+    def assignment(self) -> Literal | None: return self._assignment
+
+    @property
+    def static(self) -> bool: return self._static
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Let Statement: {self._identifier}\n"
@@ -827,6 +872,9 @@ class ForPreDef:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"

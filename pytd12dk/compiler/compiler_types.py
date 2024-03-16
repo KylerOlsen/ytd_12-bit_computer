@@ -32,6 +32,9 @@ class FileInfo:
             f"('{self._filename}',{self._line},{self._col},{self._length})"
         )
 
+    def __str__(self) -> str:
+        return f"Ln {self.line}, Col {self.col} in file {self.filename}"
+
     def __add__(self, other: "FileInfo") -> "FileInfo":
         filename = self.filename
         line = self.line
@@ -69,11 +72,18 @@ class CompilerError(Exception):
 
     _compiler_error_type = "Compiler"
 
-    def __init__(self, message: str, file_info: FileInfo):
+    def __init__(
+            self,
+            message: str,
+            file_info: FileInfo,
+            file_info_context: FileInfo | None = None,
+        ):
         new_message = message
         new_message += (
             f"\nIn file {file_info.filename} at line {file_info.line} "
         )
+        if file_info_context is not None and file_info_context.lines:
+            file_info_context = None
         if file_info.lines:
             new_message += f"to line {file_info.line + file_info.lines}"
             with open(file_info.filename, 'r') as file:
@@ -84,8 +94,25 @@ class CompilerError(Exception):
             new_message += f"col {file_info.col}\n\n"
             with open(file_info.filename, 'r') as file:
                 new_message += file.readlines()[file_info.line-1]
-            new_message += ' ' * (
-                file_info.col - 1) + '^' * file_info.length
+            if file_info_context is not None:
+                context_line = [' '] * max(
+                    file_info.col + file_info.length,
+                    file_info_context.col +file_info_context.length,
+                )
+                for i in range(
+                    file_info_context.col - 1,
+                    file_info_context.col + file_info_context.length
+                ):
+                    context_line[i] = '~'
+                for i in range(
+                    file_info.col - 1,
+                    file_info.col + file_info.length
+                ):
+                    context_line[i] = '^'
+                new_message += ''.join(context_line)
+            else:
+                new_message += ' ' * (
+                    file_info.col - 1) + '^' * file_info.length
 
         super().__init__(new_message)
 

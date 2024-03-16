@@ -1,5 +1,5 @@
 # YTD 12-bit Computer
-*Yeahbut, aka Kyler Olsen*
+*Kyler Olsen*
 
 **NOTICE: This project is still a *work in progress*.**
 
