@@ -1,4 +1,4 @@
-; Yeahbut - Feb 2024
+; Kyler Olsen - Feb 2024
 ; Example 1 - ytd 12-bit Computer
 ; Fibonacci
 

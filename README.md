@@ -601,6 +601,60 @@ The machine `tty` includes a tty IO device.
 
 - Reading from address `0x7FF` inputs an ASCII/UTF-8 character.
 
+### Assembly Example
+
+Included in the repo is an `examples` directory. Inside there is the
+file `test1.s`. It contains a simple assembly program to calculate and output
+the fibonacci sequence.
+
+```
+; Kyler Olsen - Feb 2024
+; Example 1 - ytd 12-bit Computer
+; Fibonacci
+
+; .0x5
+main:
+    ; Initialize Fibonacci values
+    ldi 1
+    or D0 MP ZR
+    or D1 ZR ZR
+    or D2 ZR ZR
+
+loop:
+    ; Output current value
+    liu 0x1f
+    lil 0x3D
+    str D0
+
+    ; Move values down
+    or D2 D1 ZR
+    or D1 D0 ZR
+
+    ; Add last two values to get the next value
+    add D0 D1 D2
+
+    ldi :loop
+    or PC MP ZR
+```
+
+We can assemble and link it using the following command. **Notice: Python 3.12
+or higher is required for `pytd12dk`.**
+
+```
+python3 -m pytd12dk am examples/test1.s -o bin/a.out
+```
+
+We can then execute the binary using the included emulator. We should see the
+fibonacci sequence printed to the console. We can use `ctrl` + `c` to exit the
+emulator.
+
+```
+python3 -m pytd12dk em bin/a.out
+```
+
+Also inside the `examples` directory there is a Hello World program in the
+file `test2.s`.
+
 ## ytd12nc
 
 `ytd12nc` (ytd 12-bit native compiler) is a compiler and assembler with linker

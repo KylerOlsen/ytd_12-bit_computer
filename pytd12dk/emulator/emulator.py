@@ -269,13 +269,13 @@ class Computer:
         elif instruction & 0xFC0 == 0x80: self.LDI(instruction & 0x3F)
         elif instruction & 0xFC0 == 0xC0: self.LIL(instruction & 0x3F)
         elif instruction & 0xFC0 == 0x100:
-            self.LSH((instruction & 0x38) >> 3, instruction & 0x7)
+            self.LSH(instruction & 0x7, (instruction & 0x38) >> 3)
         elif instruction & 0xFC0 == 0x140:
-            self.RSH((instruction & 0x38) >> 3, instruction & 0x7)
+            self.RSH(instruction & 0x7, (instruction & 0x38) >> 3)
         elif instruction & 0xFC0 == 0x180:
-            self.INC((instruction & 0x38) >> 3, instruction & 0x7)
+            self.INC(instruction & 0x7, (instruction & 0x38) >> 3)
         elif instruction & 0xFC0 == 0x1C0:
-            self.DEC((instruction & 0x38) >> 3, instruction & 0x7)
+            self.DEC(instruction & 0x7, (instruction & 0x38) >> 3)
         elif instruction & 0xE00 == 0x200:
             self.AND(
                 instruction & 0x7,
@@ -429,11 +429,11 @@ class Computer:
         self.program_counter += 1
 
     def POP(self, REG: int):
-        self._mem[self.stack_pointer] = self.get_reg(REG)
+        self.set_reg(REG, self._mem[self.stack_pointer])
         self.program_counter += 1
 
     def PSH(self, REG: int):
-        self.set_reg(REG, self._mem[self.stack_pointer])
+        self._mem[self.stack_pointer] = self.get_reg(REG)
         self.program_counter += 1
 
     def LIU(self, Immediate: int):

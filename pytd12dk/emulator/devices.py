@@ -40,4 +40,4 @@ class tty(Device):
         elif index & 0xf == 0xe:
             print(value)
         elif index & 0xf == 0xf:
-            print(chr(value), end='')
+            print(chr(value & 0x7f), end='')
