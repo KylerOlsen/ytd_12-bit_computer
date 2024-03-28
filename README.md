@@ -11,6 +11,8 @@ The purpose of this project is for me to practice creating an ISA and a compiler
 
 ## ISA
 
+*See file `docs/12-bit ISA.ods`*
+
 ## Assembly Language
 
 ### Registers
