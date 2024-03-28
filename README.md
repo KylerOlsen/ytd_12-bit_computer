@@ -7,6 +7,8 @@ It is a custom computer and instruction set architecture. It also has its own
 assembly language with assembler written in Python. Custom high level language
 currently in development.
 
+The purpose of this project is for me to practice creating an ISA and a compiler and assembler tool chain for the platform. I also plan to possibly build a redstone computer in Minecraft that implements this ISA.
+
 ## ISA
 
 ## Assembly Language
