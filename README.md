@@ -550,8 +550,7 @@ generated machine code which can directly be executed by the emulator.
 
 ### Emulator
 
-The second part of the tool kit is the assembler. Included with the assembler is
-a simple linker.
+The third part of the tool kit is the emulator.
 
 Running the following command we can get the arguments for the
 compiler `python -m pytd12dk em -h`:
