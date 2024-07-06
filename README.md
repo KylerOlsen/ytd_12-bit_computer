@@ -11,7 +11,1762 @@ The purpose of this project is for me to practice creating an ISA and a compiler
 
 ## ISA
 
-*See file `docs/12-bit ISA.ods`*
+<table cellspacing="0" border="0">
+    <colgroup width="80"></colgroup>
+    <colgroup width="182"></colgroup>
+    <colgroup span="12" width="19"></colgroup>
+    <colgroup width="507"></colgroup>
+    <tbody>
+        <tr>
+            <td colspan="15" height="17" align="center" valign="middle">
+                <font face="Consolas">Instructions</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">Mnemonic</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Full name</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="12" align="center" valign="middle">
+                <font face="Consolas">Bits</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Notes</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">NOP</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">No Operation</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">No Operation</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">HLT</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Halt</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Halt</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">BNZ</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Branch if Zero</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Move from Pointer to PC if Zero Flag is set</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">BNA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Branch if Not Zero</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Move from Pointer to PC if Zero Flag is not set</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">BNP</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Branch if Positive</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Move from Pointer to PC if Negative Flag is not set</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">BNN</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Branch if Negative</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Move from Pointer to PC if Negative Flag is set</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle" bgcolor="#808080">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Unused</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle" bgcolor="#808080">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Unused</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="4" align="center" valign="middle" bgcolor="#808080">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Unused</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">LOD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load from Memory</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load from Memory pointed by Pointer</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">STR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Store in Memory</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Store in Memory pointed by Pointer</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">POP</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load from Stack</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load from Stack</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">PSH</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Store in Stack</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Store in Stack</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">LIU</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load Immediate Upper</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="6" align="center" valign="middle">
+                <font face="Consolas">Immediate</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load Immediate Value * 64 into Pointer</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">LDI</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load Immediate</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="6" align="center" valign="middle">
+                <font face="Consolas">Immediate</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load Immediate Value into Pointer</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">LIL</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Load Immediate Lower</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="6" align="center" valign="middle">
+                <font face="Consolas">Immediate</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">OR Immediate Value with Pointer and store into Pointer</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">LSH</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Left Shift</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Left Shift</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">RSH</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Right Shift</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Right Shift</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">INC</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Increment</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Increment</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">DEC</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Decrement</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Decrement</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">AND</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise AND</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise AND</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">OR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise OR</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise OR</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">SUB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Subtract</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise NOT B then Add plus carry-in</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">XOR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise XOR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise XOR</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">NAD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise NAND</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise NAND</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">NOR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise NOR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Bitwise NOR</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas">ADD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Add</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegB</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegA</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="3" align="center" valign="middle">
+                <font face="Consolas">RegD</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Add</font>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<table cellspacing="0" border="0">
+    <colgroup span="4" width="19"></colgroup>
+    <colgroup width="29"></colgroup>
+    <colgroup width="200"></colgroup>
+    <colgroup span="2" width="19"></colgroup>
+    <tbody>
+        <tr>
+            <td colspan="8" height="17" align="center" valign="middle">
+                <font face="Consolas">Registers</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">R</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">W</font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="0" sdnum="1033;">
+                <font face="Consolas">0</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">ZR</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Zero</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="1" sdnum="1033;">
+                <font face="Consolas">1</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">PC</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Program Counter</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="2" sdnum="1033;">
+                <font face="Consolas">2</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">SP</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Stack Pointer</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="3" sdnum="1033;">
+                <font face="Consolas">3</font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">ST</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">Pointer</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="4" sdnum="1033;">
+                <font face="Consolas">4</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">D0</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                rowspan="4" align="center" valign="middle">
+                <font face="Consolas">Data</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="5" sdnum="1033;">
+                <font face="Consolas">5</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">D1</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="6" sdnum="1033;">
+                <font face="Consolas">6</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #ffffff; border-bottom: 1px solid #ffffff; border-left: 1px solid #ffffff; border-right: 1px solid #ffffff"
+                align="center" valign="middle" bgcolor="#000000">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">D2</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                height="17" align="center" valign="middle" sdval="7" sdnum="1033;">
+                <font face="Consolas">7</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas">D3</font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td height="17" align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6" height="17" align="center" valign="middle">
+                <font face="Consolas">Special Registers</font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="6" height="17" align="center" valign="middle">
+                <font face="Consolas">Program Counter Last</font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+        <tr>
+            <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 1px solid #000000"
+                colspan="6" height="17" align="center" valign="middle">
+                <font face="Consolas">Zero Flag</font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+            <td align="center" valign="middle">
+                <font face="Consolas"><br></font>
+            </td>
+        </tr>
+    </tbody>
+</table>
 
 ## Assembly Language
 
