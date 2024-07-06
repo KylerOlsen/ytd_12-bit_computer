@@ -572,6 +572,9 @@ class FunctionArgument:
     @property
     def identifier(self) -> Identifier | None: return self._identifier
 
+    @property
+    def value(self) -> Expression: return self._value
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Argument\n"
         if self._identifier: s += f"{pre_cont}├─ Name: {self._identifier}\n"
@@ -600,6 +603,9 @@ class FunctionCall:
 
     @property
     def identifier(self) -> Identifier: return self._identifier
+
+    @property
+    def args(self) -> list[FunctionArgument]: return self._args[:]
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function Call: {self._identifier}\n"
