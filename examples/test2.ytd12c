@@ -192,6 +192,8 @@ fn test_func2() -> Point {
         test += 15;
     }
 
+    let length: int = 10;
+
 	for (i: int = 0; i < length; i++)
 		$(inData + i) ^= $(pass + ((i + offset) % pLength));
 
@@ -203,6 +205,8 @@ fn test_func2() -> Point {
 	for (i: int; i < length; i++) {
 		$(inData + i) ^= $(pass + ((i + offset) % pLength));
 	}
+
+    let i: int;
 
 	for (i = 0; i < length; i++) {
 		$(inData + i) ^= $(pass + ((i + offset) % pLength));

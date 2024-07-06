@@ -12,7 +12,7 @@ type SymbolDefinitionTypes = (
     InternalDefinition |
     syntactical_analyzer.FunctionParameter |
     syntactical_analyzer.LetStatement |
-    syntactical_analyzer.ForPreDef |
+    ForPreDef |
     syntactical_analyzer.StructBlock |
     FunctionBlock |
     syntactical_analyzer.EnumBlock |
@@ -36,11 +36,24 @@ type Identifier = (
 )
 
 
-type Statement = (
+type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
+
+
+type IntermediateStatement = (
     syntactical_analyzer.Expression |
     syntactical_analyzer.LetStatement |
     syntactical_analyzer.LoopStatements |
     syntactical_analyzer.NestableCodeBlock |
+    InternalDefinition |
+    Identifier
+)
+
+
+type Statement = (
+    syntactical_analyzer.Expression |
+    syntactical_analyzer.LetStatement |
+    syntactical_analyzer.LoopStatements |
+    NestableCodeBlock |
     InternalDefinition |
     Identifier
 )
@@ -167,7 +180,7 @@ class InvalidOperand(SyntaxError):
             syntactical_analyzer.UnaryExpression |
             syntactical_analyzer.Operator
         ),
-        operand: Statement,
+        operand: IntermediateStatement | Statement,
     ):
         if isinstance(operator, (
             syntactical_analyzer.TernaryExpression,
@@ -213,6 +226,10 @@ class CompoundIdentifier:
     def member(self) -> Identifier: return self._member
 
     @property
+    def content(self) -> str:
+        return self.owner.content + '.' + self.member.content
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -241,6 +258,9 @@ class AddressOfIdentifier:
     def operand(self) -> Identifier: return self._operand
 
     @property
+    def content(self) -> str: return self._operand.content
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -266,6 +286,9 @@ class DereferenceIdentifier:
 
     @property
     def operand(self) -> Identifier: return self._operand
+
+    @property
+    def content(self) -> str: return self._operand.content
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
@@ -423,13 +446,32 @@ class SymbolTable:
         else: return f"{pre} o-{title}-o\n"
 
 
+class ForSymbolTable(SymbolTable):
+
+    _parent_table: SymbolTable
+    _symbols: list[Symbol]
+
+    def __init__(self, parent_table: SymbolTable):
+        self._parent_table = parent_table
+        self._symbols = []
+
+    def set(self, value: Symbol): self._parent_table.set(value)
+
+    def add(self, value: Symbol): self._parent_table.add(value)
+
+    def for_add(self, value: Symbol):
+        for symbol in self._symbols:
+            if symbol.name == value.name:
+                raise KeyError
+        else:
+            self._symbols.append(value)
+
+
 class CodeBlock:
 
-    _parent: BlockHolder
     _code: list[Statement]
 
-    def __init__(self, parent: BlockHolder, code: list[Statement]):
-        self._parent = parent
+    def __init__(self, code: list[Statement]):
         self._code = code[:]
 
     def tree_str(
@@ -449,7 +491,6 @@ class CodeBlock:
 
     @staticmethod
     def _sa(
-        parent: BlockHolder,
         code: list[syntactical_analyzer.Statement],
         symbol_table: SymbolTable,
         members: list[syntactical_analyzer.LetStatement],
@@ -568,11 +609,377 @@ class CodeBlock:
                     code_out.append(statement)
                 elif isinstance(statement, AddRefTypes):
                     add_ref_if(statement) # type: ignore
-                    code_out.append(statement)
+                    code_out.append(statement) # type: ignore
+                elif isinstance(statement, syntactical_analyzer.IfBlock):
+                    code_out.append(
+                        IfBlock._sa(statement, symbol_table, members))
+                elif isinstance(statement, syntactical_analyzer.DoBlock):
+                    code_out.append(
+                        DoBlock._sa(statement, symbol_table, members))
+                elif isinstance(statement, syntactical_analyzer.WhileBlock):
+                    code_out.append(
+                        WhileBlock._sa(statement, symbol_table, members))
+                elif isinstance(statement, syntactical_analyzer.ForBlock):
+                    code_out.append(
+                        ForBlock._sa(statement, symbol_table, members))
                 else:
                     code_out.append(statement)
 
-        return CodeBlock(parent, code_out)
+        return CodeBlock(code_out)
+
+
+class ElseBlock:
+
+    _code: CodeBlock
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        code: CodeBlock,
+        file_info: FileInfo,
+    ):
+        self._code = code
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Else Block\n"
+        s += self._code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        return s
+
+    @staticmethod
+    def _sa(
+        else_block: syntactical_analyzer.ElseBlock,
+        symbol_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "ElseBlock":
+
+        code = CodeBlock._sa(else_block.code, symbol_table, members)
+
+        return ElseBlock(code, else_block.file_info)
+
+
+class ForPreDef:
+
+    _identifier: Identifier
+    _type: syntactical_analyzer.DataType
+    _pointer: bool
+    _assignment: CodeBlock | None
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        identifier: Identifier,
+        type: syntactical_analyzer.DataType,
+        pointer: bool,
+        assignment: CodeBlock | None,
+        file_info: FileInfo,
+    ):
+        self._identifier = identifier
+        self._type = type
+        self._pointer = pointer
+        self._assignment = assignment
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def identifier(self) -> Identifier: return self._identifier
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
+        if self._assignment: s += f"{pre_cont}├─ Type: "
+        else: s += f"{pre_cont}└─ Type: "
+        if self._pointer: s+= "@"
+        s += f"{self._type}\n"
+        if self._assignment:
+            s += f"{pre_cont}└─ Value\n"
+            s += self._assignment.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        return s
+
+
+class ForBlock:
+
+    _pre_statement: CodeBlock | ForPreDef
+    _condition: CodeBlock
+    _code: CodeBlock
+    _post_statement: CodeBlock
+    _else: ElseBlock | None
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        pre_statement: CodeBlock | ForPreDef,
+        condition: CodeBlock,
+        code: CodeBlock,
+        post_statement: CodeBlock,
+        else_block: ElseBlock | None,
+        file_info: FileInfo,
+    ):
+        self._pre_statement = pre_statement
+        self._condition = condition
+        self._code = code
+        self._post_statement = post_statement
+        self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} For Loop\n"
+        if self._code or self._else is not None:
+            cond_pre = f"{pre_cont}├─"
+            cond_pre_cont = f"{pre_cont}│ "
+        else:
+            cond_pre = f"{pre_cont}└─"
+            cond_pre_cont = f"{pre_cont}  "
+        s += f"{cond_pre} Pre-Statement\n"
+        s += self._pre_statement.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        s += f"{cond_pre} Condition\n"
+        s += self._condition.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        s += f"{cond_pre} Post-Statement\n"
+        s += self._post_statement.tree_str(
+            cond_pre_cont + "└─", cond_pre_cont + "  ")
+        s += self._code.tree_str(
+            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
+    @staticmethod
+    def _sa(
+        for_block: syntactical_analyzer.ForBlock,
+        parent_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "ForBlock":
+        symbol_table = ForSymbolTable(parent_table)
+        if isinstance(for_block.pre_statement, syntactical_analyzer.ForPreDef):
+            assignment = CodeBlock._sa(for_block.code, symbol_table, members)
+            pre_statement = ForPreDef(
+                for_block.pre_statement.identifier,
+                for_block.pre_statement.data_type,
+                for_block.pre_statement.pointer,
+                assignment,
+                for_block.pre_statement.file_info,
+            )
+            try: symbol_table.for_add(Symbol(
+                    pre_statement.identifier.content,
+                    SymbolType.variable,
+                    pre_statement,
+                ))
+            except KeyError: raise VariableAlreadyDeclared(
+                pre_statement,
+                symbol_table.get(pre_statement.identifier.content).definition,
+            )
+        else: pre_statement = CodeBlock._sa(
+            [for_block.pre_statement], symbol_table, members)
+        condition = CodeBlock._sa([for_block.condition], symbol_table, members)
+        code = CodeBlock._sa(for_block.code, symbol_table, members)
+        post_statement = CodeBlock._sa(
+            [for_block.post_statement], symbol_table, members)
+        if for_block.else_block is None: else_block = None
+        else: else_block = ElseBlock._sa(
+            for_block.else_block, symbol_table, members)
+
+        return ForBlock(
+            pre_statement,
+            condition,
+            code,
+            post_statement,
+            else_block,
+            for_block.file_info,
+        )
+
+
+class WhileBlock:
+
+    _condition: CodeBlock
+    _code: CodeBlock
+    _else: ElseBlock | None
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        condition: CodeBlock,
+        code: CodeBlock,
+        else_block: ElseBlock | None,
+        file_info: FileInfo,
+    ):
+        self._condition = condition
+        self._code = code
+        self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} While Loop\n"
+        if self._code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        s += self._code.tree_str(
+            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
+    @staticmethod
+    def _sa(
+        while_block: syntactical_analyzer.WhileBlock,
+        symbol_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "WhileBlock":
+        condition = CodeBlock._sa(
+            [while_block.condition], symbol_table, members)
+        code = CodeBlock._sa(while_block.code, symbol_table, members)
+        if while_block.else_block is None: else_block = None
+        else: else_block = ElseBlock._sa(
+            while_block.else_block, symbol_table, members)
+
+        return WhileBlock(
+            condition,
+            code,
+            else_block,
+            while_block.file_info,
+        )
+
+
+class DoBlock:
+
+    _first_code: CodeBlock
+    _condition: CodeBlock
+    _second_code: CodeBlock | None
+    _else: ElseBlock | None
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        first_code: CodeBlock,
+        condition: CodeBlock,
+        second_code: CodeBlock | None,
+        else_block: ElseBlock | None,
+        file_info: FileInfo,
+    ):
+        self._first_code = first_code
+        self._condition = condition
+        if second_code:
+            self._second_code = second_code
+        else:
+            self._second_code = None
+        self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Do Loop\n"
+        s += self._first_code.tree_str(
+            pre_cont + "  ├─", pre_cont + "  │ ", True)
+        if self._second_code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        if self._second_code is not None:
+            s += self._second_code.tree_str(
+                pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
+    @staticmethod
+    def _sa(
+        do_block: syntactical_analyzer.DoBlock,
+        symbol_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "DoBlock":
+        condition = CodeBlock._sa([do_block.condition], symbol_table, members)
+        first_code = CodeBlock._sa(do_block.first_code, symbol_table, members)
+        if do_block.second_code is None: second_code = None
+        else: second_code = CodeBlock._sa(
+            do_block.second_code, symbol_table, members)
+        if do_block.else_block is None: else_block = None
+        else: else_block = ElseBlock._sa(
+            do_block.else_block, symbol_table, members)
+
+        return DoBlock(
+            condition,
+            first_code,
+            second_code,
+            else_block,
+            do_block.file_info,
+        )
+
+
+class IfBlock:
+
+    _condition: CodeBlock
+    _code: CodeBlock
+    _else: ElseBlock | None
+    _file_info: FileInfo
+
+    def __init__(
+        self,
+        condition: CodeBlock,
+        code: CodeBlock,
+        else_block: ElseBlock | None,
+        file_info: FileInfo,
+    ):
+        self._condition = condition
+        self._code = code
+        self._else = else_block
+        self._file_info = file_info
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} If Statement\n"
+        if self._code or self._else is not None:
+            s += f"{pre_cont}├─ Condition\n"
+            cond_pre = f"{pre_cont}│ "
+        else:
+            s += f"{pre_cont}└─ Condition\n"
+            cond_pre = f"{pre_cont}  "
+        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+        s += self._code.tree_str(
+            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+        if self._else is not None:
+            s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        return s
+
+    @staticmethod
+    def _sa(
+        if_block: syntactical_analyzer.IfBlock,
+        symbol_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "IfBlock":
+        condition = CodeBlock._sa([if_block.condition], symbol_table, members)
+        code = CodeBlock._sa(if_block.code, symbol_table, members)
+        if if_block.else_block is None: else_block = None
+        else: else_block = ElseBlock._sa(
+            if_block.else_block, symbol_table, members)
+
+        return IfBlock(
+            condition,
+            code,
+            else_block,
+            if_block.file_info,
+        )
 
 
 class FunctionReturnDefinition:
@@ -721,7 +1128,7 @@ class FunctionBlock:
                     symbol_table.get(param.identifier.content).definition,
                 )
 
-        code = CodeBlock._sa(func, func.code, symbol_table, members)
+        code = CodeBlock._sa(func.code, symbol_table, members)
 
         return FunctionBlock(
             func.identifier,
@@ -834,8 +1241,8 @@ def _compound_identifier(
         statement.operator.content ==
         syntactical_analyzer.BinaryOperatorEnum.MemberOf
     ): return CompoundIdentifier(
-            _assert_identifier(statement.operand1, statement.operator),
-            _assert_identifier(statement.operand2, statement.operator),
+            _assert_identifier(statement.operand1, statement.operator, True),
+            _assert_identifier(statement.operand2, statement.operator, True),
             statement.file_info,
         )
     else: raise InvalidOperand(operator, statement)
@@ -848,14 +1255,14 @@ def _augment_identifier(
         statement.operator.content ==
         syntactical_analyzer.PrefixUnaryOperatorEnum.AddressOf
     ): return AddressOfIdentifier(
-            _assert_identifier(statement.operand, statement.operator),
+            _assert_identifier(statement.operand, statement.operator, True),
             statement.file_info,
         )
     elif (
         statement.operator.content ==
         syntactical_analyzer.PrefixUnaryOperatorEnum.Dereference
     ): return DereferenceIdentifier(
-            _assert_identifier(statement.operand, statement.operator),
+            _assert_identifier(statement.operand, statement.operator, True),
             statement.file_info,
         )
     else: raise InvalidOperand(operator, statement)
@@ -863,10 +1270,16 @@ def _augment_identifier(
 def _assert_identifier(
     statement: syntactical_analyzer.Statement,
     operator: syntactical_analyzer.Operator,
+    harsh: bool = False
 ) -> Identifier:
     if isinstance(statement, syntactical_analyzer.Identifier):
         return statement
     elif isinstance(statement, syntactical_analyzer.UnaryExpression):
+        if (
+            isinstance(statement.operand, syntactical_analyzer.BinaryExpression)
+            and not harsh
+        ):
+            return statement # type: ignore
         return _augment_identifier(statement, operator)
     elif isinstance(statement, syntactical_analyzer.BinaryExpression):
         return _compound_identifier(statement, operator)
@@ -874,7 +1287,7 @@ def _assert_identifier(
 
 def _create_internal_definition(
     statement: syntactical_analyzer.Expression,
-) -> list[Statement]:
+) -> list[IntermediateStatement]:
     flattened = _flatten_statement(statement)
     internal_definition = InternalDefinition(
         flattened[-1]) # type: ignore
@@ -883,7 +1296,7 @@ def _create_internal_definition(
 
 def _flatten_statement(
     statement: syntactical_analyzer.Statement,
-) -> list[Statement]:
+) -> list[IntermediateStatement]:
 
     if isinstance(statement, syntactical_analyzer.UnaryExpression):
         if statement.operator.content in IncrementOperators:

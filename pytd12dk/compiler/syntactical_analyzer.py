@@ -829,6 +829,9 @@ class ElseBlock:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Else Block\n"
         if self._code:
@@ -882,6 +885,12 @@ class ForPreDef:
     @property
     def identifier(self) -> Identifier: return self._identifier
 
+    @property
+    def data_type(self) -> DataType: return self._type
+
+    @property
+    def pointer(self) -> bool: return self._pointer
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
         if self._assignment: s += f"{pre_cont}├─ Type: "
@@ -919,6 +928,22 @@ class ForBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def pre_statement(self) -> Expression | ForPreDef:
+        return self._pre_statement
+
+    @property
+    def condition(self) -> Expression: return self._condition
+
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
+
+    @property
+    def post_statement(self) -> Expression: return self._post_statement
+
+    @property
+    def else_block(self) -> ElseBlock | None: return self._else
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop\n"
@@ -1032,6 +1057,15 @@ class WhileBlock:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def condition(self) -> Expression: return self._condition
+
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
+
+    @property
+    def else_block(self) -> ElseBlock | None: return self._else
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} While Loop\n"
         if self._code or self._else is not None:
@@ -1102,6 +1136,20 @@ class DoBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def condition(self) -> Expression: return self._condition
+
+    @property
+    def first_code(self) -> list[Statement]: return self._first_code[:]
+
+    @property
+    def second_code(self) -> list[Statement] | None:
+        if self._second_code is None: return None
+        else: return self._second_code[:]
+
+    @property
+    def else_block(self) -> ElseBlock | None: return self._else
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Do Loop\n"
@@ -1189,6 +1237,15 @@ class IfBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def condition(self) -> Expression: return self._condition
+
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
+
+    @property
+    def else_block(self) -> ElseBlock | None: return self._else
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} If Statement\n"
