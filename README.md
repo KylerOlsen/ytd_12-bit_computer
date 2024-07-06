@@ -119,6 +119,9 @@ ytd 12-bit emulator (from *pytd12dk*, multi-platform)
 - Compiler Implementations: `pytd12dk` (Python),
 `ytd12nc` (*native compiler*)
 
+**Note:** The following sections define the language and may not be as well
+suited for learning the language.
+
 ### Lexical
 
 #### Directives
