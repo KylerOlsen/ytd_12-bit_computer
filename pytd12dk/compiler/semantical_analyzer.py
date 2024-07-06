@@ -46,6 +46,17 @@ type Statement = (
 )
 
 
+type BlockHolder = (
+    ElseBlock |
+    ForPreDef |
+    ForBlock |
+    WhileBlock |
+    DoBlock |
+    IfBlock |
+    FunctionBlock
+)
+
+
 BaseValues: tuple[type, ...] = (
     syntactical_analyzer.BuiltInConst,
     syntactical_analyzer.NumberLiteral,
@@ -234,8 +245,7 @@ class AddressOfIdentifier:
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = (
-            f"{pre} Unary Expression: "
-            f"{syntactical_analyzer.PrefixUnaryOperatorEnum.AddressOf}\n"
+            f"{pre} Unary Expression: PrefixUnaryOperator.AddressOf\n"
         )
         s += self._operand.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
@@ -262,8 +272,7 @@ class DereferenceIdentifier:
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = (
-            f"{pre} Unary Expression: "
-            f"{syntactical_analyzer.PrefixUnaryOperatorEnum.Dereference}\n"
+            f"{pre} Unary Expression: PrefixUnaryOperator.Dereference\n"
         )
         s += self._operand.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
@@ -414,124 +423,25 @@ class SymbolTable:
         else: return f"{pre} o-{title}-o\n"
 
 
-class FunctionReturnDefinition:
+class CodeBlock:
 
-    _identifier: syntactical_analyzer.Identifier
-    _return_type_pointer: bool
-    _return_type: syntactical_analyzer.DataType | None
-
-    def __init__(
-        self,
-        identifier: syntactical_analyzer.Identifier,
-        return_type_pointer: bool,
-        return_type: syntactical_analyzer.DataType | None,
-    ):
-        self._identifier = identifier
-        self._return_type_pointer = return_type_pointer
-        self._return_type = return_type
-
-    @property
-    def identifier(self) -> syntactical_analyzer.Identifier:
-        return self._identifier
-
-    @property
-    def return_type_pointer(self) -> bool: return self._return_type_pointer
-
-    @property
-    def return_type(self) -> syntactical_analyzer.DataType | None:
-        return self._return_type
-
-
-class FunctionBlock:
-
-    _identifier: syntactical_analyzer.Identifier
-    _params: list[syntactical_analyzer.FunctionParameter]
-    _return_type: FunctionReturnDefinition
-    _members: list[syntactical_analyzer.LetStatement]
+    _parent: BlockHolder
     _code: list[Statement]
-    _file_info: FileInfo
-    _symbol_table: SymbolTable
 
-    def __init__(
-        self,
-        identifier: syntactical_analyzer.Identifier,
-        params: list[syntactical_analyzer.FunctionParameter],
-        return_type: FunctionReturnDefinition,
-        members: list[syntactical_analyzer.LetStatement],
-        code: list[Statement],
-        file_info: FileInfo,
-        symbol_table: SymbolTable,
-    ):
-        self._identifier = identifier
-        self._params = params[:]
-        self._return_type = return_type
-        self._members = members[:]
+    def __init__(self, parent: BlockHolder, code: list[Statement]):
+        self._parent = parent
         self._code = code[:]
-        self._file_info = file_info
-        self._symbol_table = symbol_table
 
-    @property
-    def identifier(self) -> syntactical_analyzer.Identifier:
-        return self._identifier
-
-    @property
-    def params(self) -> list[syntactical_analyzer.FunctionParameter]:
-        return self._params[:]
-
-    @property
-    def return_type(self) -> FunctionReturnDefinition: return self._return_type
-
-    @property
-    def members(self) -> list[syntactical_analyzer.LetStatement]:
-        return self._members[:]
-
-    @property
-    def code(self) -> list[Statement]: return self._code[:]
-
-    @property
-    def file_info(self) -> FileInfo: return self._file_info
-
-    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Function: {self._identifier}\n"
-        if (
-            self._params or
-            self._code or
-            self._return_type is not None or
-            self._members
-        ):
-            s += self._symbol_table.table_str(
-                self.identifier.content, "├─", "│ ")
-        else:
-            s += self._symbol_table.table_str(
-                self.identifier.content, "└─", "  ")
-        if self._params:
-            if self._code or self._return_type is not None or self._members:
-                s += f"{pre_cont}├─ Parameters\n"
-                params_pre = f"{pre_cont}│ "
-            else:
-                s += f"{pre_cont}└─ Parameters\n"
-                params_pre = f"{pre_cont}  "
-            for param in self._params[:-1]:
-                s += param.tree_str(params_pre + "├─", params_pre + "│ ")
-            s += self._params[-1].tree_str(params_pre + "└─", params_pre + "  ")
-        if self.return_type._return_type is not None:
-            if self._code or self._members:
-                s += f"{pre_cont}├─ Return Type: "
-            else:
-                s += f"{pre_cont}└─ Return Type: "
-            if self.return_type._return_type_pointer: s+= "@"
-            s += f"{self.return_type._return_type}\n"
-        if self._members:
-            if self._code:
-                s += f"{pre_cont}├─ Members: "
-            else:
-                s += f"{pre_cont}└─ Members: "
-            for code in self._members[:-1]:
-                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
-            s += self._members[-1].tree_str(
-                pre_cont + "  └─", pre_cont + "    ")
+    def tree_str(
+        self,
+        pre: str = "",
+        pre_cont: str = "",
+        cont: bool = False,
+    ) -> str:
+        s: str = ""
         if self._code:
-            s += f"{pre_cont}└─ Code\n"
+            if cont: s += f"{pre}├─ Code\n"
+            else: s += f"{pre}└─ Code\n"
             for code in self._code[:-1]:
                 s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
             s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
@@ -539,10 +449,11 @@ class FunctionBlock:
 
     @staticmethod
     def _sa(
-        func: syntactical_analyzer.FunctionBlock,
-        parent_table: SymbolTable,
-    ) -> "FunctionBlock":
-        symbol_table = SymbolTable(parent_table)
+        parent: BlockHolder,
+        code: list[syntactical_analyzer.Statement],
+        symbol_table: SymbolTable,
+        members: list[syntactical_analyzer.LetStatement],
+    ) -> "CodeBlock":
 
         def add_ref_if(statement: syntactical_analyzer.Expression):
             if isinstance(statement, HasOperands):
@@ -586,6 +497,22 @@ class FunctionBlock:
                                 raise UndeclaredVariable(arg.value)
                             else:
                                 symbol.add_reference(arg.value)
+                    elif (
+                        isinstance(
+                            statement,
+                            syntactical_analyzer.BinaryExpression,
+                        ) and
+                        (
+                            statement.operator ==
+                            syntactical_analyzer.BinaryOperatorEnum.Assignment
+                        ) and
+                        hasattr(statement, key) and
+                        isinstance(
+                            getattr(statement, key),
+                            syntactical_analyzer.BinaryExpression,
+                        )
+                    ):
+                        add_ref_if(getattr(statement, key))
             elif isinstance(statement, syntactical_analyzer.FunctionCall):
                 try:
                     symbol = symbol_table.get(
@@ -610,26 +537,8 @@ class FunctionBlock:
                 else:
                     symbol.add_reference(statement)
 
-        function_return = FunctionReturnDefinition(
-            func.identifier, func.return_type_pointer, func.return_type)
-        if function_return.return_type is not None:
-            symbol_table.add(Symbol(
-                function_return.identifier.content,
-                SymbolType.return_variable,
-                function_return,
-            ))
-        for param in func.params:
-            try:
-                symbol_table.add(Symbol(
-                    param.identifier.content, SymbolType.variable, param))
-            except KeyError:
-                raise VariableAlreadyDeclared(
-                    param,
-                    symbol_table.get(param.identifier.content).definition,
-                )
-        members: list[syntactical_analyzer.LetStatement] = []
-        code: list[Statement] = []
-        for root_statement in func.code:
+        code_out: list[Statement] = []
+        for root_statement in code:
             for statement in _flatten_statement(root_statement):
                 if isinstance(statement, syntactical_analyzer.LetStatement):
                     try:
@@ -648,7 +557,7 @@ class FunctionBlock:
                     if statement.static:
                         members.append(statement)
                     else:
-                        code.append(statement)
+                        code_out.append(statement)
                 elif isinstance(statement, InternalDefinition):
                     add_ref_if(statement.operand)
                     symbol_table.add(Symbol(
@@ -656,12 +565,163 @@ class FunctionBlock:
                         SymbolType.variable,
                         statement,
                     ))
-                    code.append(statement)
+                    code_out.append(statement)
                 elif isinstance(statement, AddRefTypes):
                     add_ref_if(statement) # type: ignore
-                    code.append(statement)
+                    code_out.append(statement)
                 else:
-                    code.append(statement)
+                    code_out.append(statement)
+
+        return CodeBlock(parent, code_out)
+
+
+class FunctionReturnDefinition:
+
+    _identifier: syntactical_analyzer.Identifier
+    _return_type_pointer: bool
+    _return_type: syntactical_analyzer.DataType | None
+
+    def __init__(
+        self,
+        identifier: syntactical_analyzer.Identifier,
+        return_type_pointer: bool,
+        return_type: syntactical_analyzer.DataType | None,
+    ):
+        self._identifier = identifier
+        self._return_type_pointer = return_type_pointer
+        self._return_type = return_type
+
+    @property
+    def identifier(self) -> syntactical_analyzer.Identifier:
+        return self._identifier
+
+    @property
+    def return_type_pointer(self) -> bool: return self._return_type_pointer
+
+    @property
+    def return_type(self) -> syntactical_analyzer.DataType | None:
+        return self._return_type
+
+
+class FunctionBlock:
+
+    _identifier: syntactical_analyzer.Identifier
+    _params: list[syntactical_analyzer.FunctionParameter]
+    _return_type: FunctionReturnDefinition
+    _members: list[syntactical_analyzer.LetStatement]
+    _code: CodeBlock
+    _file_info: FileInfo
+    _symbol_table: SymbolTable
+
+    def __init__(
+        self,
+        identifier: syntactical_analyzer.Identifier,
+        params: list[syntactical_analyzer.FunctionParameter],
+        return_type: FunctionReturnDefinition,
+        members: list[syntactical_analyzer.LetStatement],
+        code: CodeBlock,
+        file_info: FileInfo,
+        symbol_table: SymbolTable,
+    ):
+        self._identifier = identifier
+        self._params = params[:]
+        self._return_type = return_type
+        self._members = members[:]
+        self._code = code
+        self._file_info = file_info
+        self._symbol_table = symbol_table
+
+    @property
+    def identifier(self) -> syntactical_analyzer.Identifier:
+        return self._identifier
+
+    @property
+    def params(self) -> list[syntactical_analyzer.FunctionParameter]:
+        return self._params[:]
+
+    @property
+    def return_type(self) -> FunctionReturnDefinition: return self._return_type
+
+    @property
+    def members(self) -> list[syntactical_analyzer.LetStatement]:
+        return self._members[:]
+
+    @property
+    def code(self) -> CodeBlock: return self._code
+
+    @property
+    def file_info(self) -> FileInfo: return self._file_info
+
+    def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
+        s: str = f"{pre} Function: {self._identifier}\n"
+        if (
+            self._params or
+            self._code or
+            self._return_type is not None or
+            self._members
+        ):
+            s += self._symbol_table.table_str(
+                self.identifier.content, "├─", "│ ")
+        else:
+            s += self._symbol_table.table_str(
+                self.identifier.content, "└─", "  ")
+        if self._params:
+            if self._code or self._return_type is not None or self._members:
+                s += f"{pre_cont}├─ Parameters\n"
+                params_pre = f"{pre_cont}│ "
+            else:
+                s += f"{pre_cont}└─ Parameters\n"
+                params_pre = f"{pre_cont}  "
+            for param in self._params[:-1]:
+                s += param.tree_str(params_pre + "├─", params_pre + "│ ")
+            s += self._params[-1].tree_str(params_pre + "└─", params_pre + "  ")
+        if self.return_type._return_type is not None:
+            if self._code or self._members:
+                s += f"{pre_cont}├─ Return Type: "
+            else:
+                s += f"{pre_cont}└─ Return Type: "
+            if self.return_type._return_type_pointer: s+= "@"
+            s += f"{self.return_type._return_type}\n"
+        if self._members:
+            if self._code:
+                s += f"{pre_cont}├─ Members: "
+            else:
+                s += f"{pre_cont}└─ Members: "
+            for code in self._members[:-1]:
+                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._members[-1].tree_str(
+                pre_cont + "  └─", pre_cont + "    ")
+        s += self._code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        return s
+
+    @staticmethod
+    def _sa(
+        func: syntactical_analyzer.FunctionBlock,
+        parent_table: SymbolTable,
+    ) -> "FunctionBlock":
+        symbol_table = SymbolTable(parent_table)
+        members: list[syntactical_analyzer.LetStatement] = []
+
+        function_return = FunctionReturnDefinition(
+            func.identifier, func.return_type_pointer, func.return_type)
+        if function_return.return_type is not None:
+            symbol_table.add(Symbol(
+                function_return.identifier.content,
+                SymbolType.return_variable,
+                function_return,
+            ))
+
+        for param in func.params:
+            try:
+                symbol_table.add(Symbol(
+                    param.identifier.content, SymbolType.variable, param))
+            except KeyError:
+                raise VariableAlreadyDeclared(
+                    param,
+                    symbol_table.get(param.identifier.content).definition,
+                )
+
+        code = CodeBlock._sa(func, func.code, symbol_table, members)
 
         return FunctionBlock(
             func.identifier,
