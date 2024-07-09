@@ -12,7 +12,7 @@ struct Point {
     random: @int
 }
 
-enum Colors { RED, GREEN, BLUE = 7 }
+enum Colors { RED, GREEN, BLUE = 5 , PINK, VIOLET = 3, PURPLE = 3, INDIGO, GREY }
 
 fn test_func(arg1: int, arg2: unsigned = 10) -> fixed {
     let var1: float;

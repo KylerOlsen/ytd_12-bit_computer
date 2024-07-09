@@ -139,12 +139,12 @@ AssignmentOperators: tuple[syntactical_analyzer.BinaryOperatorEnum, ...] = (
 OperandKeys: tuple[str, ...] = ("operand","operand1","operand2","operand3",)
 
 
-class SyntaxError(CompilerError):
+class SemanticError(CompilerError):
 
     _compiler_error_type = "Semantic"
 
 
-class VariableAlreadyDeclared(SyntaxError):
+class VariableAlreadyDeclared(SemanticError):
 
     def __init__(
         self,
@@ -158,7 +158,7 @@ class VariableAlreadyDeclared(SyntaxError):
         super().__init__(message, new.file_info) # type: ignore
 
 
-class UndeclaredVariable(SyntaxError):
+class UndeclaredVariable(SemanticError):
 
     def __init__(
         self,
@@ -170,7 +170,7 @@ class UndeclaredVariable(SyntaxError):
         super().__init__(message, variable.file_info) # type: ignore
 
 
-class InvalidOperand(SyntaxError):
+class InvalidOperand(SemanticError):
 
     def __init__(
         self,
@@ -433,12 +433,12 @@ class SymbolTable:
             name_width = max(len(i) for i in names)
             type_width = max(len(i.value) for i in types)
             count_width = max(len(str(i)) for i in counts)
-            title_width = name_width + 2 + type_width + 3 + count_width
+            title_width = name_width + 2 + type_width + 2 + count_width
 
             s = f"{pre} o{title.center(title_width, '-')}o\n"
             for i in range(len(self._symbols)):
                 s += f"{pre_cont} |{(names[i] + ':').ljust(name_width + 1)} "
-                s += f"{types[i].value.ljust(type_width)} - "
+                s += f"{types[i].value.ljust(type_width)}; "
                 s += f"{str(counts[i]).rjust(count_width)}|\n"
             s += f"{pre_cont} o{'-' * title_width}o\n"
 
@@ -1217,14 +1217,49 @@ class File:
                 symbol_table.get(
                     child.identifier.content
                 )._definition = new_child # type: ignore
+            elif isinstance(child, syntactical_analyzer.EnumBlock):
+                new_child = _sa_enum(child)
             # TODO: analyze structs
-            # TODO: analyze enums
             else:
                 new_child = child
             children.append(new_child)
         file = File(children, syntax_tree._file_info, symbol_table)
         return file
 
+def _sa_enum(block: syntactical_analyzer.EnumBlock
+) -> syntactical_analyzer.EnumBlock:
+    members: list[syntactical_analyzer.EnumMember] = []
+    used_numbers: set[int] = set()
+    for member in block.members:
+        if member.value is not None:
+            used_numbers.add(member.value.value)
+    i = 1
+    for member in block.members:
+        while i in used_numbers:
+            i += 1
+        if member.value is not None:
+            members.append(syntactical_analyzer.EnumMember(
+                member.identifier,
+                member.value,
+                member.file_info
+            ))
+            i = member.value.value + 1
+        else:
+            used_numbers.add(i)
+            members.append(syntactical_analyzer.EnumMember(
+                member.identifier,
+                syntactical_analyzer.NumberLiteral(str(i), member.file_info),
+                member.file_info
+            ))
+            i += 1
+    return syntactical_analyzer.EnumBlock(
+        block.identifier,
+        sorted(
+            sorted(members, key=lambda o: o.identifier.content),
+            key=lambda o: o.value.value # type: ignore
+        ),
+        block.file_info,
+    )
 
 def _compound_identifier(
     statement: syntactical_analyzer.BinaryExpression,

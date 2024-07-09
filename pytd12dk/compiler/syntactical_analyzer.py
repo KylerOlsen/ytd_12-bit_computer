@@ -517,6 +517,9 @@ class CharLiteral:
     @property
     def content(self) -> str: return self._content
 
+    @property
+    def value(self) -> int: return ord(self._content)
+
     def __str__(self) -> str: return self._content
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -542,6 +545,9 @@ class NumberLiteral:
 
     @property
     def content(self) -> str: return self._content
+
+    @property
+    def value(self) -> int: return int(self._content)
 
     def __str__(self) -> str: return self._content
 
@@ -1472,6 +1478,9 @@ class EnumMember:
     @property
     def identifier(self) -> Identifier: return self._identifier
 
+    @property
+    def value(self) -> NumberLiteral | None: return self._value
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum Member: {self._identifier}\n"
         if self._value is not None:
@@ -1500,6 +1509,9 @@ class EnumBlock:
 
     @property
     def identifier(self) -> Identifier: return self._identifier
+
+    @property
+    def members(self) -> list[EnumMember]: return self._members[:]
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Enum: {self._identifier}\n"
