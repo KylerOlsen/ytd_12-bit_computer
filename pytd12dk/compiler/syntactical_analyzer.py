@@ -177,6 +177,13 @@ class BuiltInConst:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def value(self) -> int:
+        match (self._content):
+            case BuiltInConstEnum.ConstTrue: return 1
+            case BuiltInConstEnum.ConstFalse: return 0
+            case BuiltInConstEnum.ConstNone: return 0
+
     def __str__(self) -> str: return self._content.value
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -547,7 +554,7 @@ class NumberLiteral:
     def content(self) -> str: return self._content
 
     @property
-    def value(self) -> int: return int(self._content)
+    def value(self) -> int: return int(self._content, base=0)
 
     def __str__(self) -> str: return self._content
 

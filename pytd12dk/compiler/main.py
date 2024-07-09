@@ -8,6 +8,7 @@ from .compiler_types import CompilerError
 from .lexer import lexer
 from .syntactical_analyzer import syntactical_analyzer
 from .semantical_analyzer import semantical_analyzer
+from .code_generator import code_generator
 
 def _compile(args: argparse.Namespace):
     tokens = lexer(args.input_file.read(), args.input_file.name)
@@ -25,6 +26,11 @@ def _compile(args: argparse.Namespace):
 
     if args.annotated_file:
         args.annotated_file.write(annotated_syntax_tree.tree_str())
+
+    assembly_code = code_generator(annotated_syntax_tree)
+
+    if args.assembly_file:
+        args.assembly_file.write(assembly_code)
 
 def compile(args: argparse.Namespace):
     try: _compile(args)

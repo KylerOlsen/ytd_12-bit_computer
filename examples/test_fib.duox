@@ -1,0 +1,21 @@
+// Kyler Olsen
+// Source Code Test 3
+// Fibonacci
+// DuoDeca-Script Test
+
+fn unused_func() -> int {unused_func = 0;}
+
+fn main() -> int {
+    main = 0;
+    let a: unsigned = 0;
+    let b: unsigned = 0;
+    let c: unsigned = 0;
+    let out: @unsigned = 0x7FD;
+
+    while (True) {
+        $out = a;
+        c = b;
+        b = a;
+        a = b + c;
+    }
+}

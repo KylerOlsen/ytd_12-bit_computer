@@ -5,31 +5,31 @@ from enum import Enum
 from typing import ClassVar
 
 from .compiler_types import CompilerError, FileInfo
-from . import syntactical_analyzer
+from . import syntactical_analyzer as sya
 
 
 type SymbolDefinitionTypes = (
     InternalDefinition |
-    syntactical_analyzer.FunctionParameter |
-    syntactical_analyzer.LetStatement |
+    sya.FunctionParameter |
+    sya.LetStatement |
     ForPreDef |
-    syntactical_analyzer.StructBlock |
+    sya.StructBlock |
     FunctionBlock |
-    syntactical_analyzer.EnumBlock |
+    sya.EnumBlock |
     FunctionReturnDefinition
 )
 
 
 type SymbolReferenceTypes = (
-    syntactical_analyzer.Identifier |
-    syntactical_analyzer.StructBlock |
+    sya.Identifier |
+    sya.StructBlock |
     FunctionBlock |
-    syntactical_analyzer.EnumBlock
+    sya.EnumBlock
 )
 
 
 type Identifier = (
-    syntactical_analyzer.Identifier |
+    sya.Identifier |
     CompoundIdentifier |
     AddressOfIdentifier |
     DereferenceIdentifier
@@ -40,19 +40,19 @@ type NestableCodeBlock = ForBlock | WhileBlock | DoBlock | IfBlock
 
 
 type IntermediateStatement = (
-    syntactical_analyzer.Expression |
-    syntactical_analyzer.LetStatement |
-    syntactical_analyzer.LoopStatements |
-    syntactical_analyzer.NestableCodeBlock |
+    sya.Expression |
+    sya.LetStatement |
+    sya.LoopStatements |
+    sya.NestableCodeBlock |
     InternalDefinition |
     Identifier
 )
 
 
 type Statement = (
-    syntactical_analyzer.Expression |
-    syntactical_analyzer.LetStatement |
-    syntactical_analyzer.LoopStatements |
+    sya.Expression |
+    sya.LetStatement |
+    sya.LoopStatements |
     NestableCodeBlock |
     InternalDefinition |
     Identifier
@@ -71,68 +71,68 @@ type BlockHolder = (
 
 
 BaseValues: tuple[type, ...] = (
-    syntactical_analyzer.BuiltInConst,
-    syntactical_analyzer.NumberLiteral,
-    syntactical_analyzer.CharLiteral,
-    syntactical_analyzer.StringLiteral,
-    syntactical_analyzer.Identifier,
-    syntactical_analyzer.FunctionCall,
+    sya.BuiltInConst,
+    sya.NumberLiteral,
+    sya.CharLiteral,
+    sya.StringLiteral,
+    sya.Identifier,
+    sya.FunctionCall,
 )
 
 
 NestableCodeBlocks: tuple[type, ...] = (
-    syntactical_analyzer.ForBlock,
-    syntactical_analyzer.WhileBlock,
-    syntactical_analyzer.DoBlock,
-    syntactical_analyzer.IfBlock,
+    sya.ForBlock,
+    sya.WhileBlock,
+    sya.DoBlock,
+    sya.IfBlock,
 )
 
 
 HasOperands: tuple[type, ...] = (
-    syntactical_analyzer.UnaryExpression,
-    syntactical_analyzer.BinaryExpression,
-    syntactical_analyzer.TernaryExpression,
+    sya.UnaryExpression,
+    sya.BinaryExpression,
+    sya.TernaryExpression,
 )
 
 
 AddRefTypes: tuple[type, ...] = (
-    syntactical_analyzer.UnaryExpression,
-    syntactical_analyzer.BinaryExpression,
-    syntactical_analyzer.TernaryExpression,
-    syntactical_analyzer.FunctionCall,
-    syntactical_analyzer.Identifier,
+    sya.UnaryExpression,
+    sya.BinaryExpression,
+    sya.TernaryExpression,
+    sya.FunctionCall,
+    sya.Identifier,
 )
 
 
 IncrementOperators: tuple[
-    syntactical_analyzer.PostfixUnaryOperatorEnum |
-    syntactical_analyzer.PrefixUnaryOperatorEnum, ...
+    sya.PostfixUnaryOperatorEnum |
+    sya.PrefixUnaryOperatorEnum, ...
 ] = (
-    syntactical_analyzer.PostfixUnaryOperatorEnum.Increment,
-    syntactical_analyzer.PostfixUnaryOperatorEnum.Decrement,
-    syntactical_analyzer.PrefixUnaryOperatorEnum.Increment,
-    syntactical_analyzer.PrefixUnaryOperatorEnum.Decrement,
+    sya.PostfixUnaryOperatorEnum.Increment,
+    sya.PostfixUnaryOperatorEnum.Decrement,
+    sya.PrefixUnaryOperatorEnum.Increment,
+    sya.PrefixUnaryOperatorEnum.Decrement,
 )
 
 
-PointerOperators: tuple[syntactical_analyzer.PrefixUnaryOperatorEnum, ...] = (
-    syntactical_analyzer.PrefixUnaryOperatorEnum.AddressOf,
-    syntactical_analyzer.PrefixUnaryOperatorEnum.Dereference,
+PointerOperators: tuple[sya.PrefixUnaryOperatorEnum, ...] = (
+    sya.PrefixUnaryOperatorEnum.AddressOf,
+    sya.PrefixUnaryOperatorEnum.Dereference,
 )
 
 
-AssignmentOperators: tuple[syntactical_analyzer.BinaryOperatorEnum, ...] = (
-    syntactical_analyzer.BinaryOperatorEnum.Assignment,
-    syntactical_analyzer.BinaryOperatorEnum.AdditionAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.SubtractionAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.MultiplicationAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.DivisionAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.ModulusAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.BitwiseANDAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.BitwiseORAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.BitwiseXORAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.LeftShiftAssignment,
-    syntactical_analyzer.BinaryOperatorEnum.RightShiftAssignment,
+AssignmentOperators: tuple[sya.BinaryOperatorEnum, ...] = (
+    sya.BinaryOperatorEnum.Assignment,
+    sya.BinaryOperatorEnum.AdditionAssignment,
+    sya.BinaryOperatorEnum.SubtractionAssignment,
+    sya.BinaryOperatorEnum.MultiplicationAssignment,
+    sya.BinaryOperatorEnum.DivisionAssignment,
+    sya.BinaryOperatorEnum.ModulusAssignment,
+    sya.BinaryOperatorEnum.BitwiseANDAssignment,
+    sya.BinaryOperatorEnum.BitwiseORAssignment,
+    sya.BinaryOperatorEnum.BitwiseXORAssignment,
+    sya.BinaryOperatorEnum.LeftShiftAssignment,
+    sya.BinaryOperatorEnum.RightShiftAssignment,
 )
 
 
@@ -162,7 +162,7 @@ class UndeclaredVariable(SemanticError):
 
     def __init__(
         self,
-        variable: syntactical_analyzer.Identifier,
+        variable: sya.Identifier,
     ):
         message = (
             f"The variable '{variable.content}' is undeclared."
@@ -175,17 +175,17 @@ class InvalidOperand(SemanticError):
     def __init__(
         self,
         operator: (
-            syntactical_analyzer.TernaryExpression |
-            syntactical_analyzer.BinaryExpression |
-            syntactical_analyzer.UnaryExpression |
-            syntactical_analyzer.Operator
+            sya.TernaryExpression |
+            sya.BinaryExpression |
+            sya.UnaryExpression |
+            sya.Operator
         ),
         operand: IntermediateStatement | Statement,
     ):
         if isinstance(operator, (
-            syntactical_analyzer.TernaryExpression,
-            syntactical_analyzer.BinaryExpression,
-            syntactical_analyzer.UnaryExpression,
+            sya.TernaryExpression,
+            sya.BinaryExpression,
+            sya.UnaryExpression,
         )):
             message = (
                 f"The operand at '{operand}' is invalid for the "
@@ -305,14 +305,14 @@ class InternalDefinition:
 
     _index: ClassVar[int] = 0
 
-    _identifier: syntactical_analyzer.Identifier
-    _operand: syntactical_analyzer.Expression
+    _identifier: sya.Identifier
+    _operand: sya.Expression
 
     def __init__(
         self,
-        operand: syntactical_analyzer.Expression,
+        operand: sya.Expression,
     ):
-        self._identifier = syntactical_analyzer.Identifier(
+        self._identifier = sya.Identifier(
             f"`{InternalDefinition._index}",
             FileInfo("",0,0,0,0)
         )
@@ -320,11 +320,11 @@ class InternalDefinition:
         InternalDefinition._index += 1
 
     @property
-    def identifier(self) -> syntactical_analyzer.Identifier:
+    def identifier(self) -> sya.Identifier:
         return self._identifier
 
     @property
-    def operand(self) -> syntactical_analyzer.Expression:
+    def operand(self) -> sya.Expression:
         return self._operand
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
@@ -360,6 +360,9 @@ class Symbol:
         self._definition = definition
         self._references = []
 
+    def __hash__(self) -> int:
+        return id(self)
+
     @property
     def name(self) -> str: return self._name
 
@@ -391,6 +394,9 @@ class SymbolTable:
         if key != value.name:
             raise KeyError
         self.set(value)
+
+    @property
+    def symbols(self) -> list[Symbol]: return self._symbols[:]
 
     def get(self, key: str, symbol_type: SymbolType | None = None) -> Symbol:
         for symbol in self._symbols:
@@ -474,6 +480,9 @@ class CodeBlock:
     def __init__(self, code: list[Statement]):
         self._code = code[:]
 
+    @property
+    def code(self) -> list[Statement]: return self._code[:]
+
     def tree_str(
         self,
         pre: str = "",
@@ -489,19 +498,19 @@ class CodeBlock:
 
     @staticmethod
     def _sa(
-        code: list[syntactical_analyzer.Statement],
+        code: list[sya.Statement],
         symbol_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "CodeBlock":
 
-        def add_ref_if(statement: syntactical_analyzer.Expression):
+        def add_ref_if(statement: sya.Expression):
             if isinstance(statement, HasOperands):
                 for key in OperandKeys:
                     if (
                         hasattr(statement, key) and
                         isinstance(
                             getattr(statement, key),
-                            syntactical_analyzer.Identifier,
+                            sya.Identifier,
                         )
                     ):
                         try:
@@ -515,7 +524,7 @@ class CodeBlock:
                         hasattr(statement, key) and
                         isinstance(
                             getattr(statement, key),
-                            syntactical_analyzer.FunctionCall,
+                            sya.FunctionCall,
                         )
                     ):
                         try:
@@ -539,20 +548,20 @@ class CodeBlock:
                     elif (
                         isinstance(
                             statement,
-                            syntactical_analyzer.BinaryExpression,
+                            sya.BinaryExpression,
                         ) and
                         (
                             statement.operator ==
-                            syntactical_analyzer.BinaryOperatorEnum.Assignment
+                            sya.BinaryOperatorEnum.Assignment
                         ) and
                         hasattr(statement, key) and
                         isinstance(
                             getattr(statement, key),
-                            syntactical_analyzer.BinaryExpression,
+                            sya.BinaryExpression,
                         )
                     ):
                         add_ref_if(getattr(statement, key))
-            elif isinstance(statement, syntactical_analyzer.FunctionCall):
+            elif isinstance(statement, sya.FunctionCall):
                 try:
                     symbol = symbol_table.get(
                         statement.identifier.content, SymbolType.function)
@@ -568,7 +577,7 @@ class CodeBlock:
                         raise UndeclaredVariable(arg.value) # type: ignore
                     else:
                         symbol.add_reference(arg.value) # type: ignore
-            elif isinstance(statement, syntactical_analyzer.Identifier):
+            elif isinstance(statement, sya.Identifier):
                 try:
                     symbol = symbol_table.get(statement.content)
                 except KeyError:
@@ -579,7 +588,7 @@ class CodeBlock:
         code_out: list[Statement] = []
         for root_statement in code:
             for statement in _flatten_statement(root_statement):
-                if isinstance(statement, syntactical_analyzer.LetStatement):
+                if isinstance(statement, sya.LetStatement):
                     try:
                         symbol_table.add(Symbol(
                             statement.identifier.content,
@@ -608,16 +617,16 @@ class CodeBlock:
                 elif isinstance(statement, AddRefTypes):
                     add_ref_if(statement) # type: ignore
                     code_out.append(statement) # type: ignore
-                elif isinstance(statement, syntactical_analyzer.IfBlock):
+                elif isinstance(statement, sya.IfBlock):
                     code_out.append(
                         IfBlock._sa(statement, symbol_table, members))
-                elif isinstance(statement, syntactical_analyzer.DoBlock):
+                elif isinstance(statement, sya.DoBlock):
                     code_out.append(
                         DoBlock._sa(statement, symbol_table, members))
-                elif isinstance(statement, syntactical_analyzer.WhileBlock):
+                elif isinstance(statement, sya.WhileBlock):
                     code_out.append(
                         WhileBlock._sa(statement, symbol_table, members))
-                elif isinstance(statement, syntactical_analyzer.ForBlock):
+                elif isinstance(statement, sya.ForBlock):
                     code_out.append(
                         ForBlock._sa(statement, symbol_table, members))
                 else:
@@ -647,9 +656,9 @@ class ElseBlock:
 
     @staticmethod
     def _sa(
-        else_block: syntactical_analyzer.ElseBlock,
+        else_block: sya.ElseBlock,
         symbol_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "ElseBlock":
 
         code = CodeBlock._sa(else_block.code, symbol_table, members)
@@ -660,7 +669,7 @@ class ElseBlock:
 class ForPreDef:
 
     _identifier: Identifier
-    _type: syntactical_analyzer.DataType
+    _type: sya.DataType
     _pointer: bool
     _assignment: CodeBlock | None
     _file_info: FileInfo
@@ -668,7 +677,7 @@ class ForPreDef:
     def __init__(
         self,
         identifier: Identifier,
-        type: syntactical_analyzer.DataType,
+        type: sya.DataType,
         pointer: bool,
         assignment: CodeBlock | None,
         file_info: FileInfo,
@@ -743,12 +752,12 @@ class ForBlock:
 
     @staticmethod
     def _sa(
-        for_block: syntactical_analyzer.ForBlock,
+        for_block: sya.ForBlock,
         parent_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "ForBlock":
         symbol_table = ForSymbolTable(parent_table)
-        if isinstance(for_block.pre_statement, syntactical_analyzer.ForPreDef):
+        if isinstance(for_block.pre_statement, sya.ForPreDef):
             assignment = CodeBlock._sa(for_block.code, symbol_table, members)
             pre_statement = ForPreDef(
                 for_block.pre_statement.identifier,
@@ -827,9 +836,9 @@ class WhileBlock:
 
     @staticmethod
     def _sa(
-        while_block: syntactical_analyzer.WhileBlock,
+        while_block: sya.WhileBlock,
         symbol_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "WhileBlock":
         condition = CodeBlock._sa(
             [while_block.condition], symbol_table, members)
@@ -897,9 +906,9 @@ class DoBlock:
 
     @staticmethod
     def _sa(
-        do_block: syntactical_analyzer.DoBlock,
+        do_block: sya.DoBlock,
         symbol_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "DoBlock":
         condition = CodeBlock._sa([do_block.condition], symbol_table, members)
         first_code = CodeBlock._sa(do_block.first_code, symbol_table, members)
@@ -957,9 +966,9 @@ class IfBlock:
 
     @staticmethod
     def _sa(
-        if_block: syntactical_analyzer.IfBlock,
+        if_block: sya.IfBlock,
         symbol_table: SymbolTable,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
     ) -> "IfBlock":
         condition = CodeBlock._sa([if_block.condition], symbol_table, members)
         code = CodeBlock._sa(if_block.code, symbol_table, members)
@@ -977,48 +986,48 @@ class IfBlock:
 
 class FunctionReturnDefinition:
 
-    _identifier: syntactical_analyzer.Identifier
+    _identifier: sya.Identifier
     _return_type_pointer: bool
-    _return_type: syntactical_analyzer.DataType | None
+    _return_type: sya.DataType | None
 
     def __init__(
         self,
-        identifier: syntactical_analyzer.Identifier,
+        identifier: sya.Identifier,
         return_type_pointer: bool,
-        return_type: syntactical_analyzer.DataType | None,
+        return_type: sya.DataType | None,
     ):
         self._identifier = identifier
         self._return_type_pointer = return_type_pointer
         self._return_type = return_type
 
     @property
-    def identifier(self) -> syntactical_analyzer.Identifier:
+    def identifier(self) -> sya.Identifier:
         return self._identifier
 
     @property
     def return_type_pointer(self) -> bool: return self._return_type_pointer
 
     @property
-    def return_type(self) -> syntactical_analyzer.DataType | None:
+    def return_type(self) -> sya.DataType | None:
         return self._return_type
 
 
 class FunctionBlock:
 
-    _identifier: syntactical_analyzer.Identifier
-    _params: list[syntactical_analyzer.FunctionParameter]
+    _identifier: sya.Identifier
+    _params: list[sya.FunctionParameter]
     _return_type: FunctionReturnDefinition
-    _members: list[syntactical_analyzer.LetStatement]
+    _members: list[sya.LetStatement]
     _code: CodeBlock
     _file_info: FileInfo
     _symbol_table: SymbolTable
 
     def __init__(
         self,
-        identifier: syntactical_analyzer.Identifier,
-        params: list[syntactical_analyzer.FunctionParameter],
+        identifier: sya.Identifier,
+        params: list[sya.FunctionParameter],
         return_type: FunctionReturnDefinition,
-        members: list[syntactical_analyzer.LetStatement],
+        members: list[sya.LetStatement],
         code: CodeBlock,
         file_info: FileInfo,
         symbol_table: SymbolTable,
@@ -1032,18 +1041,18 @@ class FunctionBlock:
         self._symbol_table = symbol_table
 
     @property
-    def identifier(self) -> syntactical_analyzer.Identifier:
+    def identifier(self) -> sya.Identifier:
         return self._identifier
 
     @property
-    def params(self) -> list[syntactical_analyzer.FunctionParameter]:
+    def params(self) -> list[sya.FunctionParameter]:
         return self._params[:]
 
     @property
     def return_type(self) -> FunctionReturnDefinition: return self._return_type
 
     @property
-    def members(self) -> list[syntactical_analyzer.LetStatement]:
+    def members(self) -> list[sya.LetStatement]:
         return self._members[:]
 
     @property
@@ -1051,6 +1060,9 @@ class FunctionBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def symbol_table(self) -> SymbolTable: return self._symbol_table
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Function: {self._identifier}\n"
@@ -1096,11 +1108,11 @@ class FunctionBlock:
 
     @staticmethod
     def _sa(
-        func: syntactical_analyzer.FunctionBlock,
+        func: sya.FunctionBlock,
         parent_table: SymbolTable,
     ) -> "FunctionBlock":
         symbol_table = SymbolTable(parent_table)
-        members: list[syntactical_analyzer.LetStatement] = []
+        members: list[sya.LetStatement] = []
 
         function_return = FunctionReturnDefinition(
             func.identifier, func.return_type_pointer, func.return_type)
@@ -1137,10 +1149,10 @@ class FunctionBlock:
 class File:
 
     _children: list[
-        syntactical_analyzer.Directive |
-        syntactical_analyzer.StructBlock |
+        sya.Directive |
+        sya.StructBlock |
         FunctionBlock |
-        syntactical_analyzer.EnumBlock
+        sya.EnumBlock
     ]
     _file_info: FileInfo
     _symbol_table: SymbolTable
@@ -1148,10 +1160,10 @@ class File:
     def __init__(
         self,
         children: list[
-            syntactical_analyzer.Directive |
-            syntactical_analyzer.StructBlock |
+            sya.Directive |
+            sya.StructBlock |
             FunctionBlock |
-            syntactical_analyzer.EnumBlock
+            sya.EnumBlock
         ],
         file_info: FileInfo,
         symbol_table: SymbolTable,
@@ -1161,7 +1173,18 @@ class File:
         self._symbol_table = symbol_table
 
     @property
+    def children(self) -> list[
+        sya.Directive |
+        sya.StructBlock |
+        FunctionBlock |
+        sya.EnumBlock
+    ]: return self._children[:]
+
+    @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def symbol_table(self) -> SymbolTable: return self._symbol_table
 
     def tree_str(self) -> str:
         s: str = " File\n"
@@ -1175,29 +1198,29 @@ class File:
         return s
 
     @staticmethod
-    def _sa(syntax_tree: syntactical_analyzer.File) -> "File":
+    def _sa(syntax_tree: sya.File) -> "File":
         symbol_table = SymbolTable()
         children: list[
-            syntactical_analyzer.Directive |
-            syntactical_analyzer.StructBlock |
+            sya.Directive |
+            sya.StructBlock |
             FunctionBlock |
-            syntactical_analyzer.EnumBlock
+            sya.EnumBlock
         ] = []
         for child in syntax_tree.children:
             symbol: Symbol | None = None
-            if isinstance(child, syntactical_analyzer.StructBlock):
+            if isinstance(child, sya.StructBlock):
                 symbol = Symbol(
                     child.identifier.content,
                     SymbolType.struct,
                     child,
                 )
-            elif isinstance(child, syntactical_analyzer.FunctionBlock):
+            elif isinstance(child, sya.FunctionBlock):
                 symbol = Symbol(
                     child.identifier.content,
                     SymbolType.function,
                     child, # type: ignore
                 )
-            elif isinstance(child, syntactical_analyzer.EnumBlock):
+            elif isinstance(child, sya.EnumBlock):
                 symbol = Symbol(
                     child.identifier.content,
                     SymbolType.enum,
@@ -1206,30 +1229,26 @@ class File:
             if symbol is not None:
                 symbol_table.add(symbol)
         for child in syntax_tree.children:
-            new_child: (
-                syntactical_analyzer.StructBlock |
-                FunctionBlock |
-                syntactical_analyzer.EnumBlock
-            )
-            if isinstance(child, syntactical_analyzer.FunctionBlock):
+            new_child: sya.StructBlock | FunctionBlock | sya.EnumBlock
+            if isinstance(child, sya.FunctionBlock):
                 new_child = FunctionBlock._sa(child, symbol_table)
                 symbol_table.get(
                     child.identifier.content
                 )._definition = new_child # type: ignore
             # TODO: analyze structs
-            elif isinstance(child, syntactical_analyzer.StructBlock):
+            elif isinstance(child, sya.StructBlock):
                 new_child = child
-            elif isinstance(child, syntactical_analyzer.EnumBlock):
+            elif isinstance(child, sya.EnumBlock):
                 new_child = _sa_enum(child)
-            elif isinstance(child, syntactical_analyzer.Directive):
+            elif isinstance(child, sya.Directive):
                 continue
             children.append(new_child)
         file = File(children, syntax_tree._file_info, symbol_table)
         return file
 
-def _sa_enum(block: syntactical_analyzer.EnumBlock
-) -> syntactical_analyzer.EnumBlock:
-    members: list[syntactical_analyzer.EnumMember] = []
+
+def _sa_enum(block: sya.EnumBlock) -> sya.EnumBlock:
+    members: list[sya.EnumMember] = []
     used_numbers: set[int] = set()
     for member in block.members:
         if member.value is not None:
@@ -1239,7 +1258,7 @@ def _sa_enum(block: syntactical_analyzer.EnumBlock
         while i in used_numbers:
             i += 1
         if member.value is not None:
-            members.append(syntactical_analyzer.EnumMember(
+            members.append(sya.EnumMember(
                 member.identifier,
                 member.value,
                 member.file_info
@@ -1247,13 +1266,13 @@ def _sa_enum(block: syntactical_analyzer.EnumBlock
             i = member.value.value + 1
         else:
             used_numbers.add(i)
-            members.append(syntactical_analyzer.EnumMember(
+            members.append(sya.EnumMember(
                 member.identifier,
-                syntactical_analyzer.NumberLiteral(str(i), member.file_info),
+                sya.NumberLiteral(str(i), member.file_info),
                 member.file_info
             ))
             i += 1
-    return syntactical_analyzer.EnumBlock(
+    return sya.EnumBlock(
         block.identifier,
         sorted(
             sorted(members, key=lambda o: o.identifier.content),
@@ -1263,12 +1282,12 @@ def _sa_enum(block: syntactical_analyzer.EnumBlock
     )
 
 def _compound_identifier(
-    statement: syntactical_analyzer.BinaryExpression,
-    operator: syntactical_analyzer.Operator,
+    statement: sya.BinaryExpression,
+    operator: sya.Operator,
 ) -> CompoundIdentifier:
     if (
         statement.operator.content ==
-        syntactical_analyzer.BinaryOperatorEnum.MemberOf
+        sya.BinaryOperatorEnum.MemberOf
     ): return CompoundIdentifier(
             _assert_identifier(statement.operand1, statement.operator, True),
             _assert_identifier(statement.operand2, statement.operator, True),
@@ -1277,19 +1296,19 @@ def _compound_identifier(
     else: raise InvalidOperand(operator, statement)
 
 def _augment_identifier(
-    statement: syntactical_analyzer.UnaryExpression,
-    operator: syntactical_analyzer.Operator,
+    statement: sya.UnaryExpression,
+    operator: sya.Operator,
 ) -> AddressOfIdentifier | DereferenceIdentifier:
     if (
         statement.operator.content ==
-        syntactical_analyzer.PrefixUnaryOperatorEnum.AddressOf
+        sya.PrefixUnaryOperatorEnum.AddressOf
     ): return AddressOfIdentifier(
             _assert_identifier(statement.operand, statement.operator, True),
             statement.file_info,
         )
     elif (
         statement.operator.content ==
-        syntactical_analyzer.PrefixUnaryOperatorEnum.Dereference
+        sya.PrefixUnaryOperatorEnum.Dereference
     ): return DereferenceIdentifier(
             _assert_identifier(statement.operand, statement.operator, True),
             statement.file_info,
@@ -1297,25 +1316,25 @@ def _augment_identifier(
     else: raise InvalidOperand(operator, statement)
 
 def _assert_identifier(
-    statement: syntactical_analyzer.Statement,
-    operator: syntactical_analyzer.Operator,
+    statement: sya.Statement,
+    operator: sya.Operator,
     harsh: bool = False
 ) -> Identifier:
-    if isinstance(statement, syntactical_analyzer.Identifier):
+    if isinstance(statement, sya.Identifier):
         return statement
-    elif isinstance(statement, syntactical_analyzer.UnaryExpression):
+    elif isinstance(statement, sya.UnaryExpression):
         if (
-            isinstance(statement.operand, syntactical_analyzer.BinaryExpression)
+            isinstance(statement.operand, sya.BinaryExpression)
             and not harsh
         ):
             return statement # type: ignore
         return _augment_identifier(statement, operator)
-    elif isinstance(statement, syntactical_analyzer.BinaryExpression):
+    elif isinstance(statement, sya.BinaryExpression):
         return _compound_identifier(statement, operator)
     else: raise InvalidOperand(operator, statement)
 
 def _create_internal_definition(
-    statement: syntactical_analyzer.Expression,
+    statement: sya.Expression,
 ) -> list[IntermediateStatement]:
     flattened = _flatten_statement(statement)
     internal_definition = InternalDefinition(
@@ -1324,12 +1343,12 @@ def _create_internal_definition(
         internal_definition, internal_definition.identifier]
 
 def _flatten_statement(
-    statement: syntactical_analyzer.Statement,
+    statement: sya.Statement,
 ) -> list[IntermediateStatement]:
 
-    if isinstance(statement, syntactical_analyzer.UnaryExpression):
+    if isinstance(statement, sya.UnaryExpression):
         if statement.operator.content in IncrementOperators:
-            return [syntactical_analyzer.UnaryExpression(
+            return [sya.UnaryExpression(
                 statement.operator,
                 _assert_identifier( # type: ignore
                     statement.operand, statement.operator),
@@ -1342,17 +1361,17 @@ def _flatten_statement(
         else:
             flattened = _create_internal_definition(statement.operand)
             return flattened[:-1] + [
-                syntactical_analyzer.UnaryExpression(
+                sya.UnaryExpression(
                     statement.operator,
                     flattened[-1], # type: ignore
                     statement.file_info,
                 )
             ]
 
-    elif isinstance(statement, syntactical_analyzer.BinaryExpression):
+    elif isinstance(statement, sya.BinaryExpression):
         if (
             statement.operator.content ==
-            syntactical_analyzer.BinaryOperatorEnum.MemberOf
+            sya.BinaryOperatorEnum.MemberOf
         ): return [CompoundIdentifier(
             _assert_identifier(statement.operand1, statement.operator),
             _assert_identifier(statement.operand2, statement.operator),
@@ -1360,10 +1379,10 @@ def _flatten_statement(
         )]
         elif (
             statement.operator.content ==
-            syntactical_analyzer.BinaryOperatorEnum.Assignment
+            sya.BinaryOperatorEnum.Assignment
         ):
             flattened = _flatten_statement(statement.operand2)
-            return flattened[:-1] + [syntactical_analyzer.BinaryExpression(
+            return flattened[:-1] + [sya.BinaryExpression(
                 statement.operator,
                 _assert_identifier( # type: ignore
                     statement.operand1,
@@ -1374,7 +1393,7 @@ def _flatten_statement(
             )]
         elif statement.operator.content in AssignmentOperators:
             if isinstance(statement.operand2, BaseValues):
-                return [syntactical_analyzer.BinaryExpression(
+                return [sya.BinaryExpression(
                     statement.operator,
                     _assert_identifier( # type: ignore
                         statement.operand1,
@@ -1385,7 +1404,7 @@ def _flatten_statement(
                 )]
             else:
                 flattened = _create_internal_definition(statement.operand2)
-                return flattened[:-1] + [syntactical_analyzer.BinaryExpression(
+                return flattened[:-1] + [sya.BinaryExpression(
                     statement.operator,
                     _assert_identifier( # type: ignore
                         statement.operand1,
@@ -1402,7 +1421,7 @@ def _flatten_statement(
                 flattened2 = [statement.operand2]
             else: flattened2 = _create_internal_definition(statement.operand2)
             return flattened1[:-1] + flattened2[:-1] + [
-                syntactical_analyzer.BinaryExpression(
+                sya.BinaryExpression(
                     statement.operator,
                     flattened1[-1], # type: ignore
                     flattened2[-1], # type: ignore
@@ -1410,7 +1429,7 @@ def _flatten_statement(
                 )
             ]
 
-    elif isinstance(statement, syntactical_analyzer.TernaryExpression):
+    elif isinstance(statement, sya.TernaryExpression):
         if isinstance(statement.operand1, BaseValues):
             flattened1 = [statement.operand1]
         else: flattened1 = _create_internal_definition(statement.operand1)
@@ -1421,7 +1440,7 @@ def _flatten_statement(
             flattened3 = [statement.operand3]
         else: flattened3 = _create_internal_definition(statement.operand3)
         return flattened1[:-1] + flattened2[:-1] + flattened3[:-1] + [
-            syntactical_analyzer.TernaryExpression(
+            sya.TernaryExpression(
                 statement.operator,
                 flattened1[-1], # type: ignore
                 flattened2[-1], # type: ignore
@@ -1432,5 +1451,5 @@ def _flatten_statement(
 
     else: return [statement]
 
-def semantical_analyzer(syntax_tree: syntactical_analyzer.File) -> File:
+def semantical_analyzer(syntax_tree: sya.File) -> File:
     return File._sa(syntax_tree)
