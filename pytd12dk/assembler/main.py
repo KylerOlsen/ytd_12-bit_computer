@@ -41,6 +41,7 @@ def parser(parser: argparse.ArgumentParser):
 def main(argv: Sequence[str] | None = None):
     parser = argparse.ArgumentParser(
         description='ytd 12-bit Computer Linker and Assembler',
+        epilog='https://github.com/KylerOlsen/ytd_12-bit_computer',
     )
 
     args = parser.parse_args(argv)

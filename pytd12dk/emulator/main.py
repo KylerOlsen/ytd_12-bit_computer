@@ -52,6 +52,7 @@ def main(argv: Sequence[str] | None = None):
 
     parser = argparse.ArgumentParser(
         description='ytd 12-bit Computer Emulator',
+        epilog='https://github.com/KylerOlsen/ytd_12-bit_computer',
     )
     parser.add_argument('rom_file', type=argparse.FileType('rb'))
     parser.add_argument(
