@@ -104,10 +104,12 @@ loop:
     or PC MP ZR
 ```
 
-## High Level Language
-*WIP*
+## High Level Language: *DuoDeca-Script*
 
-About
+![DuoDeca-Script Logo](./docs/DuoDeca-Script_Logo_Small.png)
+
+### About
+- Name: DuoDeca-Script
 - Paradigm: Multi-Paradigm: Procedural (Imperative), Structured
 - Designer: Kyler Olsen
 - Created: Mar 2024
@@ -115,7 +117,7 @@ About
 - Platform: ytd 12-bit computer,
 ytd 12-bit emulator (from *pytd12dk*, multi-platform)
 - License: MIT
-- Filename extension: `.ytd12c`
+- Filename extension: `.ytd12c`, `.duox`
 - Compiler Implementations: `pytd12dk` (Python),
 `ytd12nc` (*native compiler*)
 

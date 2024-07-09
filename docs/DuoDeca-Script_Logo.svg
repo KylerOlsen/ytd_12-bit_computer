@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="150mm"
+   height="175mm"
+   viewBox="0 0 150 175"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="Logo.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="399.99997"
+     inkscape:cy="560"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     showguides="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect833"
+       style="fill:#800080;stroke:none;stroke-width:1.40316;stroke-linecap:round"
+       transform="rotate(45.000001)"
+       d="M 141.42136,35.355337 70.710682,70.710674 53.033012,-53.033012 141.42136,35.355337"
+       sodipodi:nodetypes="cccc" />
+    <path
+       id="rect833-3"
+       style="fill:#ff00ff;stroke:none;stroke-width:1.40316;stroke-linecap:round"
+       d="M 75,125 150,100 75,0 v 125"
+       sodipodi:nodetypes="cccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:27px;line-height:0.75;font-family:'AR DESTINE';-inkscape-font-specification:'AR DESTINE';fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="97.599159"
+       y="50.900482"
+       id="text853"
+       transform="matrix(0.83858353,0.30901699,-0.65517326,0.95105652,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan851"
+         x="97.599159"
+         y="50.900482"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:27px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:center;text-anchor:middle;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">Duo</tspan><tspan
+         sodipodi:role="line"
+         x="97.599159"
+         y="72.040573"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:27px;font-family:'Times New Roman';-inkscape-font-specification:'Times New Roman, Bold';text-align:center;text-anchor:middle;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan855">Deca</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;line-height:1.25;font-family:'AR DESTINE';-inkscape-font-specification:'AR DESTINE';stroke-width:0.264583"
+       x="82.398804"
+       y="204.86308"
+       id="text861"><tspan
+         sodipodi:role="line"
+         id="tspan859"
+         x="82.398804"
+         y="204.86308"
+         style="font-style:normal;font-variant:normal;font-weight:100;font-stretch:normal;font-family:'AR DESTINE';-inkscape-font-specification:'AR DESTINE Thin';stroke-width:0.264583" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;line-height:1.25;font-family:'AR DESTINE';-inkscape-font-specification:'AR DESTINE';stroke-width:0.264583"
+       x="16.062479"
+       y="159.25784"
+       id="text865"><tspan
+         sodipodi:role="line"
+         id="tspan863"
+         x="16.062479"
+         y="159.25784"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Comic Sans MS';-inkscape-font-specification:'Comic Sans MS Bold';stroke-width:0.264583">Script</tspan></text>
+  </g>
+</svg>
