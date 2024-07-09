@@ -1207,7 +1207,6 @@ class File:
                 symbol_table.add(symbol)
         for child in syntax_tree.children:
             new_child: (
-                syntactical_analyzer.Directive |
                 syntactical_analyzer.StructBlock |
                 FunctionBlock |
                 syntactical_analyzer.EnumBlock
@@ -1217,11 +1216,13 @@ class File:
                 symbol_table.get(
                     child.identifier.content
                 )._definition = new_child # type: ignore
+            # TODO: analyze structs
+            elif isinstance(child, syntactical_analyzer.StructBlock):
+                new_child = child
             elif isinstance(child, syntactical_analyzer.EnumBlock):
                 new_child = _sa_enum(child)
-            # TODO: analyze structs
-            else:
-                new_child = child
+            elif isinstance(child, syntactical_analyzer.Directive):
+                continue
             children.append(new_child)
         file = File(children, syntax_tree._file_info, symbol_table)
         return file

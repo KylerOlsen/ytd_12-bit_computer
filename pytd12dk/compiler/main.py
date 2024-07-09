@@ -9,7 +9,6 @@ from .lexer import lexer
 from .syntactical_analyzer import syntactical_analyzer
 from .semantical_analyzer import semantical_analyzer
 
-
 def _compile(args: argparse.Namespace):
     tokens = lexer(args.input_file.read(), args.input_file.name)
 
@@ -40,13 +39,15 @@ def compile(args: argparse.Namespace):
 def parser(parser: argparse.ArgumentParser):
     parser.add_argument(
         'input_file', type=argparse.FileType('r', encoding='utf-8'))
-    # parser.add_argument('-o', '--output_file', type=argparse.FileType('wb'))
+    parser.add_argument('-o', '--output_file', type=argparse.FileType('wb'))
     parser.add_argument(
         '-t', '--token_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.add_argument(
         '-x', '--syntax_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.add_argument(
         '-n', '--annotated_file', type=argparse.FileType('w', encoding='utf-8'))
+    parser.add_argument(
+        '-a', '--assembly_file', type=argparse.FileType('w', encoding='utf-8'))
     parser.set_defaults(func=compile)
 
 def main(argv: Sequence[str] | None = None):

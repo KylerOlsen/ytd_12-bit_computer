@@ -107,6 +107,10 @@ loop:
 ## High Level Language: *DuoDeca-Script*
 
 ![DuoDeca-Script Logo](./docs/DuoDeca-Script_Logo_Small.png)
+<br/><small>
+Yes, you may cringe that I used Comic Sans in my logo.
+I do when others do so. &lt;3 Kyler
+</small>
 
 ### About
 - Name: DuoDeca-Script
