@@ -178,6 +178,9 @@ class BuiltInConst:
     def file_info(self) -> FileInfo: return self._file_info
 
     @property
+    def content(self) -> BuiltInConstEnum: return self._content
+
+    @property
     def value(self) -> int:
         match (self._content):
             case BuiltInConstEnum.ConstTrue: return 1

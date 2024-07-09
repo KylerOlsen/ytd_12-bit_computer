@@ -9,6 +9,7 @@ from .lexer import lexer
 from .syntactical_analyzer import syntactical_analyzer
 from .semantical_analyzer import semantical_analyzer
 from .code_generator import code_generator
+from ..assembler import Program
 
 def _compile(args: argparse.Namespace):
     tokens = lexer(args.input_file.read(), args.input_file.name)
@@ -31,6 +32,10 @@ def _compile(args: argparse.Namespace):
 
     if args.assembly_file:
         args.assembly_file.write(assembly_code)
+
+    if args.output_file:
+        machine_code = Program(assembly_code)
+        args.output_file.write(bytes(machine_code))
 
 def compile(args: argparse.Namespace):
     try: _compile(args)

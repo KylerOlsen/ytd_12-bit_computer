@@ -651,6 +651,9 @@ class ElseBlock:
     @property
     def file_info(self) -> FileInfo: return self._file_info
 
+    @property
+    def code(self) -> CodeBlock: return self._code
+
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         return self._code.tree_str(pre + " Else", pre_cont + "")
 
@@ -816,6 +819,15 @@ class WhileBlock:
 
     @property
     def file_info(self) -> FileInfo: return self._file_info
+
+    @property
+    def condition(self) -> CodeBlock: return self._condition
+
+    @property
+    def code(self) -> CodeBlock: return self._code
+
+    @property
+    def else_block(self) -> ElseBlock | None: return self._else
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} While Loop\n"
