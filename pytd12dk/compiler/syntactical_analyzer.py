@@ -1616,7 +1616,7 @@ class StructBlock:
         if self._members:
             for member in self._members[:-1]:
                 s += member.tree_str(pre_cont + "├─", pre_cont + "│ ")
-            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "│ ")
+            s += self._members[-1].tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
     @staticmethod

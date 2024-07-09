@@ -235,7 +235,7 @@ class CompoundIdentifier:
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} CompoundIdentifier\n"
         s += f"{pre_cont}├─ Owner\n"
-        s += self._owner.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        s += self._owner.tree_str(pre_cont + "│ └─", pre_cont + "    ")
         s += f"{pre_cont}└─ Member\n"
         s += self._member.tree_str(pre_cont + "  └─", pre_cont + "    ")
         return s
@@ -478,15 +478,13 @@ class CodeBlock:
         self,
         pre: str = "",
         pre_cont: str = "",
-        cont: bool = False,
     ) -> str:
         s: str = ""
         if self._code:
-            if cont: s += f"{pre}├─ Code\n"
-            else: s += f"{pre}└─ Code\n"
+            s += f"{pre} Code Block\n"
             for code in self._code[:-1]:
-                s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
-            s += self._code[-1].tree_str(pre_cont + "  └─", pre_cont + "    ")
+                s += code.tree_str(pre_cont + "├─", pre_cont + "│ ")
+            s += self._code[-1].tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
 
     @staticmethod
@@ -645,9 +643,7 @@ class ElseBlock:
     def file_info(self) -> FileInfo: return self._file_info
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} Else Block\n"
-        s += self._code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
-        return s
+        return self._code.tree_str(pre + " Else", pre_cont + "")
 
     @staticmethod
     def _sa(
@@ -690,14 +686,13 @@ class ForPreDef:
     def identifier(self) -> Identifier: return self._identifier
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
-        s: str = f"{pre} For Loop Pre-Definition: {self._identifier}\n"
+        s: str = f"{pre} Definition: {self._identifier}\n"
         if self._assignment: s += f"{pre_cont}├─ Type: "
         else: s += f"{pre_cont}└─ Type: "
         if self._pointer: s+= "@"
         s += f"{self._type}\n"
         if self._assignment:
-            s += f"{pre_cont}└─ Value\n"
-            s += self._assignment.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+            s += self._assignment.tree_str(pre_cont + "└─ Value", pre_cont + "  ")
         return s
 
 
@@ -731,25 +726,19 @@ class ForBlock:
 
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} For Loop\n"
-        if self._code or self._else is not None:
-            cond_pre = f"{pre_cont}├─"
-            cond_pre_cont = f"{pre_cont}│ "
-        else:
-            cond_pre = f"{pre_cont}└─"
-            cond_pre_cont = f"{pre_cont}  "
-        s += f"{cond_pre} Pre-Statement\n"
         s += self._pre_statement.tree_str(
-            cond_pre_cont + "└─", cond_pre_cont + "  ")
-        s += f"{cond_pre} Condition\n"
+            f"{pre_cont}├─ Pre-Statement", f"{pre_cont}│ ")
         s += self._condition.tree_str(
-            cond_pre_cont + "└─", cond_pre_cont + "  ")
-        s += f"{cond_pre} Post-Statement\n"
+            f"{pre_cont}├─ Condition", f"{pre_cont}│ ")
         s += self._post_statement.tree_str(
-            cond_pre_cont + "└─", cond_pre_cont + "  ")
-        s += self._code.tree_str(
-            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+            f"{pre_cont}├─ Post-Statement", f"{pre_cont}│ ")
         if self._else is not None:
+            s += self._code.tree_str(
+                pre_cont + "├─", pre_cont + "│ ")
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        else:
+            s += self._code.tree_str(
+                pre_cont + "└─", pre_cont + "  ")
         return s
 
     @staticmethod
@@ -822,16 +811,18 @@ class WhileBlock:
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} While Loop\n"
         if self._code or self._else is not None:
-            s += f"{pre_cont}├─ Condition\n"
-            cond_pre = f"{pre_cont}│ "
+            s += self._condition.tree_str(
+                f"{pre_cont}├─ Condition", f"{pre_cont}│ ")
         else:
-            s += f"{pre_cont}└─ Condition\n"
-            cond_pre = f"{pre_cont}  "
-        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
-        s += self._code.tree_str(
-            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+            s += self._condition.tree_str(
+                f"{pre_cont}└─ Condition", f"{pre_cont}  ")
         if self._else is not None:
+            s += self._code.tree_str(
+                pre_cont + "├─", pre_cont + "│ ")
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
+        else:
+            s += self._code.tree_str(
+                pre_cont + "└─", pre_cont + "  ")
         return s
 
     @staticmethod
@@ -886,17 +877,20 @@ class DoBlock:
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} Do Loop\n"
         s += self._first_code.tree_str(
-            pre_cont + "  ├─", pre_cont + "  │ ", True)
+            pre_cont + "├─ First Do", pre_cont + "│ ")
         if self._second_code or self._else is not None:
-            s += f"{pre_cont}├─ Condition\n"
-            cond_pre = f"{pre_cont}│ "
+            s += self._condition.tree_str(
+                f"{pre_cont}├─ Condition", f"{pre_cont}│ ")
         else:
-            s += f"{pre_cont}└─ Condition\n"
-            cond_pre = f"{pre_cont}  "
-        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+            s += self._condition.tree_str(
+                f"{pre_cont}└─ Condition", f"{pre_cont}  ")
         if self._second_code is not None:
-            s += self._second_code.tree_str(
-                pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+            if self._else is not None:
+                s += self._second_code.tree_str(
+                    pre_cont + "├─ Second Do", pre_cont + "│ ")
+            else:
+                s += self._second_code.tree_str(
+                    pre_cont + "└─ Second Do", pre_cont + "  ")
         if self._else is not None:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
@@ -950,14 +944,13 @@ class IfBlock:
     def tree_str(self, pre: str = "", pre_cont: str = "") -> str:
         s: str = f"{pre} If Statement\n"
         if self._code or self._else is not None:
-            s += f"{pre_cont}├─ Condition\n"
-            cond_pre = f"{pre_cont}│ "
+            s += self._condition.tree_str(
+                f"{pre_cont}├─ Condition", f"{pre_cont}│ ")
         else:
-            s += f"{pre_cont}└─ Condition\n"
-            cond_pre = f"{pre_cont}  "
-        s += self._condition.tree_str(cond_pre + "└─", cond_pre + "  ")
+            s += self._condition.tree_str(
+                f"{pre_cont}└─ Condition", f"{pre_cont}  ")
         s += self._code.tree_str(
-            pre_cont + "  ├─", pre_cont + "  │ ", self._else is not None)
+            pre_cont + "├─ If", pre_cont + "│ ")
         if self._else is not None:
             s += self._else.tree_str(pre_cont + "└─", pre_cont + "  ")
         return s
@@ -1068,10 +1061,10 @@ class FunctionBlock:
             self._members
         ):
             s += self._symbol_table.table_str(
-                self.identifier.content, "├─", "│ ")
+                self.identifier.content, pre_cont + "├─", pre_cont + "│ ")
         else:
             s += self._symbol_table.table_str(
-                self.identifier.content, "└─", "  ")
+                self.identifier.content, pre_cont + "└─", pre_cont + "  ")
         if self._params:
             if self._code or self._return_type is not None or self._members:
                 s += f"{pre_cont}├─ Parameters\n"
@@ -1098,7 +1091,7 @@ class FunctionBlock:
                 s += code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
             s += self._members[-1].tree_str(
                 pre_cont + "  └─", pre_cont + "    ")
-        s += self._code.tree_str(pre_cont + "  ├─", pre_cont + "  │ ")
+        s += self._code.tree_str(pre_cont + "└─ Function", pre_cont + "  ")
         return s
 
     @staticmethod
