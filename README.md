@@ -1,7 +1,7 @@
 # YTD 12-bit Computer
 *Kyler Olsen*
 
-[Github](https://github.com/KylerOlsen/ytd_12-bit_computer)
+[Github](https://github.com/KylerOlsen/ytd_12-bit_computer)<br/>
 [Git Mirror](https://git.purplecello.org/KylerOlsen/ytd_12-bit_computer)
 
 **NOTICE: This project is still a *work in progress*.**
